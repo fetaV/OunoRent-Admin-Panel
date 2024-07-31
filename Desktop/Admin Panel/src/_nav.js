@@ -12,6 +12,7 @@ import {
   cilCursor,
   cilDescription,
   cilDrop,
+  cilLibraryBuilding,
   cilNotes,
   cilPencil,
   cilPuzzle,
@@ -83,6 +84,12 @@ const _nav = [
     name: 'Bize Ulaşın',
     to: '/theme/contactForm',
     icon: <CIcon icon={cilContact} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Markalar',
+    to: '/theme/brand',
+    icon: <CIcon icon={cilLibraryBuilding} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
