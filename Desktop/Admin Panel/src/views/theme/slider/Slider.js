@@ -19,6 +19,7 @@ import {
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import API_BASE_URL from '../../../../config'
 
 const Slider = () => {
   const [sliders, setSliders] = useState([])
@@ -44,7 +45,7 @@ const Slider = () => {
     }
 
     try {
-      await axios.post('http://10.10.3.181:5244/api/slider', {
+      await axios.post(`${API_BASE_URL}/slider`, {
         title,
         mainImageUrl,
         mobileImageUrl,
@@ -67,7 +68,7 @@ const Slider = () => {
     const fetchSliders = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://10.10.3.181:5244/api/Slider', {
+        const response = await axios.get(`${API_BASE_URL}/Slider`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -84,7 +85,7 @@ const Slider = () => {
   const handleDelete = async (sliderId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://10.10.3.181:5244/api/slider/${sliderId}`, {
+      await axios.delete(`${API_BASE_URL}/slider/${sliderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -133,7 +134,7 @@ const Slider = () => {
         isActive,
       })
       await axios.put(
-        `http://10.10.3.181:5244/api/Slider/${sliderId}`,
+        `${API_BASE_URL}/Slider/${sliderId}`,
         {
           sliderId,
           title,

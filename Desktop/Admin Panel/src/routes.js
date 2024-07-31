@@ -10,6 +10,8 @@ const FeaturedCategory = React.lazy(
 )
 const MenuItem = React.lazy(() => import('./views/theme/menuItem/MenuItem'))
 const Footer = React.lazy(() => import('./views/theme/footer/Footer'))
+const Faq = React.lazy(() => import('./views/theme/faq/Faq'))
+const ContactForm = React.lazy(() => import('./views/theme/contactForm/ContactForm'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -68,7 +70,9 @@ const routes = [
   { path: '/theme/blog', name: 'Blog', element: Blog },
   { path: '/theme/featuredCategories', name: 'FeaturedCategory', element: FeaturedCategory },
   { path: '/theme/menuItem', name: 'MenuItem', element: MenuItem },
+  { path: '/theme/contactForm', name: 'ContactForm', element: ContactForm },
   { path: '/theme/footer', name: 'Footer', element: Footer },
+  { path: '/theme/faq', name: 'Faq', element: Faq },
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
   { path: '/base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },

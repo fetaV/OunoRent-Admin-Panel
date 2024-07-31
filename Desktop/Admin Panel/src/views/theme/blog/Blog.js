@@ -23,6 +23,7 @@ import {
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import API_BASE_URL from '../../../../config'
 
 function Blog() {
   const [blogs, setBlogs] = useState([])
@@ -37,8 +38,6 @@ function Blog() {
   const [editBlogId, setEditBlogId] = useState(null)
   const [categories, setCategories] = useState([])
   const [subCategories, setSubCategories] = useState([])
-  const [subCategoryId, setSubCategoryId] = useState('')
-  const [categoryId, setCategoryId] = useState('')
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
@@ -59,7 +58,7 @@ function Blog() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await axios.post('http://10.10.3.181:5244/api/blog', {
+      await axios.post(`${API_BASE_URL}/blog`, {
         title,
         body,
         largeImageUrl,
@@ -82,7 +81,7 @@ function Blog() {
     const fetchBlogs = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://10.10.3.181:5244/api/Blog', {
+        const response = await axios.get(`${API_BASE_URL}/Blog`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -99,7 +98,7 @@ function Blog() {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get('http://10.10.3.181:5244/api/category', {
+      const response = await axios.get(`${API_BASE_URL}/category`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -117,14 +116,11 @@ function Blog() {
     try {
       console.log('Fetching subcategories for categoryId:', categoryId)
       const token = localStorage.getItem('token')
-      const response = await axios.get(
-        `http://10.10.3.181:5244/api/category/${categoryId}/subcategory`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.get(`${API_BASE_URL}/category/${categoryId}/subcategory`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      )
+      })
       console.log('Subcategories response:', response.data)
       setSubCategories(response.data)
     } catch (error) {
@@ -156,7 +152,7 @@ function Blog() {
   const handleDelete = async (blogId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://10.10.3.181:5244/api/blog/${blogId}`, {
+      await axios.delete(`${API_BASE_URL}/blog/${blogId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -171,7 +167,7 @@ function Blog() {
 
   const handleEditModalOpen = async (blogId) => {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`http://10.10.3.181:5244/api/blog/${blogId}`, {
+    const response = await axios.get(`${API_BASE_URL}/blog/${blogId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -197,30 +193,17 @@ function Blog() {
   const handleEdit = async (blogId) => {
     try {
       const token = localStorage.getItem('token')
-      console.log('Sending request with data:', {
-        blogId,
-        subCategoryId: selectedSubCategoryId, // subCategoryId eklendi
-        title,
-        body,
-        largeImgUrl: largeImageUrl, // isim düzeltildi
-        smallImgUrl: smallImageUrl, // isim düzeltildi
-        tags,
-        slug,
-        orderNumber: parseInt(orderNumber, 10), // integer'a çevrildi
-        date: new Date().toISOString(),
-        isActive,
-      })
       await axios.put(
-        `http://10.10.3.181:5244/api/Blog/${blogId}`, // doğru endpoint
+        `${API_BASE_URL}/Blog/${blogId}`,
         {
           blogId,
-          subCategoryId: selectedSubCategoryId, // subCategoryId eklendi
+          subCategoryId: selectedSubCategoryId,
           title,
-          largeImgUrl: largeImageUrl, // isim düzeltildi
-          smallImgUrl: smallImageUrl, // isim düzeltildi
+          largeImgUrl: largeImageUrl,
+          smallImgUrl: smallImageUrl,
           tags,
           slug,
-          orderNumber: parseInt(orderNumber, 10), // integer'a çevrildi
+          orderNumber: parseInt(orderNumber, 10),
           date: new Date().toISOString(),
           isActive,
         },

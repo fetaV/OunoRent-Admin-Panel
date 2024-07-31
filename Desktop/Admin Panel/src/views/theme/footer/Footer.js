@@ -19,6 +19,7 @@ import {
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import API_BASE_URL from '../../../../config'
 
 const Footer = () => {
   const [footer, setFooter] = useState([])
@@ -32,15 +33,13 @@ const Footer = () => {
   })
   const [visible, setVisible] = useState(false)
 
-  const API_BASE_URL = 'http://10.10.3.181:5244/api/FooterItem'
-
   useEffect(() => {
     fetchfooter()
   }, [])
 
   const fetchfooter = async () => {
     try {
-      const response = await axios.get(API_BASE_URL)
+      const response = await axios.get(`${API_BASE_URL}/footerItem`)
       console.log('getfooter response:', response.data)
       setFooter(response.data)
     } catch (error) {
@@ -51,7 +50,7 @@ const Footer = () => {
 
   const handleCreateFooter = async () => {
     try {
-      const response = await axios.post(API_BASE_URL, newFooter)
+      const response = await axios.post(`${API_BASE_URL}/footerItem`, newFooter)
       console.log('createFooter response:', response.data)
       toast.success('Menu item created successfully')
       fetchfooter()
@@ -64,7 +63,7 @@ const Footer = () => {
 
   const handleUpdateFooter = async (FooterId) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/${FooterId}`, currentFooter)
+      const response = await axios.put(`${API_BASE_URL}/footerItem/${FooterId}`, currentFooter)
       console.log('updateFooter response:', response.data)
       toast.success('Menu item updated successfully')
       fetchfooter()
@@ -77,7 +76,7 @@ const Footer = () => {
 
   const handleDeleteFooter = async (FooterId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/${FooterId}`)
+      const response = await axios.delete(`${API_BASE_URL}/footerItem/${FooterId}`)
       console.log('deleteFooter response:', response.data)
       toast.success('Menu item deleted successfully')
       fetchfooter()
@@ -115,17 +114,20 @@ const Footer = () => {
               <CTableDataCell>{item.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
-                  color="primary"
+                  color="primary text-white"
                   className="me-2"
                   onClick={() => {
                     setCurrentFooter(item)
                     setVisible(true)
                   }}
                 >
-                  Edit
+                  Düzenle
                 </CButton>
-                <CButton color="danger" onClick={() => handleDeleteFooter(item.footerItemId)}>
-                  Delete
+                <CButton
+                  color="danger text-white"
+                  onClick={() => handleDeleteFooter(item.footerItemId)}
+                >
+                  Sil
                 </CButton>
               </CTableDataCell>
             </CTableRow>

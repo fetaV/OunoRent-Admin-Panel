@@ -20,6 +20,7 @@ import {
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import API_BASE_URL from '../../../../config'
 
 const FeaturedCategories = () => {
   const [featuredCategories, setFeaturedCategories] = useState([])
@@ -39,7 +40,7 @@ const FeaturedCategories = () => {
     })
     e.preventDefault()
     try {
-      const response = await axios.post('http://10.10.3.181:5244/api/FeaturedCategory', {
+      const response = await axios.post(`${API_BASE_URL}/FeaturedCategory`, {
         categoryId: selectedCategoryId,
         orderNumber: parseInt(orderNumber, 10),
         isActive,
@@ -65,7 +66,7 @@ const FeaturedCategories = () => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://10.10.3.181:5244/api/category', {
+        const response = await axios.get(`${API_BASE_URL}/category`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -84,7 +85,7 @@ const FeaturedCategories = () => {
     const fetchfeaturedCategories = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://10.10.3.181:5244/api/featuredcategory', {
+        const response = await axios.get(`${API_BASE_URL}/featuredcategory`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -102,7 +103,7 @@ const FeaturedCategories = () => {
   const handleDelete = async (featuredCategoryId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://10.10.3.181:5244/api/FeaturedCategory/${featuredCategoryId}`, {
+      await axios.delete(`${API_BASE_URL}/FeaturedCategory/{featuredCategoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -123,7 +124,7 @@ const FeaturedCategories = () => {
     const categoryToEdit = featuredCategories.find(
       (category) => category.featuredCategoryId === featuredCategoryId,
     )
-    setSelectedCategoryId(categoryToEdit.categoryId) // Kategori seçimi için
+    setSelectedCategoryId(categoryToEdit.categoryId)
     setOrderNumber(categoryToEdit.orderNumber)
     setIsActive(categoryToEdit.isActive)
     setVisible2(true)
@@ -133,7 +134,7 @@ const FeaturedCategories = () => {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.put(
-        `http://10.10.3.181:5244/api/FeaturedCategory/${editCategoryId}`,
+        `${API_BASE_URL}/FeaturedCategory/{editCategoryId}`,
         {
           featuredCategoryId: editCategoryId,
           categoryId: selectedCategoryId,

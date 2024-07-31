@@ -18,6 +18,7 @@ import {
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import API_BASE_URL from '../../../../config'
 
 const Categories = () => {
   const [categories, setCategories] = useState([])
@@ -40,7 +41,7 @@ const Categories = () => {
   const newCategory = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('http://10.10.3.181:5244/api/category', {
+      const response = await axios.post(`${API_BASE_URL}/category`, {
         name,
         description,
         icon,
@@ -58,7 +59,17 @@ const Categories = () => {
       setImageSquareUrl('')
       setVisible(false)
     } catch (error) {
-      console.error(error)
+      if (error.response && error.response.data.errors) {
+        const errorMessage = Object.values(error.response.data.errors).flat().join(' ')
+        toast.error(errorMessage)
+        console.error(errorMessage)
+      } else if (error.response.data) {
+        const errorMessages = Object.values(error.response.data).flat().join('')
+        toast.error(errorMessages)
+      } else {
+        toast.error('Bir hata oluştu.')
+        console.error(error)
+      }
     }
   }
   const handleSubCategoryEdit = (categoryId) => {
@@ -70,7 +81,7 @@ const Categories = () => {
     e.preventDefault()
     try {
       const response = await axios.post(
-        `http://10.10.3.181:5244/api/category/${parentCategoryId}/subcategory`,
+        `${API_BASE_URL}/category/${parentCategoryId}/subcategory`,
         {
           name,
           description,
@@ -78,7 +89,6 @@ const Categories = () => {
           orderNumber,
         },
       )
-      // Alt kategori ekledikten sonra, ilgili kategoriye ekleyin
       setCategories((prevCategories) =>
         prevCategories.map((category) =>
           category.categoryId === parentCategoryId
@@ -94,7 +104,7 @@ const Categories = () => {
       setDescription('')
       setIcon('')
       setOrderNumber('')
-      setVisible4(false) // Modalı başarıyla ekledikten sonra kapat
+      setVisible4(false)
       setInterval(() => {
         window.location.reload()
       }, 1000)
@@ -108,7 +118,7 @@ const Categories = () => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://10.10.3.181:5244/api/category', {
+        const response = await axios.get(`${API_BASE_URL}/category`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -123,14 +133,11 @@ const Categories = () => {
       console.log('123', categoryId)
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(
-          `http://10.10.3.181:5244/api/category/${categoryId}/subcategory`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await axios.get(`${API_BASE_URL}/category/${categoryId}/subcategory`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        )
+        })
         setSubCategories(response.data)
       } catch (error) {
         console.error(error)
@@ -146,7 +153,7 @@ const Categories = () => {
   const handleDelete = async (categoryId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://10.10.3.181:5244/api/category/${categoryId}`, {
+      await axios.delete(`${API_BASE_URL}/category/${categoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -162,7 +169,7 @@ const Categories = () => {
     console.log(subCategoryId)
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://10.10.3.181:5244/api/category/subcategory/${subCategoryId}`, {
+      await axios.delete(`${API_BASE_URL}/category/subcategory/${subCategoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -181,7 +188,7 @@ const Categories = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.put(
-        `http://10.10.3.181:5244/api/category/${categoryId}/subcategory/${subCategoryId}`, // Changed axios method from delete to put and corrected URL
+        `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`, // Changed axios method from delete to put and corrected URL
         {
           categoryId,
           subCategoryId,
@@ -212,23 +219,34 @@ const Categories = () => {
     }
   }
 
-  const categoryEdit = (categoryId) => {
+  const categoryEdit = async (categoryId) => {
     setEditCategoryId(categoryId)
-    const categoryToEdit = categories.find((category) => category.categoryId === categoryId)
-    setName(categoryToEdit.name)
-    setDescription(categoryToEdit.description)
-    setIcon(categoryToEdit.icon)
-    setOrderNumber(categoryToEdit.orderNumber)
-    setImageHorizontalUrl(categoryToEdit.imageHorizontalUrl)
-    setImageSquareUrl(categoryToEdit.imageSquareUrl)
-    setVisible2(true)
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.get(`${API_BASE_URL}/category/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const categoryToEdit = response.data
+      setName(categoryToEdit.name)
+      setDescription(categoryToEdit.description)
+      setIcon(categoryToEdit.icon)
+      setOrderNumber(categoryToEdit.orderNumber)
+      setImageHorizontalUrl(categoryToEdit.imageHorizontalUrl)
+      setImageSquareUrl(categoryToEdit.imageSquareUrl)
+      setVisible2(true)
+    } catch (error) {
+      console.error(error)
+      toast.error('Kategori bilgileri getirilirken bir hata oluştu.')
+    }
   }
 
   const handleEdit = async (categoryId) => {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.put(
-        `http://10.10.3.181:5244/api/category/${categoryId}`,
+        `${API_BASE_URL}/category/${categoryId}`,
         { categoryId, name, description, icon, orderNumber, imageHorizontalUrl, imageSquareUrl },
         {
           headers: {
@@ -249,19 +267,29 @@ const Categories = () => {
     }
   }
 
-  const handleEditSubCategoryModalOpen = (subCategoryId) => {
-    console.log(subCategoryId)
-    setEditSubCategoryId(subCategoryId)
-    const subCategoryToEdit = subCategories.find(
-      (subCategory) => subCategory.subCategoryId === subCategoryId,
-    )
-    setName(subCategoryToEdit.name)
-    setDescription(subCategoryToEdit.description)
-    setIcon(subCategoryToEdit.icon)
-    setOrderNumber(subCategoryToEdit.orderNumber)
-    setImageHorizontalUrl(subCategoryToEdit.imageHorizontalUrl)
-    setImageSquareUrl(subCategoryToEdit.imageSquareUrl)
-    setVisible3(true)
+  const handleEditSubCategoryModalOpen = async (categoryId, subCategoryId) => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.get(
+        `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const subCategoryToEdit = response.data
+      setEditSubCategoryId(subCategoryId)
+      setName(subCategoryToEdit.name || '')
+      setDescription(subCategoryToEdit.description || '')
+      setIcon(subCategoryToEdit.icon || '')
+      setOrderNumber(subCategoryToEdit.orderNumber || '')
+      setVisible3(true)
+    } catch (error) {
+      console.error(error)
+      toast.error('Alt kategori bilgileri getirilirken bir hata oluştu.')
+    }
   }
 
   return (
@@ -460,24 +488,6 @@ const Categories = () => {
               onChange={(e) => setOrderNumber(e.target.value)}
             />
           </CForm>
-          <CForm className="mt-3">
-            <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
-              label="Web Görsel"
-              value={imageHorizontalUrl}
-              onChange={(e) => setImageHorizontalUrl(e.target.value)}
-            />
-          </CForm>
-          <CForm className="mt-3">
-            <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
-              label="Mobil Görsel"
-              value={imageSquareUrl}
-              onChange={(e) => setImageSquareUrl(e.target.value)}
-            />
-          </CForm>
         </CModalBody>
         <CModalFooter>
           <CButton color="primary" onClick={newSubCategory}>
@@ -497,58 +507,35 @@ const Categories = () => {
           <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="name"
               label="Alt Kategori Adı"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="name"
               label="Açıklama"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="icon"
               label="İkon"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
               type="number"
-              id="exampleFormControlInput1"
+              id="orderNumber"
               label="Sıra No"
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
             />
           </CForm>
-          <CForm className="mt-3">
-            <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
-              label="Web Görsel"
-              value={imageHorizontalUrl}
-              onChange={(e) => setImageHorizontalUrl(e.target.value)}
-            />
-          </CForm>
-          <CForm className="mt-3">
-            <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
-              label="Mobil Görsel"
-              value={imageSquareUrl}
-              onChange={(e) => setImageSquareUrl(e.target.value)}
-            />
-          </CForm>
         </CModalBody>
+
         <CModalFooter>
           <CButton color="secondary" onClick={() => setVisible3(false)}>
             Kapat
@@ -599,7 +586,11 @@ const Categories = () => {
                   className="ms-2"
                   onClick={() => {
                     setParentCategoryId(category.categoryId)
-                    setSelectedCategoryId(category.categoryId)
+                    if (category.subCategories && category.subCategories.length > 0) {
+                      setSelectedCategoryId(category.categoryId)
+                    } else {
+                      toast.info('Alt kategori verisi bulunmamaktadır')
+                    }
                   }}
                 >
                   Alt Kategorileri Göster
@@ -627,7 +618,12 @@ const Categories = () => {
                     <CButton
                       color="primary"
                       className="me-2"
-                      onClick={() => handleEditSubCategoryModalOpen(subCategory.subCategoryId)}
+                      onClick={() =>
+                        handleEditSubCategoryModalOpen(
+                          selectedCategoryId,
+                          subCategory.subCategoryId,
+                        )
+                      }
                     >
                       Düzenle
                     </CButton>

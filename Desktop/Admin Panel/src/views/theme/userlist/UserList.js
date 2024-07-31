@@ -22,6 +22,7 @@ import {
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import API_BASE_URL from '../../../../config'
 
 const Typography = () => {
   const [users, setUsers] = useState([])
@@ -42,7 +43,7 @@ const Typography = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('http://10.10.3.181:5244/api/auth/register', {
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
         email,
         password,
         passwordConfirm,
@@ -73,7 +74,7 @@ const Typography = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://10.10.3.181:5244/api/user', {
+        const response = await axios.get(`${API_BASE_URL}/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -91,7 +92,7 @@ const Typography = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://10.10.3.181:5244/api/user/${id}`, {
+      await axios.delete(`${API_BASE_URL}/user/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -129,7 +130,7 @@ const Typography = () => {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.put(
-        `http://10.10.3.181:5244/api/user/${userId}`,
+        `${API_BASE_URL}/user/${userId}`,
         { name, surname, email, phoneNumber, tc, birthDate, gender, address },
         {
           headers: {
