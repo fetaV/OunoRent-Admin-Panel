@@ -9,6 +9,7 @@ const FeaturedCategory = React.lazy(
   () => import('./views/theme/featuredCategory/FeaturedCategories'),
 )
 const MenuItem = React.lazy(() => import('./views/theme/menuItem/MenuItem'))
+const Footer = React.lazy(() => import('./views/theme/footer/Footer'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -67,6 +68,7 @@ const routes = [
   { path: '/theme/blog', name: 'Blog', element: Blog },
   { path: '/theme/featuredCategories', name: 'FeaturedCategory', element: FeaturedCategory },
   { path: '/theme/menuItem', name: 'MenuItem', element: MenuItem },
+  { path: '/theme/footer', name: 'Footer', element: Footer },
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
   { path: '/base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },

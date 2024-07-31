@@ -5,6 +5,7 @@ import {
   cilActionRedo,
   cilBell,
   cilCalculator,
+  cilCarAlt,
   cilChartPie,
   cilCursor,
   cilDescription,
@@ -67,6 +68,12 @@ const _nav = [
     component: CNavItem,
     name: 'Menü Ana Başlıkları',
     to: '/theme/menuItem',
+    icon: <CIcon icon={cilCarAlt} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Footer',
+    to: '/theme/footer',
     icon: <CIcon icon={cilActionRedo} customClassName="nav-icon" />,
   },
   {
