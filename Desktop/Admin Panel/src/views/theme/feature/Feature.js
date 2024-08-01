@@ -16,7 +16,6 @@ import {
   CFormInput,
   CFormSwitch,
   CFormSelect,
-  CFormTextarea,
   CRow,
   CCol,
 } from '@coreui/react'
@@ -25,27 +24,22 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import API_BASE_URL from '../../../../config'
 
-function Blog() {
-  const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [body, setBody] = useState('')
-  const [largeImageUrl, setLargeImageUrl] = useState('')
-  const [smallImageUrl, setSmallImageUrl] = useState('')
-  const [tags, setTags] = useState('')
-  const [slug, setSlug] = useState('')
-  const [orderNumber, setOrderNumber] = useState('')
+function Feature() {
+  const [features, setFeatures] = useState([])
+  const [featureName, setFeatureName] = useState('')
+  const [featureType, setFeatureType] = useState('')
   const [isActive, setIsActive] = useState(false)
-  const [editBlogId, setEditBlogId] = useState(null)
+  const [editFeatureId, setEditFeatureId] = useState(null)
   const [categories, setCategories] = useState([])
   const [subCategories, setSubCategories] = useState([])
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
-  const [editBlogData, setEditBlogData] = useState({
-    blogId: '',
+  const [editfeatureData, setEditfeatureData] = useState({
+    featureId: '',
     subCategoryId: '',
-    title: '',
+    featureName: '',
     largeImagegUrl: '',
     smallImageUrl: '',
     tags: '',
@@ -56,20 +50,20 @@ function Blog() {
   })
 
   const handleSubmit = async (e) => {
+    console.log({ featureName, featureType, subCategoryId: selectedCategoryId })
     e.preventDefault()
     try {
-      await axios.post(`${API_BASE_URL}/blog`, {
-        title,
-        body,
-        largeImageUrl,
-        smallImageUrl,
-        tags,
-        slug,
-        orderNumber,
-        isActive,
+      await axios.post(`${API_BASE_URL}/feature`, {
+        featureName,
+        featureType,
+        categoryId: selectedCategoryId,
         subcategoryId: selectedSubCategoryId,
+        isActive,
       })
-      toast.success('Blog başarıyla eklendi!')
+      toast.success('feature başarıyla eklendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible(false)
     } catch (error) {
       console.error(error)
@@ -78,21 +72,22 @@ function Blog() {
   }
 
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchfeatures = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${API_BASE_URL}/Blog`, {
+        const response = await axios.get(`${API_BASE_URL}/feature`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-        setBlogs(response.data)
+        console.log(response)
+        setFeatures(response.data)
       } catch (error) {
         console.error(error)
       }
     }
 
-    fetchBlogs()
+    fetchfeatures()
   }, [])
 
   const fetchCategories = async () => {
@@ -149,62 +144,61 @@ function Blog() {
     console.log(selectedId)
   }
 
-  const handleDelete = async (blogId) => {
+  const handleDelete = async (featureId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${API_BASE_URL}/blog/${blogId}`, {
+      await axios.delete(`${API_BASE_URL}/feature/${featureId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      setBlogs(blogs.filter((blog) => blog.blogId !== blogId))
-      toast.success('Blog başarıyla silindi!')
+      setFeatures(features.filter((feature) => feature.featureId !== featureId))
+      toast.success('feature başarıyla silindi!')
     } catch (error) {
       console.error(error.response.data)
-      toast.error('Blog silinirken bir hata oluştu!')
+      toast.error('feature silinirken bir hata oluştu!')
     }
   }
 
-  const handleEditModalOpen = async (blogId) => {
+  const handleEditModalOpen = async (featureId) => {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_BASE_URL}/blog/${blogId}`, {
+    const response = await axios.get(`${API_BASE_URL}/feature/${featureId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-    console.log('idblog', response)
+    console.log('idfeature', response)
 
-    const blogData = response.data
-    setEditBlogId(blogId)
-    setEditBlogData(blogData)
-    setTitle(blogData.title || '')
-    setBody(blogData.body || '')
-    setLargeImageUrl(blogData.largeImageUrl || '')
-    setSmallImageUrl(blogData.smallImageUrl || '')
-    setTags(blogData.tags || '')
-    setSlug(blogData.slug || '')
-    setOrderNumber(blogData.orderNumber || '')
-    setIsActive(blogData.isActive || false)
-    setSelectedSubCategoryId(blogData.subCategoryId || '')
-    setSelectedCategoryId(blogData.categoryId || '')
+    const featureData = response.data
+    setEditFeatureId(featureId)
+    setEditfeatureData(featureData)
+    setFeatureName(featureData.featureName || '')
+    setFeatureType(featureData.featureType || '')
+    setIsActive(featureData.isActive || false)
+    setSelectedSubCategoryId(featureData.subCategory.subCategoryId || '')
+    setSelectedCategoryId(featureData.subCategory.categoryId || '')
     setVisible2(true)
   }
 
-  const handleEdit = async (blogId) => {
+  const handleEdit = async (featureId) => {
+    console.log({
+      featureId,
+      subCategoryId: selectedSubCategoryId,
+      categoryId: selectedCategoryId,
+      featureName,
+      featureType,
+      isActive,
+    })
     try {
       const token = localStorage.getItem('token')
       await axios.put(
-        `${API_BASE_URL}/Blog/${blogId}`,
+        `${API_BASE_URL}/feature/${featureId}`,
         {
-          blogId,
+          featureId,
           subCategoryId: selectedSubCategoryId,
-          title,
-          largeImgUrl: largeImageUrl,
-          smallImgUrl: smallImageUrl,
-          tags,
-          slug,
-          orderNumber: parseInt(orderNumber, 10),
-          date: new Date().toISOString(),
+          categoryId: selectedCategoryId,
+          featureName,
+          featureType,
           isActive,
         },
         {
@@ -213,14 +207,17 @@ function Blog() {
           },
         },
       )
-      toast.success('Blog başarıyla güncellendi!')
+      toast.success('Feature başarıyla güncellendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible2(false)
     } catch (error) {
       console.error('Error response:', error.response)
       if (error.response && error.response.status === 409) {
-        toast.error('Çakışma: Blog ID zaten mevcut veya veri çakışması yaşandı.')
+        toast.error('Çakışma: Feature ID zaten mevcut veya veri çakışması yaşandı.')
       } else {
-        toast.error('Blog güncellenirken hata oluştu.')
+        toast.error('Feature güncellenirken hata oluştu.')
       }
     }
   }
@@ -229,7 +226,7 @@ function Blog() {
     <>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
-        Yeni Blog Ekle
+        Yeni feature Ekle
       </CButton>
 
       <CModal
@@ -238,72 +235,25 @@ function Blog() {
         aria-labelledby="LiveDemoExampleLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni Blog Ekle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel">Yeni feature Ekle</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
-            <CRow>
-              <CCol>
-                <CFormInput
-                  type="text"
-                  className="mb-3"
-                  id="title"
-                  label="Başlık"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </CCol>
-              <CCol>
-                <CFormInput
-                  type="number"
-                  className="mb-3"
-                  id="orderNumber"
-                  label="Sıra Numarası"
-                  value={orderNumber}
-                  onChange={(e) => setOrderNumber(e.target.value)}
-                />
-              </CCol>
-            </CRow>
-            <CFormTextarea
+            <CFormInput
               type="text"
               className="mb-3"
-              id="body"
+              id="featureName"
+              label="Başlık"
+              value={featureName}
+              onChange={(e) => setFeatureName(e.target.value)}
+            />
+            <CFormInput
+              type="text"
+              className="mb-3"
+              id="featureType"
               label="Metin"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="largeImageUrl"
-              label="Büyük Resim"
-              value={largeImageUrl}
-              onChange={(e) => setLargeImageUrl(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="smallImageUrl"
-              label="Küçük Resim"
-              value={smallImageUrl}
-              onChange={(e) => setSmallImageUrl(e.target.value)}
-            />
-
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="tags"
-              label="Etiketler"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="slug"
-              label="URL Adresi"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
+              value={featureType}
+              onChange={(e) => setFeatureType(e.target.value)}
             />
             <CFormSelect
               label="Kategori"
@@ -360,59 +310,24 @@ function Blog() {
         aria-labelledby="LiveDemoExampleLabel2"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">Blog Düzenle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel2">feature Düzenle</CModalTitle>
         </CModalHeader>
 
         <CModalBody>
           <CForm>
             <CFormInput
               type="text"
-              id="title"
+              id="featureName"
               label="Başlık"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={featureName}
+              onChange={(e) => setFeatureName(e.target.value)}
             />
             <CFormInput
               type="text"
-              id="body"
+              id="featureType"
               label="Ana Resim URL"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              id="largeImageUrl"
-              label="Mobil Resim URL"
-              value={largeImageUrl}
-              onChange={(e) => setLargeImageUrl(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              id="smallImageUrl"
-              label="Hedef URL"
-              value={smallImageUrl}
-              onChange={(e) => setSmallImageUrl(e.target.value)}
-            />
-            <CFormInput
-              type="number"
-              id="orderNumber"
-              label="Sıra Numarası"
-              value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              id="tags"
-              label="Süre"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              id="slug"
-              label="Aktif Başlangıç"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
+              value={featureType}
+              onChange={(e) => setFeatureType(e.target.value)}
             />
             <CFormSelect
               label="Kategori"
@@ -456,7 +371,7 @@ function Blog() {
           <CButton color="secondary" onClick={() => setVisible2(false)}>
             Kapat
           </CButton>
-          <CButton color="primary" onClick={() => handleEdit(editBlogId)}>
+          <CButton color="primary" onClick={() => handleEdit(editFeatureId)}>
             Değişiklikleri Kaydet
           </CButton>
         </CModalFooter>
@@ -467,33 +382,25 @@ function Blog() {
           <CTableRow>
             <CTableHeaderCell scope="col">Başlık</CTableHeaderCell>
             <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Büyük Resim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Küçük Resim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Etiketler</CTableHeaderCell>
-            <CTableHeaderCell scope="col">URL Adresi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Kategori</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Aktiflik</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {blogs.map((blog) => (
-            <CTableRow key={blog.blogId}>
-              <CTableDataCell>{blog.title}</CTableDataCell>
-              <CTableDataCell>{blog.orderNumber}</CTableDataCell>
-              <CTableDataCell>{blog.largeImageUrl}</CTableDataCell>
-              <CTableDataCell>{blog.smallImageUrl}</CTableDataCell>
-              <CTableDataCell>{blog.tags}</CTableDataCell>
-              <CTableDataCell>{blog.slug}</CTableDataCell>
-              <CTableDataCell>{blog.subCategoryName}</CTableDataCell>
+          {features.map((feature) => (
+            <CTableRow key={feature.featureId}>
+              <CTableDataCell>{feature.featureName}</CTableDataCell>
+              <CTableDataCell>{feature.featureType}</CTableDataCell>
+              <CTableDataCell>{feature.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary"
                   className="me-2"
-                  onClick={() => handleEditModalOpen(blog.blogId)}
+                  onClick={() => handleEditModalOpen(feature.featureId)}
                 >
                   Düzenle
                 </CButton>
-                <CButton color="danger" onClick={() => handleDelete(blog.blogId)}>
+                <CButton color="danger text-white" onClick={() => handleDelete(feature.featureId)}>
                   Sil
                 </CButton>
               </CTableDataCell>
@@ -505,4 +412,4 @@ function Blog() {
   )
 }
 
-export default Blog
+export default Feature

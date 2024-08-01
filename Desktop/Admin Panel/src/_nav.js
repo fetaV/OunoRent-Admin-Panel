@@ -12,6 +12,7 @@ import {
   cilCursor,
   cilDescription,
   cilDrop,
+  cilFeaturedPlaylist,
   cilLibraryBuilding,
   cilNotes,
   cilPencil,
@@ -90,6 +91,12 @@ const _nav = [
     name: 'Markalar',
     to: '/theme/brand',
     icon: <CIcon icon={cilLibraryBuilding} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Özellikler',
+    to: '/theme/feature',
+    icon: <CIcon icon={cilFeaturedPlaylist} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
