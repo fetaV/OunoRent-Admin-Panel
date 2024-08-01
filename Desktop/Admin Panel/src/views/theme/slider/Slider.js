@@ -32,11 +32,14 @@ const Slider = () => {
   const [activeFrom, setActiveFrom] = useState('')
   const [activeTo, setActiveTo] = useState('')
   const [isActive, setIsActive] = useState(false)
+  const [mainImage, setMainImage] = useState(null)
+  const [mobileImage, setMobileImage] = useState(null)
   const [editSliderId, setEditSliderId] = useState(null)
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
 
   const handleSubmit = async (e) => {
+    const token = localStorage.getItem('token')
     e.preventDefault()
 
     const formatToUTC = (dateStr) => {
@@ -44,17 +47,27 @@ const Slider = () => {
       return date.toISOString()
     }
 
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('targetUrl', targetUrl)
+    formData.append('orderNumber', orderNumber)
+    formData.append('duration', duration)
+    formData.append('activeFrom', formatToUTC(activeFrom))
+    formData.append('activeTo', formatToUTC(activeTo))
+    formData.append('isActive', isActive)
+    if (mainImage) {
+      formData.append('mainImage', mainImage)
+    }
+    if (mobileImage) {
+      formData.append('mobileImage', mobileImage)
+    }
+
     try {
-      await axios.post(`${API_BASE_URL}/slider`, {
-        title,
-        mainImageUrl,
-        mobileImageUrl,
-        targetUrl,
-        orderNumber,
-        duration,
-        activeFrom: formatToUTC(activeFrom),
-        activeTo: formatToUTC(activeTo),
-        isActive,
+      await axios.post(`${API_BASE_URL}/Slider`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
       })
       toast.success('Slider successfully added!')
       setVisible(false)
@@ -189,18 +202,16 @@ const Slider = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
             <CFormInput
-              type="text"
-              id="mainImageUrl"
-              label="Ana Resim URL"
-              value={mainImageUrl}
-              onChange={(e) => setMainImageUrl(e.target.value)}
+              type="file"
+              id="mainImage"
+              label="Ana Resim"
+              onChange={(e) => setMainImage(e.target.files[0])}
             />
             <CFormInput
-              type="text"
-              id="mobileImageUrl"
-              label="Mobil Resim URL"
-              value={mobileImageUrl}
-              onChange={(e) => setMobileImageUrl(e.target.value)}
+              type="file"
+              id="mobileImage"
+              label="Mobil Resim"
+              onChange={(e) => setMobileImage(e.target.files[0])}
             />
             <CFormInput
               type="text"
@@ -237,7 +248,6 @@ const Slider = () => {
               value={activeTo ? new Date(activeTo).toISOString().slice(0, 16) : ''}
               onChange={(e) => setActiveTo(e.target.value)}
             />
-
             <CFormSwitch
               id="isActive"
               label="Aktif"
