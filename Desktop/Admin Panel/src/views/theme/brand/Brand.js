@@ -47,7 +47,7 @@ const Brand = () => {
     }
   }
 
-  const handleCreateMenuItem = async () => {
+  const handleCreateBrand = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/brand`, newBrand)
       toast.success('brand item created successfully')
@@ -60,30 +60,30 @@ const Brand = () => {
         isActive: false,
       })
     } catch (error) {
-      console.error('createMenuItem error:', error)
+      console.error('createBrand error:', error)
       toast.error('Failed to create brand item')
     }
   }
 
-  const handleUpdateMenuItem = async (brandId) => {
+  const handleUpdateBrand = async (brandId) => {
     try {
       const response = await axios.put(`${API_BASE_URL}/brand/${brandId}`, currentBrand)
       toast.success('brand item updated successfully')
       fetchbrand()
       setVisible(false)
     } catch (error) {
-      console.error('updateMenuItem error:', error)
+      console.error('updateBrand error:', error)
       toast.error('Failed to update brand item')
     }
   }
 
-  const handleDeleteMenuItem = async (brandId) => {
+  const handleDeleteBrand = async (brandId) => {
     try {
       const response = await axios.delete(`${API_BASE_URL}/brand/${brandId}`)
       toast.success('brand item deleted successfully')
       fetchbrand()
     } catch (error) {
-      console.error('deleteMenuItem error:', error)
+      console.error('deleteBrand error:', error)
       toast.error('Failed to delete brand item')
     }
   }
@@ -109,10 +109,10 @@ const Brand = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Soru Başlığı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Marka Adı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Logo</CTableHeaderCell>
             <CTableHeaderCell scope="col">Markalarda Göster</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Aktiflik</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
@@ -121,8 +121,8 @@ const Brand = () => {
             <CTableRow key={item.brandId}>
               <CTableDataCell>{item.name}</CTableDataCell>
               <CTableDataCell>{item.logo}</CTableDataCell>
-              <CTableDataCell>{item.showOnBrands ? 'Evet' : 'Hayır'}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
+              <CTableDataCell>{item.showOnBrands ? 'Aktif' : 'Pasif'}</CTableDataCell>
+              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary text-white"
@@ -131,10 +131,7 @@ const Brand = () => {
                 >
                   Düzenle
                 </CButton>
-                <CButton
-                  color="danger text-white"
-                  onClick={() => handleDeleteMenuItem(item.brandId)}
-                >
+                <CButton color="danger text-white" onClick={() => handleDeleteBrand(item.brandId)}>
                   Sil
                 </CButton>
               </CTableDataCell>
@@ -152,7 +149,7 @@ const Brand = () => {
             <CFormInput
               type="text"
               className="mb-3"
-              label="Soru Başlığı"
+              label="Marka Adı"
               value={currentBrand ? currentBrand.name : newBrand.name}
               onChange={(e) =>
                 currentBrand
@@ -181,7 +178,7 @@ const Brand = () => {
               }
             />
             <CFormSwitch
-              label="Aktiflik"
+              label="Durum"
               checked={currentBrand ? currentBrand.isActive : newBrand.isActive}
               onChange={(e) =>
                 currentBrand
@@ -198,7 +195,7 @@ const Brand = () => {
           <CButton
             color="primary"
             onClick={() =>
-              currentBrand ? handleUpdateMenuItem(currentBrand.brandId) : handleCreateMenuItem()
+              currentBrand ? handleUpdateBrand(currentBrand.brandId) : handleCreateBrand()
             }
           >
             {currentBrand ? 'Save Changes' : 'Create'}

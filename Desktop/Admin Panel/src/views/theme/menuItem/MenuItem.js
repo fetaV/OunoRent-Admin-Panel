@@ -63,7 +63,7 @@ const MenuItems = () => {
 
   const handleCreateMenuItem = async () => {
     try {
-      const response = await axios.post(API_BASE_URL, newMenuItem)
+      const response = await axios.post(`${API_BASE_URL}/menuItem`, newMenuItem)
       console.log('createMenuItem response:', response.data)
       toast.success('Menu item created successfully')
       fetchMenuItems()
@@ -76,7 +76,7 @@ const MenuItems = () => {
 
   const handleUpdateMenuItem = async (menuItemId) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/${menuItemId}`, currentMenuItem)
+      const response = await axios.put(`${API_BASE_URL}/menuItem/${menuItemId}`, currentMenuItem)
       console.log('updateMenuItem response:', response.data)
       toast.success('Menu item updated successfully')
       fetchMenuItems()
@@ -89,7 +89,7 @@ const MenuItems = () => {
 
   const handleDeleteMenuItem = async (menuItemId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/${menuItemId}`)
+      const response = await axios.delete(`${API_BASE_URL}/menuItem/${menuItemId}`)
       console.log('deleteMenuItem response:', response.data)
       toast.success('Menu item deleted successfully')
       fetchMenuItems()
@@ -112,7 +112,7 @@ const MenuItems = () => {
             <CTableHeaderCell scope="col">Menü Başlığı</CTableHeaderCell>
             <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
             <CTableHeaderCell scope="col">Hedef URL</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Aktiflik</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
             <CTableHeaderCell scope="col">Kullanıcılara Özel</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
@@ -123,8 +123,8 @@ const MenuItems = () => {
               <CTableDataCell>{item.label}</CTableDataCell>
               <CTableDataCell>{item.orderNumber}</CTableDataCell>
               <CTableDataCell>{item.targetUrl}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
-              <CTableDataCell>{item.onlyToMembers ? 'Evet' : 'Hayır'}</CTableDataCell>
+              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
+              <CTableDataCell>{item.onlyToMembers ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary text-white"
@@ -200,7 +200,7 @@ const MenuItems = () => {
               }
             />
             <CFormSwitch
-              label="Aktiflik"
+              label="Durum"
               checked={currentMenuItem ? currentMenuItem.isActive : newMenuItem.isActive}
               onChange={(e) =>
                 currentMenuItem

@@ -86,6 +86,7 @@ const Slider = () => {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log(response)
         setSliders(response.data)
       } catch (error) {
         console.error(error)
@@ -132,48 +133,37 @@ const Slider = () => {
       return date.toISOString()
     }
 
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('targetUrl', targetUrl)
+    formData.append('orderNumber', orderNumber)
+    formData.append('duration', duration)
+    formData.append('activeFrom', formatToUTC(activeFrom))
+    formData.append('activeTo', formatToUTC(activeTo))
+    formData.append('isActive', isActive)
+    if (mainImage) {
+      formData.append('mainImage', mainImage)
+    }
+    if (mobileImage) {
+      formData.append('mobileImage', mobileImage)
+    }
+
     try {
       const token = localStorage.getItem('token')
-      console.log('Sending request with data:', {
-        sliderId,
-        title,
-        mainImageUrl,
-        mobileImageUrl,
-        targetUrl,
-        orderNumber,
-        duration,
-        activeFrom: formatToUTC(activeFrom),
-        activeTo: formatToUTC(activeTo),
-        isActive,
+      await axios.put(`${API_BASE_URL}/Slider/${sliderId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
       })
-      await axios.put(
-        `${API_BASE_URL}/Slider/${sliderId}`,
-        {
-          sliderId,
-          title,
-          mainImageUrl,
-          mobileImageUrl,
-          targetUrl,
-          orderNumber,
-          duration,
-          activeFrom: formatToUTC(activeFrom),
-          activeTo: formatToUTC(activeTo),
-          isActive,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      toast.success('Slider updated successfully!')
+      toast.success('Slider başarıyla güncellendi!')
       setVisible2(false)
     } catch (error) {
       console.error('Error response:', error.response)
       if (error.response && error.response.status === 409) {
-        toast.error('Conflict: Slider ID already exists or data conflict occurred.')
+        toast.error('Çakışma: Slider ID mevcut veya veri çakışması oluştu.')
       } else {
-        toast.error('Failed to update slider')
+        toast.error('Slider güncellenirken bir hata oluştu')
       }
     }
   }
@@ -284,19 +274,18 @@ const Slider = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
             <CFormInput
-              type="text"
-              id="mainImageUrl"
-              label="Ana Resim URL"
-              value={mainImageUrl}
-              onChange={(e) => setMainImageUrl(e.target.value)}
+              type="file"
+              id="mainImage"
+              label={`Ana Resim (mevcut: ${mainImageUrl})`}
+              onChange={(e) => setMainImage(e.target.files[0])}
             />
             <CFormInput
-              type="text"
-              id="mobileImageUrl"
-              label="Mobil Resim URL"
-              value={mobileImageUrl}
-              onChange={(e) => setMobileImageUrl(e.target.value)}
+              type="file"
+              id="mobileImage"
+              label={`Mobil Resim (mevcut: ${mobileImageUrl})`}
+              onChange={(e) => setMobileImage(e.target.files[0])}
             />
+
             <CFormInput
               type="text"
               id="targetUrl"
@@ -332,7 +321,6 @@ const Slider = () => {
               value={activeTo ? new Date(activeTo).toISOString().slice(0, 16) : ''}
               onChange={(e) => setActiveTo(e.target.value)}
             />
-
             <CFormSwitch
               id="isActive"
               label="Aktif"
@@ -384,8 +372,35 @@ const Slider = () => {
                 <CTableDataCell>{activeFrom}</CTableDataCell>
                 <CTableDataCell>{activeTo}</CTableDataCell>
                 <CTableDataCell>{slider.duration}</CTableDataCell>
-                <CTableDataCell>{slider.mainImageUrl}</CTableDataCell>
-                <CTableDataCell>{slider.mobileImageUrl}</CTableDataCell>
+                <CTableDataCell>
+                  <a href={slider.mainImageUrl} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={slider.mainImageUrl}
+                      alt="Ana Resim"
+                      style={{
+                        maxWidth: '100px',
+                        maxHeight: '100px',
+                        display: 'block',
+                        margin: '0 auto',
+                      }}
+                    />
+                  </a>
+                </CTableDataCell>
+                <CTableDataCell>
+                  <a href={slider.mobileImageUrl} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={slider.mobileImageUrl}
+                      alt="Mobil Resim"
+                      style={{
+                        maxWidth: '100px',
+                        maxHeight: '100px',
+                        display: 'block',
+                        margin: '0 auto',
+                      }}
+                    />
+                  </a>
+                </CTableDataCell>
+
                 <CTableDataCell>
                   <CButton
                     color="primary"
@@ -394,7 +409,7 @@ const Slider = () => {
                   >
                     Düzenle
                   </CButton>
-                  <CButton color="danger" onClick={() => handleDelete(slider.sliderId)}>
+                  <CButton color="danger text-white" onClick={() => handleDelete(slider.sliderId)}>
                     Sil
                   </CButton>
                 </CTableDataCell>

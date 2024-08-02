@@ -26,8 +26,8 @@ const Categories = () => {
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
-  const [imageHorizontalUrl, setImageHorizontalUrl] = useState('')
-  const [imageSquareUrl, setImageSquareUrl] = useState('')
+  const [imageHorizontal, setImageHorizontal] = useState('')
+  const [imageSquare, setImageSquare] = useState('')
   const [editCategoryId, setEditCategoryId] = useState(null)
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
@@ -40,23 +40,37 @@ const Categories = () => {
 
   const newCategory = async (e) => {
     e.preventDefault()
+
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('description', description)
+    formData.append('icon', icon) // icon bir dosya olduğunda
+    formData.append('orderNumber', orderNumber)
+    if (imageHorizontal) {
+      formData.append('imageHorizontal', imageHorizontal)
+    }
+    if (imageSquare) {
+      formData.append('imageSquare', imageSquare)
+    }
+    console.log({ name, description, icon, orderNumber, imageHorizontal, imageSquare })
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/category`, {
-        name,
-        description,
-        icon,
-        orderNumber,
-        imageHorizontalUrl,
-        imageSquareUrl,
+      const response = await axios.post(`${API_BASE_URL}/category`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
       setCategories([...categories, response.data])
       toast.success('Başarıyla Kayıt İşlemi Gerçekleşti!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setName('')
       setDescription('')
       setIcon('')
       setOrderNumber('')
-      setImageHorizontalUrl('')
-      setImageSquareUrl('')
+      setImageHorizontal('')
+      setImageSquare('')
       setVisible(false)
     } catch (error) {
       if (error.response && error.response.data.errors) {
@@ -72,6 +86,7 @@ const Categories = () => {
       }
     }
   }
+
   const handleSubCategoryEdit = (categoryId) => {
     setParentCategoryId(categoryId)
     setVisible4(true) // Modal'ı aç
@@ -174,7 +189,6 @@ const Categories = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      // Alt kategoriyi state'den sil
       setSubCategories(
         subCategories.filter((subCategory) => subCategory.subCategoryId !== subCategoryId),
       )
@@ -188,7 +202,7 @@ const Categories = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.put(
-        `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`, // Changed axios method from delete to put and corrected URL
+        `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`,
         {
           categoryId,
           subCategoryId,
@@ -233,8 +247,8 @@ const Categories = () => {
       setDescription(categoryToEdit.description)
       setIcon(categoryToEdit.icon)
       setOrderNumber(categoryToEdit.orderNumber)
-      setImageHorizontalUrl(categoryToEdit.imageHorizontalUrl)
-      setImageSquareUrl(categoryToEdit.imageSquareUrl)
+      setImageHorizontal(categoryToEdit.imageHorizontal)
+      setImageSquare(categoryToEdit.imageSquare)
       setVisible2(true)
     } catch (error) {
       console.error(error)
@@ -245,21 +259,32 @@ const Categories = () => {
   const handleEdit = async (categoryId) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.put(
-        `${API_BASE_URL}/category/${categoryId}`,
-        { categoryId, name, description, icon, orderNumber, imageHorizontalUrl, imageSquareUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+
+      const formData = new FormData()
+      formData.append('categoryId', categoryId)
+      formData.append('name', name)
+      formData.append('description', description)
+      formData.append('icon', icon)
+      formData.append('orderNumber', orderNumber)
+      formData.append('imageHorizontal', imageHorizontal)
+      formData.append('imageSquare', imageSquare)
+
+      const response = await axios.put(`${API_BASE_URL}/category/${categoryId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
-      )
+      })
+
       setCategories(
         categories.map((category) =>
           category.categoryId === categoryId ? response.data : category,
         ),
       )
       toast.success('Kategori başarıyla güncellendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible2(false) // Edit modalı kapat
     } catch (error) {
       console.error(error)
@@ -298,73 +323,57 @@ const Categories = () => {
       <CModal
         visible={visible2}
         onClose={() => setVisible2(false)}
-        aria-labelledby="LiveDemoExampleLabel2"
+        aria-labelledby="EditCategoryModalLabel"
       >
         <CModalHeader>
-          <CModalTitle>Kategoriyi Düzenle</CModalTitle>
+          <CModalTitle id="EditCategoryModalLabel">Kategori Düzenle</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="editCategoryName"
               label="Kategori Adı"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="editDescription"
               label="Açıklama"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="file"
+              id="editIcon"
               label="İkon"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
+              onChange={(e) => setIcon(e.target.files[0])}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="number"
+              id="editOrderNumber"
               label="Sıra No"
               value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
+              onChange={(e) => setOrderNumber(parseInt(e.target.value))}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="file"
+              id="editImageHorizontal"
               label="Web Görsel"
-              value={imageHorizontalUrl}
-              onChange={(e) => setImageHorizontalUrl(e.target.value)}
+              onChange={(e) => setImageHorizontal(e.target.files[0])}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="file"
+              id="editImageSquare"
               label="Mobil Görsel"
-              value={imageSquareUrl}
-              onChange={(e) => setImageSquareUrl(e.target.value)}
+              onChange={(e) => setImageSquare(e.target.files[0])}
             />
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible2(false)}>
-            Kapat
-          </CButton>
           <CButton color="primary" onClick={() => handleEdit(editCategoryId)}>
-            Değişiklikleri Kaydet
+            Güncelle
           </CButton>
         </CModalFooter>
       </CModal>
@@ -384,55 +393,42 @@ const Categories = () => {
           <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="categoryName"
               label="Yeni Kategori Adı"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
               type="text"
-              id="exampleFormControlInput1"
+              id="description"
               label="Açıklama"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="file"
+              id="icon"
               label="İkon"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
+              onChange={(e) => setIcon(e.target.files[0])}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
               type="number"
-              id="exampleFormControlInput1"
+              id="orderNumber"
               label="Sıra No"
               value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
+              onChange={(e) => setOrderNumber(parseInt(e.target.value))}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="file"
+              id="imageHorizontal"
               label="Web Görsel"
-              value={imageHorizontalUrl}
-              onChange={(e) => setImageHorizontalUrl(e.target.value)}
+              onChange={(e) => setImageHorizontal(e.target.files[0])}
             />
-          </CForm>
-          <CForm className="mt-3">
             <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
+              type="file"
+              id="imageSquare"
               label="Mobil Görsel"
-              value={imageSquareUrl}
-              onChange={(e) => setImageSquareUrl(e.target.value)}
+              onChange={(e) => setImageSquare(e.target.files[0])}
             />
           </CForm>
         </CModalBody>
@@ -520,11 +516,10 @@ const Categories = () => {
               onChange={(e) => setDescription(e.target.value)}
             />
             <CFormInput
-              type="text"
+              type="file"
               id="icon"
               label="İkon"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
+              onChange={(e) => setIcon(e.target.files[0])}
             />
             <CFormInput
               type="number"

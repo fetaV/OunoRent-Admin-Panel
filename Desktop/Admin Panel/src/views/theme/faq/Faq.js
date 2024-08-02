@@ -117,7 +117,7 @@ const Faq = () => {
           <CTableRow>
             <CTableHeaderCell scope="col">Soru Başlığı</CTableHeaderCell>
             <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Aktiflik</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
@@ -126,7 +126,7 @@ const Faq = () => {
             <CTableRow key={item.faqId}>
               <CTableDataCell>{item.label}</CTableDataCell>
               <CTableDataCell>{item.orderNumber}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
+              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary text-white"
@@ -185,7 +185,7 @@ const Faq = () => {
               }
             />
             <CFormSwitch
-              label="Aktiflik"
+              label="Durum"
               checked={currentMenuItem ? currentMenuItem.isActive : newMenuItem.isActive}
               onChange={(e) =>
                 currentMenuItem

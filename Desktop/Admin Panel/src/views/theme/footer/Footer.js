@@ -100,7 +100,7 @@ const Footer = () => {
             <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
             <CTableHeaderCell scope="col">Sütun</CTableHeaderCell>
             <CTableHeaderCell scope="col">Hedef URL</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Aktiflik</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
@@ -111,7 +111,7 @@ const Footer = () => {
               <CTableDataCell>{item.orderNumber}</CTableDataCell>
               <CTableDataCell>{item.column}</CTableDataCell>
               <CTableDataCell>{item.targetUrl}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
+              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary text-white"
@@ -179,7 +179,7 @@ const Footer = () => {
             />
 
             <CFormSwitch
-              label="Aktiflik"
+              label="Durum"
               checked={currentFooter ? currentFooter.isActive : newFooter.isActive}
               onChange={(e) =>
                 currentFooter

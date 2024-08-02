@@ -382,7 +382,7 @@ function Feature() {
           <CTableRow>
             <CTableHeaderCell scope="col">Başlık</CTableHeaderCell>
             <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Aktiflik</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
@@ -391,7 +391,7 @@ function Feature() {
             <CTableRow key={feature.featureId}>
               <CTableDataCell>{feature.featureName}</CTableDataCell>
               <CTableDataCell>{feature.featureType}</CTableDataCell>
-              <CTableDataCell>{feature.isActive ? 'Evet' : 'Hayır'}</CTableDataCell>
+              <CTableDataCell>{feature.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary"
