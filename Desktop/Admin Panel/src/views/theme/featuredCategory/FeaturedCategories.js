@@ -103,7 +103,7 @@ const FeaturedCategories = () => {
   const handleDelete = async (featuredCategoryId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${API_BASE_URL}/FeaturedCategory/{featuredCategoryId}`, {
+      await axios.delete(`${API_BASE_URL}/FeaturedCategory/${featuredCategoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -119,22 +119,35 @@ const FeaturedCategories = () => {
     }
   }
 
-  const categoryEdit = (featuredCategoryId) => {
+  const categoryEdit = async (featuredCategoryId) => {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${API_BASE_URL}/featuredCategory/${featuredCategoryId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const categoryData = response.data.getCategoryResponse
+
+    // Kategori verilerini state'e atıyoruz
     setEditCategoryId(featuredCategoryId)
-    const categoryToEdit = featuredCategories.find(
-      (category) => category.featuredCategoryId === featuredCategoryId,
-    )
-    setSelectedCategoryId(categoryToEdit.categoryId)
-    setOrderNumber(categoryToEdit.orderNumber)
-    setIsActive(categoryToEdit.isActive)
+    setSelectedCategoryId(categoryData.categoryId || '')
+    setOrderNumber(categoryData.orderNumber || '')
+    setIsActive(categoryData.isActive || false)
     setVisible2(true)
   }
 
   const handleEdit = async () => {
+    console.log({
+      featuredCategoryId: editCategoryId,
+      categoryId: selectedCategoryId,
+      orderNumber: parseInt(orderNumber, 10),
+      isActive,
+    })
     try {
       const token = localStorage.getItem('token')
       const response = await axios.put(
-        `${API_BASE_URL}/FeaturedCategory/{editCategoryId}`,
+        `${API_BASE_URL}/FeaturedCategory/${editCategoryId}`,
         {
           featuredCategoryId: editCategoryId,
           categoryId: selectedCategoryId,
@@ -153,6 +166,9 @@ const FeaturedCategories = () => {
         ),
       )
       toast.success('Kategori başarıyla güncellendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible2(false) // Edit modalı kapat
     } catch (error) {
       console.error(error)

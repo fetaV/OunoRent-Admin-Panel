@@ -70,6 +70,9 @@ const Slider = () => {
         },
       })
       toast.success('Slider successfully added!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible(false)
     } catch (error) {
       console.error(error)
