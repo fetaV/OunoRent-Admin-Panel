@@ -29,8 +29,8 @@ function Blog() {
   const [blogs, setBlogs] = useState([])
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [largeImageUrl, setLargeImageUrl] = useState('')
-  const [smallImageUrl, setSmallImageUrl] = useState('')
+  const [largeImage, setLargeImage] = useState('')
+  const [smallImage, setSmallImage] = useState('')
   const [tags, setTags] = useState('')
   const [slug, setSlug] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
@@ -46,8 +46,8 @@ function Blog() {
     blogId: '',
     subCategoryId: '',
     title: '',
-    largeImagegUrl: '',
-    smallImageUrl: '',
+    largeImageg: '',
+    smallImage: '',
     tags: '',
     slug: '',
     orderNumber: 0,
@@ -57,23 +57,51 @@ function Blog() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('body', body)
+    formData.append('largeImage', largeImage)
+    formData.append('smallImage', smallImage)
+    formData.append('tags', tags)
+    formData.append('slug', slug)
+    formData.append('orderNumber', orderNumber)
+    formData.append('isActive', isActive)
+    formData.append('subCategoryId', selectedSubCategoryId)
+    console.log({
+      title,
+      body,
+      largeImage,
+      smallImage,
+      tags,
+      slug,
+      orderNumber,
+      isActive,
+      selectedSubCategoryId,
+    })
+
     try {
-      await axios.post(`${API_BASE_URL}/blog`, {
-        title,
-        body,
-        largeImageUrl,
-        smallImageUrl,
-        tags,
-        slug,
-        orderNumber,
-        isActive,
-        subcategoryId: selectedSubCategoryId,
+      await axios.post(`${API_BASE_URL}/blog`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
       toast.success('Blog başarıyla eklendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible(false)
+      setTitle('')
+      setBody('')
+      setLargeImage('')
+      setSmallImage('')
+      setTags('')
+      setSlug('')
+      setOrderNumber('')
+      setIsActive('')
     } catch (error) {
       console.error(error)
-      toast.error('Failed to add Slider')
+      toast.error('Blog eklenirken bir hata oluştu!')
     }
   }
 
@@ -179,8 +207,8 @@ function Blog() {
     setEditBlogData(blogData)
     setTitle(blogData.title || '')
     setBody(blogData.body || '')
-    setLargeImageUrl(blogData.largeImageUrl || '')
-    setSmallImageUrl(blogData.smallImageUrl || '')
+    setLargeImage(blogData.largeImage || '')
+    setSmallImage(blogData.smallImage || '')
     setTags(blogData.tags || '')
     setSlug(blogData.slug || '')
     setOrderNumber(blogData.orderNumber || '')
@@ -191,29 +219,45 @@ function Blog() {
   }
 
   const handleEdit = async (blogId) => {
+    const formData = new FormData()
+    formData.append('BlogId', blogId)
+    formData.append('SubCategoryId', selectedSubCategoryId)
+    formData.append('Title', title)
+    formData.append('Tags', tags)
+    formData.append('Slug', slug)
+    formData.append('OrderNumber', orderNumber)
+    formData.append('Date', new Date().toISOString()) // Tarih bilgisi eklenmeli
+    formData.append('IsActive', isActive)
+    formData.append('LargeImage', largeImage)
+    formData.append('SmallImage', smallImage)
+
     try {
       const token = localStorage.getItem('token')
+      console.log({
+        blogId,
+        subCategoryId: selectedSubCategoryId,
+        title,
+        tags,
+        slug,
+        orderNumber,
+        isActive,
+        largeImage,
+        smallImage,
+      })
       await axios.put(
         `${API_BASE_URL}/Blog/${blogId}`,
-        {
-          blogId,
-          subCategoryId: selectedSubCategoryId,
-          title,
-          largeImgUrl: largeImageUrl,
-          smallImgUrl: smallImageUrl,
-          tags,
-          slug,
-          orderNumber: parseInt(orderNumber, 10),
-          date: new Date().toISOString(),
-          isActive,
-        },
+        formData, // FormData kullanarak veri gönderiyoruz
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data', // Header'da content-type ayarlaması
           },
         },
       )
       toast.success('Blog başarıyla güncellendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible2(false)
     } catch (error) {
       console.error('Error response:', error.response)
@@ -273,20 +317,18 @@ function Blog() {
               onChange={(e) => setBody(e.target.value)}
             />
             <CFormInput
-              type="text"
+              type="file"
               className="mb-3"
-              id="largeImageUrl"
+              id="largeImage"
               label="Büyük Resim"
-              value={largeImageUrl}
-              onChange={(e) => setLargeImageUrl(e.target.value)}
+              onChange={(e) => setLargeImage(e.target.files[0])}
             />
             <CFormInput
-              type="text"
+              type="file"
               className="mb-3"
-              id="smallImageUrl"
+              id="smallImage"
               label="Küçük Resim"
-              value={smallImageUrl}
-              onChange={(e) => setSmallImageUrl(e.target.value)}
+              onChange={(e) => setSmallImage(e.target.files[0])}
             />
 
             <CFormInput
@@ -362,7 +404,6 @@ function Blog() {
         <CModalHeader>
           <CModalTitle id="LiveDemoExampleLabel2">Blog Düzenle</CModalTitle>
         </CModalHeader>
-
         <CModalBody>
           <CForm>
             <CFormInput
@@ -375,23 +416,21 @@ function Blog() {
             <CFormInput
               type="text"
               id="body"
-              label="Ana Resim URL"
+              label="Metin"
               value={body}
               onChange={(e) => setBody(e.target.value)}
             />
             <CFormInput
-              type="text"
-              id="largeImageUrl"
+              type="file"
+              id="largeImage"
               label="Mobil Resim URL"
-              value={largeImageUrl}
-              onChange={(e) => setLargeImageUrl(e.target.value)}
+              onChange={(e) => setLargeImage(e.target.files[0])}
             />
             <CFormInput
-              type="text"
-              id="smallImageUrl"
+              type="file"
+              id="smallImage"
               label="Hedef URL"
-              value={smallImageUrl}
-              onChange={(e) => setSmallImageUrl(e.target.value)}
+              onChange={(e) => setSmallImage(e.target.files[0])}
             />
             <CFormInput
               type="number"
@@ -419,7 +458,7 @@ function Blog() {
               className="mb-3"
               aria-label="Select category"
               onChange={handleCategoryChange}
-              value={selectedCategoryId || ''} // Ensure value is set correctly
+              value={selectedCategoryId} // Ensure value is set correctly
             >
               <option value="">Kategori Seçiniz</option>
               {categories.map((category) => (
@@ -434,7 +473,7 @@ function Blog() {
               className="mb-3"
               aria-label="Select subcategory"
               onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId || ''} // Ensure value is set correctly
+              value={selectedSubCategoryId} // Ensure value is set correctly
             >
               <option value="">Lütfen Önce Kategori Seçiniz</option>
               {subCategories.map((subCategory) => (
@@ -480,8 +519,8 @@ function Blog() {
             <CTableRow key={blog.blogId}>
               <CTableDataCell>{blog.title}</CTableDataCell>
               <CTableDataCell>{blog.orderNumber}</CTableDataCell>
-              <CTableDataCell>{blog.largeImageUrl}</CTableDataCell>
-              <CTableDataCell>{blog.smallImageUrl}</CTableDataCell>
+              <CTableDataCell>{blog.largeImage}</CTableDataCell>
+              <CTableDataCell>{blog.smallImage}</CTableDataCell>
               <CTableDataCell>{blog.tags}</CTableDataCell>
               <CTableDataCell>{blog.slug}</CTableDataCell>
               <CTableDataCell>{blog.subCategoryName}</CTableDataCell>
