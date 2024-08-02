@@ -94,14 +94,21 @@ const Categories = () => {
 
   const newSubCategory = async (e) => {
     e.preventDefault()
+
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('description', description)
+    formData.append('icon', icon)
+    formData.append('orderNumber', orderNumber)
+
     try {
       const response = await axios.post(
         `${API_BASE_URL}/category/${parentCategoryId}/subcategory`,
+        formData,
         {
-          name,
-          description,
-          icon,
-          orderNumber,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
       )
       setCategories((prevCategories) =>
@@ -201,35 +208,38 @@ const Categories = () => {
   const editSubCategory = async (categoryId, subCategoryId) => {
     try {
       const token = localStorage.getItem('token')
+
+      const formData = new FormData()
+      formData.append('categoryId', categoryId)
+      formData.append('subCategoryId', subCategoryId)
+      formData.append('name', name)
+      formData.append('description', description)
+      formData.append('icon', icon)
+      formData.append('orderNumber', orderNumber)
+
       await axios.put(
         `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`,
-        {
-          categoryId,
-          subCategoryId,
-          name,
-          description,
-          icon,
-          orderNumber,
-        },
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
           },
         },
       )
+
       setSubCategories(
-        subCategories.map(
-          (subCategory) =>
-            subCategory.subCategoryId === subCategoryId
-              ? { ...subCategory, name, description, icon, orderNumber }
-              : subCategory, // Updated state manipulation logic
+        subCategories.map((subCategory) =>
+          subCategory.subCategoryId === subCategoryId
+            ? { ...subCategory, name, description, icon, orderNumber }
+            : subCategory,
         ),
       )
-      toast.success('Alt kategori başarıyla güncellendi!') // Changed success message
+      toast.success('Alt kategori başarıyla güncellendi!')
       setVisible3(false)
     } catch (error) {
       console.error(error.response.data)
-      toast.error('Alt kategori güncellenirken bir hata oluştu.') // Changed error message
+      toast.error('Alt kategori güncellenirken bir hata oluştu.')
     }
   }
 
@@ -468,11 +478,10 @@ const Categories = () => {
           </CForm>
           <CForm className="mt-3">
             <CFormInput
-              type="text"
+              type="file"
               id="exampleFormControlInput1"
               label="İkon"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
+              onChange={(e) => setIcon(e.target.files[0])}
             />
           </CForm>
           <CForm className="mt-3">
