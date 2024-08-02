@@ -226,7 +226,7 @@ function Blog() {
     formData.append('Tags', tags)
     formData.append('Slug', slug)
     formData.append('OrderNumber', orderNumber)
-    formData.append('Date', new Date().toISOString()) // Tarih bilgisi eklenmeli
+    formData.append('Date', new Date().toISOString())
     formData.append('IsActive', isActive)
     formData.append('LargeImage', largeImage)
     formData.append('SmallImage', smallImage)
@@ -244,16 +244,12 @@ function Blog() {
         largeImage,
         smallImage,
       })
-      await axios.put(
-        `${API_BASE_URL}/Blog/${blogId}`,
-        formData, // FormData kullanarak veri gönderiyoruz
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data', // Header'da content-type ayarlaması
-          },
+      await axios.put(`${API_BASE_URL}/Blog/${blogId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
-      )
+      })
       toast.success('Blog başarıyla güncellendi!')
       setInterval(() => {
         window.location.reload()

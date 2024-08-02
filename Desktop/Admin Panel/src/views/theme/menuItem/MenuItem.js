@@ -191,21 +191,21 @@ const MenuItems = () => {
               }
             />
             <CFormSwitch
-              label="Kullanıcılara Özel"
-              checked={currentMenuItem ? currentMenuItem.onlyToMembers : newMenuItem.onlyToMembers}
-              onChange={(e) =>
-                currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, onlyToMembers: e.target.checked })
-                  : setNewMenuItem({ ...newMenuItem, onlyToMembers: e.target.checked })
-              }
-            />
-            <CFormSwitch
               label="Durum"
               checked={currentMenuItem ? currentMenuItem.isActive : newMenuItem.isActive}
               onChange={(e) =>
                 currentMenuItem
                   ? setCurrentMenuItem({ ...currentMenuItem, isActive: e.target.checked })
                   : setNewMenuItem({ ...newMenuItem, isActive: e.target.checked })
+              }
+            />
+            <CFormSwitch
+              label="Kullanıcılara Özel"
+              checked={currentMenuItem ? currentMenuItem.onlyToMembers : newMenuItem.onlyToMembers}
+              onChange={(e) =>
+                currentMenuItem
+                  ? setCurrentMenuItem({ ...currentMenuItem, onlyToMembers: e.target.checked })
+                  : setNewMenuItem({ ...newMenuItem, onlyToMembers: e.target.checked })
               }
             />
           </CForm>

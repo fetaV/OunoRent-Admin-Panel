@@ -15,7 +15,6 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
-  CFormTextarea,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -26,64 +25,87 @@ const Brand = () => {
   const [brand, setBrand] = useState([])
   const [currentBrand, setCurrentBrand] = useState(null)
   const [newBrand, setNewBrand] = useState({
-    label: '',
-    text: '',
-    orderNumber: 0,
+    name: '',
+    logo: null,
+    showOnBrands: false,
     isActive: false,
   })
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    fetchbrand()
+    fetchBrand()
   }, [])
 
-  const fetchbrand = async () => {
+  const fetchBrand = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/brand`)
       setBrand(response.data)
     } catch (error) {
-      console.error('getbrand error:', error)
+      console.error('Fetch brand error:', error)
       toast.error('Failed to fetch brand items')
     }
   }
 
   const handleCreateBrand = async () => {
+    const formData = new FormData()
+    formData.append('name', newBrand.name)
+    if (newBrand.logo) formData.append('logo', newBrand.logo)
+    formData.append('showOnBrands', newBrand.showOnBrands)
+    formData.append('isActive', newBrand.isActive)
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/brand`, newBrand)
-      toast.success('brand item created successfully')
-      fetchbrand()
+      const response = await axios.post(`${API_BASE_URL}/brand`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      toast.success('Brand item created successfully')
+      fetchBrand()
       setVisible(false)
       setNewBrand({
-        label: '',
-        text: '',
-        orderNumber: 0,
+        name: '',
+        logo: null,
+        showOnBrands: false,
         isActive: false,
       })
     } catch (error) {
-      console.error('createBrand error:', error)
+      console.error('Create brand error:', error)
       toast.error('Failed to create brand item')
     }
   }
 
   const handleUpdateBrand = async (brandId) => {
+    const formData = new FormData()
+    formData.append('brandId', brandId)
+    formData.append('name', currentBrand.name)
+    if (currentBrand.logo) formData.append('logo', currentBrand.logo)
+    formData.append('showOnBrands', currentBrand.showOnBrands)
+    formData.append('isActive', currentBrand.isActive)
+
     try {
-      const response = await axios.put(`${API_BASE_URL}/brand/${brandId}`, currentBrand)
-      toast.success('brand item updated successfully')
-      fetchbrand()
+      const token = localStorage.getItem('token')
+      await axios.put(`${API_BASE_URL}/brand/${brandId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      toast.success('Brand item updated successfully')
+      fetchBrand()
       setVisible(false)
     } catch (error) {
-      console.error('updateBrand error:', error)
+      console.error('Update brand error:', error)
       toast.error('Failed to update brand item')
     }
   }
 
   const handleDeleteBrand = async (brandId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/brand/${brandId}`)
-      toast.success('brand item deleted successfully')
-      fetchbrand()
+      await axios.delete(`${API_BASE_URL}/brand/${brandId}`)
+      toast.success('Brand item deleted successfully')
+      fetchBrand()
     } catch (error) {
-      console.error('deleteBrand error:', error)
+      console.error('Delete brand error:', error)
       toast.error('Failed to delete brand item')
     }
   }
@@ -103,7 +125,7 @@ const Brand = () => {
     <div>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
-        Yeni brand Ekle
+        Yeni Brand Ekle
       </CButton>
 
       <CTable>
@@ -120,7 +142,13 @@ const Brand = () => {
           {brand.map((item) => (
             <CTableRow key={item.brandId}>
               <CTableDataCell>{item.name}</CTableDataCell>
-              <CTableDataCell>{item.logo}</CTableDataCell>
+              <CTableDataCell>
+                {item.logo ? (
+                  <img src={`path/to/your/logo/${item.logo}`} alt="Logo" width={50} height={50} />
+                ) : (
+                  'No Logo'
+                )}
+              </CTableDataCell>
               <CTableDataCell>{item.showOnBrands ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
@@ -140,9 +168,15 @@ const Brand = () => {
         </CTableBody>
       </CTable>
 
-      <CModal visible={visible} onClose={() => setVisible(false)}>
+      <CModal
+        visible={visible}
+        onClose={() => {
+          setVisible(false)
+          setCurrentBrand(null) // Modal kapandığında mevcut markayı sıfırla
+        }}
+      >
         <CModalHeader>
-          <CModalTitle>{currentBrand ? 'Edit brand Item' : 'Create brand Item'}</CModalTitle>
+          <CModalTitle>{currentBrand ? 'Edit Brand Item' : 'Create Brand Item'}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -158,14 +192,13 @@ const Brand = () => {
               }
             />
             <CFormInput
-              type="text"
+              type="file"
               className="mb-3"
-              label="Metin"
-              value={currentBrand ? currentBrand.logo : newBrand.logo}
+              label="Logo"
               onChange={(e) =>
                 currentBrand
-                  ? setCurrentBrand({ ...currentBrand, logo: e.target.value })
-                  : setNewBrand({ ...newBrand, logo: e.target.value })
+                  ? setCurrentBrand({ ...currentBrand, logo: e.target.files[0] })
+                  : setNewBrand({ ...newBrand, logo: e.target.files[0] })
               }
             />
             <CFormSwitch
@@ -189,8 +222,14 @@ const Brand = () => {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
-            Close
+          <CButton
+            color="secondary"
+            onClick={() => {
+              setVisible(false)
+              setCurrentBrand(null) // Modal kapandığında mevcut markayı sıfırla
+            }}
+          >
+            Kapat
           </CButton>
           <CButton
             color="primary"
@@ -198,7 +237,7 @@ const Brand = () => {
               currentBrand ? handleUpdateBrand(currentBrand.brandId) : handleCreateBrand()
             }
           >
-            {currentBrand ? 'Save Changes' : 'Create'}
+            {currentBrand ? 'Değişiklikleri Kaydet' : 'Oluştur'}
           </CButton>
         </CModalFooter>
       </CModal>
