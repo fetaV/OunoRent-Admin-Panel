@@ -14,6 +14,7 @@ const Faq = React.lazy(() => import('./views/theme/faq/Faq'))
 const ContactForm = React.lazy(() => import('./views/theme/contactForm/ContactForm'))
 const Brand = React.lazy(() => import('./views/theme/brand/Brand'))
 const Feature = React.lazy(() => import('./views/theme/feature/Feature'))
+const Address = React.lazy(() => import('./views/theme/address/Address'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -75,6 +76,7 @@ const routes = [
   { path: '/theme/contactForm', name: 'ContactForm', element: ContactForm },
   { path: '/theme/brand', name: 'Brand', element: Brand },
   { path: '/theme/feature', name: 'Feature', element: Feature },
+  { path: '/theme/address', name: 'Address', element: Address },
   { path: '/theme/footer', name: 'Footer', element: Footer },
   { path: '/theme/faq', name: 'Faq', element: Faq },
   { path: '/base', name: 'Base', element: Cards, exact: true },
