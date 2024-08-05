@@ -26,10 +26,10 @@ import API_BASE_URL from '../../../../config'
 
 function Address() {
   const [address, setAddress] = useState([])
-  const [addressName, setaddressName] = useState('')
-  const [addressType, setaddressType] = useState('')
+  const [addressName, setAddressName] = useState('')
+  const [addressType, setAddressType] = useState('')
   const [isActive, setIsActive] = useState(false)
-  const [editaddressId, setEditaddressId] = useState(null)
+  const [editAddressId, setEditAddressId] = useState(null)
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
@@ -88,7 +88,7 @@ function Address() {
       })
       console.log(response)
       const addressData = response.data
-      setEditaddressId(addressId)
+      setEditAddressId(addressId)
       setEditAddressData({
         addressId: addressId,
         addressName: addressData.title || '',
@@ -102,8 +102,8 @@ function Address() {
         userId: addressData.user.userId || '', // userId'yi doğru şekilde ayarlayın
         isActive: addressData.isActive || false,
       })
-      setaddressName(addressData.title || '')
-      setaddressType(addressData.type || 0)
+      setAddressName(addressData.title || '')
+      setAddressType(addressData.type || 0)
       setIsActive(addressData.isActive || false)
       setSelectedSubCategoryId(addressData.neighborhood || '')
       setSelectedCategoryId(addressData.district || '')
@@ -131,7 +131,7 @@ function Address() {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.put(`${API_BASE_URL}/address/${editaddressId}`, updatedAddressData, {
+      await axios.put(`${API_BASE_URL}/address/${editAddressId}`, updatedAddressData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ function Address() {
       setVisible2(false)
       setAddress((prevAddresses) =>
         prevAddresses.map((addr) =>
-          addr.addressId === editaddressId ? { ...addr, ...updatedAddressData } : addr,
+          addr.addressId === editAddressId ? { ...addr, ...updatedAddressData } : addr,
         ),
       )
     } catch (error) {
@@ -177,14 +177,14 @@ function Address() {
               id="title"
               label="Başlık"
               value={addressName}
-              onChange={(e) => setaddressName(e.target.value)}
+              onChange={(e) => setAddressName(e.target.value)}
             />
             <CFormInput
               type="number"
               id="type"
               label="Adres Tipi"
               value={addressType}
-              onChange={(e) => setaddressType(e.target.value)}
+              onChange={(e) => setAddressType(e.target.value)}
             />
             <CFormInput
               type="text"
@@ -253,7 +253,7 @@ function Address() {
           <CButton color="secondary" onClick={() => setVisible2(false)}>
             Kapat
           </CButton>
-          <CButton color="primary" onClick={() => handleEdit(editaddressId)}>
+          <CButton color="primary" onClick={() => handleEdit(editAddressId)}>
             Değişiklikleri Kaydet
           </CButton>
         </CModalFooter>

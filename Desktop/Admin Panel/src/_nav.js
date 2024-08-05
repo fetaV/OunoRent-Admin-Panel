@@ -15,6 +15,7 @@ import {
   cilDescription,
   cilDrop,
   cilFeaturedPlaylist,
+  cilFile,
   cilLibraryBuilding,
   cilNotes,
   cilPencil,
@@ -111,6 +112,12 @@ const _nav = [
     name: 'Kanallar',
     to: '/theme/channel',
     icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Kontratlar',
+    to: '/theme/contract',
+    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
