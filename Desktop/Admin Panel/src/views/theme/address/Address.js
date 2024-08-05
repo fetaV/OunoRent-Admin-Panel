@@ -30,46 +30,18 @@ function Address() {
   const [addressType, setaddressType] = useState('')
   const [isActive, setIsActive] = useState(false)
   const [editaddressId, setEditaddressId] = useState(null)
-  const [categories, setCategories] = useState([])
-  const [subCategories, setSubCategories] = useState([])
-  const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
-  const [editaddressData, setEditaddressData] = useState({
+  const [editAddressData, setEditAddressData] = useState({
     addressId: '',
-    subCategoryId: '',
     addressName: '',
-    largeImagegUrl: '',
-    smallImageUrl: '',
     tags: '',
     slug: '',
     orderNumber: 0,
     date: '',
     isActive: false,
   })
-
-  const handleSubmit = async (e) => {
-    console.log({ addressName, addressType, subCategoryId: selectedCategoryId })
-    e.preventDefault()
-    try {
-      await axios.post(`${API_BASE_URL}/address`, {
-        addressName,
-        addressType,
-        categoryId: selectedCategoryId,
-        subcategoryId: selectedSubCategoryId,
-        isActive,
-      })
-      toast.success('address başarıyla eklendi!')
-      setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible(false)
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to add Slider')
-    }
-  }
 
   useEffect(() => {
     const fetchaddress = async () => {
@@ -90,60 +62,6 @@ function Address() {
     fetchaddress()
   }, [])
 
-  const fetchCategories = async () => {
-    try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_BASE_URL}/category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Categories:', response.data) / setCategories(response.data)
-    } catch (error) {
-      console.error(
-        'Error fetching categories:',
-        error.response ? error.response.data : error.message,
-      )
-    }
-  }
-
-  const fetchSubCategories = async (categoryId) => {
-    try {
-      console.log('Fetching subcategories for categoryId:', categoryId)
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_BASE_URL}/category/${categoryId}/subcategory`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Subcategories response:', response.data)
-      setSubCategories(response.data)
-    } catch (error) {
-      console.error(
-        'Error fetching subcategories:',
-        error.response ? error.response.data : error.message,
-      )
-    }
-  }
-
-  useEffect(() => {
-    fetchCategories()
-    if (selectedCategoryId) {
-      fetchSubCategories(selectedCategoryId)
-    }
-  }, [selectedCategoryId])
-
-  const handleCategoryChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedCategoryId(selectedId)
-    fetchSubCategories(selectedId)
-  }
-  const handleSubCategoryChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedSubCategoryId(selectedId)
-    console.log(selectedId)
-  }
-
   const handleDelete = async (addressId) => {
     try {
       const token = localStorage.getItem('token')
@@ -162,62 +80,79 @@ function Address() {
 
   const handleEditModalOpen = async (addressId) => {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_BASE_URL}/address/${addressId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    console.log('idaddress', response)
-
-    const addressData = response.data
-    setEditaddressId(addressId)
-    setEditaddressData(addressData)
-    setaddressName(addressData.addressName || '')
-    setaddressType(addressData.addressType || '')
-    setIsActive(addressData.isActive || false)
-    setSelectedSubCategoryId(addressData.subCategory.subCategoryId || '')
-    setSelectedCategoryId(addressData.subCategory.categoryId || '')
-    setVisible2(true)
+    try {
+      const response = await axios.get(`${API_BASE_URL}/address/${addressId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      console.log(response)
+      const addressData = response.data
+      setEditaddressId(addressId)
+      setEditAddressData({
+        addressId: addressId,
+        addressName: addressData.title || '',
+        city: addressData.city || '',
+        district: addressData.district || '',
+        neighborhood: addressData.neighborhood || '',
+        addressDetail: addressData.addressDetail || '',
+        taxNo: addressData.taxNo || 0,
+        taxOffice: addressData.taxOffice || '',
+        companyName: addressData.companyName || '',
+        userId: addressData.user.userId || '', // userId'yi doğru şekilde ayarlayın
+        isActive: addressData.isActive || false,
+      })
+      setaddressName(addressData.title || '')
+      setaddressType(addressData.type || 0)
+      setIsActive(addressData.isActive || false)
+      setSelectedSubCategoryId(addressData.neighborhood || '')
+      setSelectedCategoryId(addressData.district || '')
+      setVisible2(true)
+    } catch (error) {
+      console.error('Error fetching address:', error)
+    }
   }
 
-  const handleEdit = async (addressId) => {
-    console.log({
-      addressId,
-      subCategoryId: selectedSubCategoryId,
-      categoryId: selectedCategoryId,
-      addressName,
-      addressType,
-      isActive,
-    })
+  const handleEdit = async () => {
+    const updatedAddressData = {
+      addressId: editAddressData.addressId,
+      type: addressType,
+      title: addressName,
+      city: editAddressData.city,
+      district: editAddressData.district,
+      neighborhood: editAddressData.neighborhood,
+      addressDetail: editAddressData.addressDetail,
+      taxNo: editAddressData.taxNo,
+      taxOffice: editAddressData.taxOffice,
+      companyName: editAddressData.companyName,
+      userId: editAddressData.userId,
+      isActive: isActive,
+    }
+
     try {
       const token = localStorage.getItem('token')
-      await axios.put(
-        `${API_BASE_URL}/address/${addressId}`,
-        {
-          addressId,
-          subCategoryId: selectedSubCategoryId,
-          categoryId: selectedCategoryId,
-          addressName,
-          addressType,
-          isActive,
+      await axios.put(`${API_BASE_URL}/address/${editaddressId}`, updatedAddressData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      toast.success('address başarıyla güncellendi!')
+      })
+      toast.success('Adres başarıyla güncellendi!')
       setInterval(() => {
         window.location.reload()
       }, 500)
       setVisible2(false)
+      setAddress((prevAddresses) =>
+        prevAddresses.map((addr) =>
+          addr.addressId === editaddressId ? { ...addr, ...updatedAddressData } : addr,
+        ),
+      )
     } catch (error) {
       console.error('Error response:', error.response)
       if (error.response && error.response.status === 409) {
-        toast.error('Çakışma: address ID zaten mevcut veya veri çakışması yaşandı.')
+        toast.error('Çakışma: adres ID zaten mevcut veya veri çakışması yaşandı.')
       } else {
-        toast.error('address güncellenirken hata oluştu.')
+        toast.error('Adres güncellenirken hata oluştu.')
       }
     }
   }
@@ -225,84 +160,6 @@ function Address() {
   return (
     <>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
-        Yeni Adres Ekle
-      </CButton>
-
-      <CModal
-        visible={visible}
-        onClose={() => setVisible(false)}
-        aria-labelledby="LiveDemoExampleLabel"
-      >
-        <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni address Ekle</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CForm>
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="addressName"
-              label="Başlık"
-              value={addressName}
-              onChange={(e) => setaddressName(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="addressType"
-              label="Metin"
-              value={addressType}
-              onChange={(e) => setaddressType(e.target.value)}
-            />
-            <CFormSelect
-              label="Kategori"
-              className="mb-3"
-              aria-label="Select category"
-              onChange={handleCategoryChange}
-              value={selectedCategoryId}
-            >
-              <option value="">Kategori Seçiniz</option>
-              {categories.map((category) => (
-                <option key={category.categoryId} value={category.categoryId}>
-                  {category.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSelect
-              label="Alt Kategori"
-              className="mb-3"
-              aria-label="Select subcategory"
-              onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId}
-            >
-              <option value="">Lütfen Önce Kategori Seçiniz</option>
-              {subCategories.map((subCategory) => (
-                <option key={subCategory.subCategoryId} value={subCategory.subCategoryId}>
-                  {subCategory.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSwitch
-              id="isActive"
-              label="Aktif"
-              className="mb-3"
-              checked={isActive}
-              onChange={() => setIsActive(!isActive)}
-            />
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
-            Kapat
-          </CButton>
-          <CButton color="primary" onClick={handleSubmit}>
-            Kaydet
-          </CButton>
-        </CModalFooter>
-      </CModal>
 
       <CModal
         visible={visible2}
@@ -310,55 +167,80 @@ function Address() {
         aria-labelledby="LiveDemoExampleLabel2"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">address Düzenle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel2">Adres Düzenle</CModalTitle>
         </CModalHeader>
 
         <CModalBody>
           <CForm>
             <CFormInput
               type="text"
-              id="addressName"
+              id="title"
               label="Başlık"
               value={addressName}
               onChange={(e) => setaddressName(e.target.value)}
             />
             <CFormInput
-              type="text"
-              id="addressType"
-              label="Ana Resim URL"
+              type="number"
+              id="type"
+              label="Adres Tipi"
               value={addressType}
               onChange={(e) => setaddressType(e.target.value)}
             />
-            <CFormSelect
-              label="Kategori"
-              className="mb-3"
-              aria-label="Select category"
-              onChange={handleCategoryChange}
-              value={selectedCategoryId || ''} // Ensure value is set correctly
-            >
-              <option value="">Kategori Seçiniz</option>
-              {categories.map((category) => (
-                <option key={category.categoryId} value={category.categoryId}>
-                  {category.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSelect
-              label="Alt Kategori"
-              className="mb-3"
-              aria-label="Select subcategory"
-              onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId || ''} // Ensure value is set correctly
-            >
-              <option value="">Lütfen Önce Kategori Seçiniz</option>
-              {subCategories.map((subCategory) => (
-                <option key={subCategory.subCategoryId} value={subCategory.subCategoryId}>
-                  {subCategory.name}
-                </option>
-              ))}
-            </CFormSelect>
-
+            <CFormInput
+              type="text"
+              id="city"
+              label="Şehir"
+              value={editAddressData.city}
+              onChange={(e) => setEditAddressData({ ...editAddressData, city: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="district"
+              label="İlçe"
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+            />
+            <CFormInput
+              type="text"
+              id="neighborhood"
+              label="Semt"
+              value={selectedSubCategoryId}
+              onChange={(e) => setSelectedSubCategoryId(e.target.value)}
+            />
+            <CFormInput
+              type="text"
+              id="addressDetail"
+              label="Adres Detayı"
+              value={editAddressData.addressDetail}
+              onChange={(e) =>
+                setEditAddressData({ ...editAddressData, addressDetail: e.target.value })
+              }
+            />
+            <CFormInput
+              type="number"
+              id="taxNo"
+              label="Vergi No"
+              value={editAddressData.taxNo}
+              onChange={(e) => setEditAddressData({ ...editAddressData, taxNo: e.target.value })}
+            />
+            <CFormInput
+              type="text"
+              id="taxOffice"
+              label="Vergi Dairesi"
+              value={editAddressData.taxOffice}
+              onChange={(e) =>
+                setEditAddressData({ ...editAddressData, taxOffice: e.target.value })
+              }
+            />
+            <CFormInput
+              type="text"
+              id="companyName"
+              label="Şirket Adı"
+              value={editAddressData.companyName}
+              onChange={(e) =>
+                setEditAddressData({ ...editAddressData, companyName: e.target.value })
+              }
+            />
             <CFormSwitch
               id="isActive"
               label="Aktif"
@@ -380,8 +262,16 @@ function Address() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Başlık</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Adres Başlığı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Adres</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Şehir</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Şirket Adı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">İlçe</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Semt</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Vergi No</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Vergi Dairesi</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Adres Tipi</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Kullanıcı Adı</CTableHeaderCell>
             <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
             <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
           </CTableRow>
@@ -389,8 +279,16 @@ function Address() {
         <CTableBody>
           {address.map((address) => (
             <CTableRow key={address.addressId}>
-              <CTableDataCell>{address.addressName}</CTableDataCell>
-              <CTableDataCell>{address.addressType}</CTableDataCell>
+              <CTableDataCell>{address.title}</CTableDataCell>
+              <CTableDataCell>{address.addressDetail}</CTableDataCell>
+              <CTableDataCell>{address.city}</CTableDataCell>
+              <CTableDataCell>{address.companyName}</CTableDataCell>
+              <CTableDataCell>{address.district}</CTableDataCell>
+              <CTableDataCell>{address.neighborhood}</CTableDataCell>
+              <CTableDataCell>{address.taxNo}</CTableDataCell>
+              <CTableDataCell>{address.taxOffice}</CTableDataCell>
+              <CTableDataCell>{address.type ? 'Kurumsal' : 'Bireysel'}</CTableDataCell>
+              <CTableDataCell>{address.user.name}</CTableDataCell>
               <CTableDataCell>{address.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton

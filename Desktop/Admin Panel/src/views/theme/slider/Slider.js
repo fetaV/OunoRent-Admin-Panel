@@ -138,6 +138,7 @@ const Slider = () => {
 
     const formData = new FormData()
     formData.append('title', title)
+    formData.append('sliderId', sliderId)
     formData.append('targetUrl', targetUrl)
     formData.append('orderNumber', orderNumber)
     formData.append('duration', duration)
@@ -160,6 +161,9 @@ const Slider = () => {
         },
       })
       toast.success('Slider başarıyla güncellendi!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       setVisible2(false)
     } catch (error) {
       console.error('Error response:', error.response)

@@ -110,11 +110,7 @@ const Typography = () => {
 
     const userToEdit = users.find((user) => user.id === id)
     if (userToEdit) {
-      const formattedDate = new Date(userToEdit.birthDate).toLocaleDateString('tr-TR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      })
+      const formattedDate = new Date(userToEdit.birthDate).toISOString().split('T')[0]
       setName(userToEdit.name || '')
       setSurname(userToEdit.surname || '')
       setEmail(userToEdit.email || '')
@@ -129,16 +125,31 @@ const Typography = () => {
   const handleEdit = async (userId) => {
     try {
       const token = localStorage.getItem('token')
+      const utcBirthDate = new Date(birthDate).toISOString()
       const response = await axios.put(
         `${API_BASE_URL}/user/${userId}`,
-        { name, surname, email, phoneNumber, tc, birthDate, gender, address },
+        {
+          id: userId,
+          name,
+          surname,
+          email,
+          phoneNumber,
+          address,
+          tc,
+          gender,
+          birthDate: utcBirthDate,
+        },
         {
           headers: {
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
           },
         },
       )
       toast.success('User updated successfully!')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
+      setVisible2(false)
       console.log('User information:', response.data)
     } catch (error) {
       if (error.response && error.response.data.errors) {
@@ -154,6 +165,7 @@ const Typography = () => {
       }
     }
   }
+
   return (
     <>
       <ToastContainer />
@@ -232,7 +244,7 @@ const Typography = () => {
               <CCol>
                 <CForm>
                   <CFormInput
-                    type="text"
+                    type="date"
                     id="exampleFormControlInput1"
                     label="Doğum Tarihi"
                     value={birthDate}
