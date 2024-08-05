@@ -24,6 +24,8 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import API_BASE_URL from '../../../../config'
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
 function Blog() {
   const [blogs, setBlogs] = useState([])
@@ -304,14 +306,23 @@ function Blog() {
                 />
               </CCol>
             </CRow>
-            <CFormTextarea
-              type="text"
-              className="mb-3"
-              id="body"
-              label="Metin"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
+            <div className="mb-3">
+              <label htmlFor="body" className="form-label">
+                Metin
+              </label>
+              <CKEditor
+                editor={ClassicEditor}
+                data={body}
+                config={{
+                  editorConfig: {
+                    content: {
+                      styles: ['body { color: black; }'],
+                    },
+                  },
+                }}
+                onChange={(event, editor) => setBody(editor.getData())}
+              />
+            </div>
             <CFormInput
               type="file"
               className="mb-3"
@@ -326,7 +337,6 @@ function Blog() {
               label="Küçük Resim"
               onChange={(e) => setSmallImage(e.target.files[0])}
             />
-
             <CFormInput
               type="text"
               className="mb-3"
@@ -357,7 +367,6 @@ function Blog() {
                 </option>
               ))}
             </CFormSelect>
-
             <CFormSelect
               label="Alt Kategori"
               className="mb-3"
@@ -372,7 +381,6 @@ function Blog() {
                 </option>
               ))}
             </CFormSelect>
-
             <CFormSwitch
               id="isActive"
               label="Aktif"
@@ -409,13 +417,17 @@ function Blog() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            <CFormInput
-              type="text"
-              id="body"
-              label="Metin"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
+            <div className="mb-3">
+              <label htmlFor="body" className="form-label">
+                Metin
+              </label>
+              <CKEditor
+                editor={ClassicEditor}
+                data={body}
+                className="text-black"
+                onChange={(event, editor) => setBody(editor.getData())}
+              />
+            </div>
             <CFormInput
               type="file"
               id="largeImage"

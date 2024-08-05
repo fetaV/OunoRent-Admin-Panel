@@ -109,16 +109,16 @@ const Contract = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {contracts.map((item) => (
-            <CTableRow key={item.contractId}>
-              <CTableDataCell>{item.name}</CTableDataCell>
-              <CTableDataCell>{item.version}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
+          {contracts.map((contract) => (
+            <CTableRow key={contract.contractId}>
+              <CTableDataCell>{contract.name}</CTableDataCell>
+              <CTableDataCell>{contract.version}</CTableDataCell>
+              <CTableDataCell>{contract.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
               <CTableDataCell>
                 <CButton
                   color="primary text-white"
                   className="me-2"
-                  onClick={() => handleEditButtonClick(item.contractId)}
+                  onClick={() => handleEditButtonClick(contract.contractId)}
                 >
                   Düzenle
                 </CButton>
@@ -149,7 +149,7 @@ const Contract = () => {
               readOnly={isReadOnly}
             />
             <CFormInput
-              type="number"
+              type="text"
               className="mb-3"
               label="Versiyon"
               value={currentContract ? currentContract.version : newContract.version}
@@ -164,7 +164,7 @@ const Contract = () => {
               readOnly={isReadOnly}
             />
             <CFormInput
-              type="number"
+              type="text"
               className="mb-3"
               label="Önceki Versiyon"
               value={
