@@ -13,6 +13,7 @@ import {
   cilContact,
   cilCursor,
   cilDescription,
+  cilDollar,
   cilDrop,
   cilFeaturedPlaylist,
   cilFile,
@@ -118,6 +119,12 @@ const _nav = [
     name: 'Kontratlar',
     to: '/theme/contract',
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Fiyatlar',
+    to: '/theme/price',
+    icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
