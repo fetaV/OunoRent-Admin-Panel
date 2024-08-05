@@ -9,6 +9,7 @@ import {
   cilCalculator,
   cilCarAlt,
   cilChartPie,
+  cilChatBubble,
   cilContact,
   cilCursor,
   cilDescription,
@@ -104,6 +105,12 @@ const _nav = [
     name: 'Adresler',
     to: '/theme/address',
     icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Kanallar',
+    to: '/theme/channel',
+    icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

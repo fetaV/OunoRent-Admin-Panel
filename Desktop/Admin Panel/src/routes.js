@@ -15,6 +15,7 @@ const ContactForm = React.lazy(() => import('./views/theme/contactForm/ContactFo
 const Brand = React.lazy(() => import('./views/theme/brand/Brand'))
 const Feature = React.lazy(() => import('./views/theme/feature/Feature'))
 const Address = React.lazy(() => import('./views/theme/address/Address'))
+const Channel = React.lazy(() => import('./views/theme/channel/Channel'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -77,6 +78,7 @@ const routes = [
   { path: '/theme/brand', name: 'Brand', element: Brand },
   { path: '/theme/feature', name: 'Feature', element: Feature },
   { path: '/theme/address', name: 'Address', element: Address },
+  { path: '/theme/channel', name: 'Channel', element: Channel },
   { path: '/theme/footer', name: 'Footer', element: Footer },
   { path: '/theme/faq', name: 'Faq', element: Faq },
   { path: '/base', name: 'Base', element: Cards, exact: true },

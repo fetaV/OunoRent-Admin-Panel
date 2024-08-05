@@ -25,8 +25,8 @@ import API_BASE_URL from '../../../../config'
 const Faq = () => {
   const [faq, setFaq] = useState([])
   const [activeFaq, setActiveFaq] = useState([])
-  const [currentMenuItem, setCurrentMenuItem] = useState(null)
-  const [newMenuItem, setNewMenuItem] = useState({
+  const [currentFaq, setCurrentFaq] = useState(null)
+  const [newFaq, setNewFaq] = useState({
     label: '',
     text: '',
     orderNumber: 0,
@@ -59,37 +59,37 @@ const Faq = () => {
     }
   }
 
-  const handleCreateMenuItem = async () => {
+  const handleCreateFaq = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/faq`, newMenuItem)
+      const response = await axios.post(`${API_BASE_URL}/faq`, newFaq)
       toast.success('FAQ item created successfully')
       fetchFaq()
       setVisible(false)
     } catch (error) {
-      console.error('createMenuItem error:', error)
+      console.error('createFaq error:', error)
       toast.error('Failed to create FAQ item')
     }
   }
 
-  const handleUpdateMenuItem = async (faqId) => {
+  const handleUpdateFaq = async (faqId) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/faq/${faqId}`, currentMenuItem)
+      const response = await axios.put(`${API_BASE_URL}/faq/${faqId}`, currentFaq)
       toast.success('FAQ item updated successfully')
       fetchFaq()
       setVisible(false)
     } catch (error) {
-      console.error('updateMenuItem error:', error)
+      console.error('updateFaq error:', error)
       toast.error('Failed to update FAQ item')
     }
   }
 
-  const handleDeleteMenuItem = async (faqId) => {
+  const handleDeleteFaq = async (faqId) => {
     try {
       const response = await axios.delete(`${API_BASE_URL}/faq/${faqId}`)
       toast.success('FAQ item deleted successfully')
       fetchFaq()
     } catch (error) {
-      console.error('deleteMenuItem error:', error)
+      console.error('deleteFaq error:', error)
       toast.error('Failed to delete FAQ item')
     }
   }
@@ -97,7 +97,7 @@ const Faq = () => {
   const handleEditButtonClick = async (faqId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/faq/${faqId}`)
-      setCurrentMenuItem(response.data)
+      setCurrentFaq(response.data)
       setVisible(true)
     } catch (error) {
       console.error('Error fetching the FAQ item:', error)
@@ -135,7 +135,7 @@ const Faq = () => {
                 >
                   Düzenle
                 </CButton>
-                <CButton color="danger text-white" onClick={() => handleDeleteMenuItem(item.faqId)}>
+                <CButton color="danger text-white" onClick={() => handleDeleteFaq(item.faqId)}>
                   Sil
                 </CButton>
               </CTableDataCell>
@@ -146,7 +146,7 @@ const Faq = () => {
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
-          <CModalTitle>{currentMenuItem ? 'Edit FAQ Item' : 'Create FAQ Item'}</CModalTitle>
+          <CModalTitle>{currentFaq ? 'Edit FAQ Item' : 'Create FAQ Item'}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -154,22 +154,22 @@ const Faq = () => {
               type="text"
               className="mb-3"
               label="Soru Başlığı"
-              value={currentMenuItem ? currentMenuItem.label : newMenuItem.label}
+              value={currentFaq ? currentFaq.label : newFaq.label}
               onChange={(e) =>
-                currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, label: e.target.value })
-                  : setNewMenuItem({ ...newMenuItem, label: e.target.value })
+                currentFaq
+                  ? setCurrentFaq({ ...currentFaq, label: e.target.value })
+                  : setNewFaq({ ...newFaq, label: e.target.value })
               }
             />
             <CFormTextarea
               type="text"
               className="mb-3"
               label="Metin"
-              value={currentMenuItem ? currentMenuItem.text : newMenuItem.text}
+              value={currentFaq ? currentFaq.text : newFaq.text}
               onChange={(e) =>
-                currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, text: e.target.value })
-                  : setNewMenuItem({ ...newMenuItem, text: e.target.value })
+                currentFaq
+                  ? setCurrentFaq({ ...currentFaq, text: e.target.value })
+                  : setNewFaq({ ...newFaq, text: e.target.value })
               }
             />
             <CFormInput
@@ -177,20 +177,20 @@ const Faq = () => {
               className="mb-3"
               placeholder="Order Number"
               label="Sıra Numarası"
-              value={currentMenuItem ? currentMenuItem.orderNumber : newMenuItem.orderNumber}
+              value={currentFaq ? currentFaq.orderNumber : newFaq.orderNumber}
               onChange={(e) =>
-                currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, orderNumber: +e.target.value })
-                  : setNewMenuItem({ ...newMenuItem, orderNumber: +e.target.value })
+                currentFaq
+                  ? setCurrentFaq({ ...currentFaq, orderNumber: +e.target.value })
+                  : setNewFaq({ ...newFaq, orderNumber: +e.target.value })
               }
             />
             <CFormSwitch
               label="Durum"
-              checked={currentMenuItem ? currentMenuItem.isActive : newMenuItem.isActive}
+              checked={currentFaq ? currentFaq.isActive : newFaq.isActive}
               onChange={(e) =>
-                currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, isActive: e.target.checked })
-                  : setNewMenuItem({ ...newMenuItem, isActive: e.target.checked })
+                currentFaq
+                  ? setCurrentFaq({ ...currentFaq, isActive: e.target.checked })
+                  : setNewFaq({ ...newFaq, isActive: e.target.checked })
               }
             />
           </CForm>
@@ -201,11 +201,9 @@ const Faq = () => {
           </CButton>
           <CButton
             color="primary"
-            onClick={() =>
-              currentMenuItem ? handleUpdateMenuItem(currentMenuItem.faqId) : handleCreateMenuItem()
-            }
+            onClick={() => (currentFaq ? handleUpdateFaq(currentFaq.faqId) : handleCreateFaq())}
           >
-            {currentMenuItem ? 'Save Changes' : 'Create'}
+            {currentFaq ? 'Save Changes' : 'Create'}
           </CButton>
         </CModalFooter>
       </CModal>
