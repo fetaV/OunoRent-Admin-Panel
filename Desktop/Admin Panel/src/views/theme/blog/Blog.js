@@ -26,6 +26,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import API_BASE_URL from '../../../../config'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import '../blog/ckeditor-styles.css'
 
 function Blog() {
   const [blogs, setBlogs] = useState([])
@@ -310,17 +311,17 @@ function Blog() {
               <label htmlFor="body" className="form-label">
                 Metin
               </label>
+
               <CKEditor
                 editor={ClassicEditor}
                 data={body}
-                config={{
-                  editorConfig: {
-                    content: {
-                      styles: ['body { color: black; }'],
-                    },
-                  },
+                onChange={(event, editor) => {
+                  const data = editor.getData()
+                  setBody(data)
                 }}
-                onChange={(event, editor) => setBody(editor.getData())}
+                config={{
+                  contentsCss: '../blog/ckeditor-styles.css', // Stil dosyasının yolunu burada belirtin
+                }}
               />
             </div>
             <CFormInput
