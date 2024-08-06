@@ -349,14 +349,30 @@ const Slider = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Başlık</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Hedef URL</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Başlangıç Tarihi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Bitiş Tarihi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Ekranda Durma Süresi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Web Resim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Mobil Resim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Başlık
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Hedef URL
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Başlangıç Tarihi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Bitiş Tarihi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Ekranda Durma Süresi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Web Resim
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Mobil Resim
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
@@ -374,38 +390,44 @@ const Slider = () => {
 
             return (
               <CTableRow key={slider.sliderId}>
-                <CTableHeaderCell>{slider.title}</CTableHeaderCell>
-                <CTableDataCell>{slider.targetUrl}</CTableDataCell>
-                <CTableDataCell>{activeFrom}</CTableDataCell>
-                <CTableDataCell>{activeTo}</CTableDataCell>
-                <CTableDataCell>{slider.duration}</CTableDataCell>
-                <CTableDataCell>
-                  <a href={slider.mainImageUrl} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={slider.mainImageUrl}
-                      alt="Ana Resim"
-                      style={{
-                        maxWidth: '100px',
-                        maxHeight: '100px',
-                        display: 'block',
-                        margin: '0 auto',
-                      }}
-                    />
-                  </a>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {slider.title}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {slider.targetUrl}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {activeFrom}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {activeTo}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {slider.duration}
                 </CTableDataCell>
                 <CTableDataCell>
-                  <a href={slider.mobileImageUrl} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={slider.mobileImageUrl}
-                      alt="Mobil Resim"
-                      style={{
-                        maxWidth: '100px',
-                        maxHeight: '100px',
-                        display: 'block',
-                        margin: '0 auto',
-                      }}
-                    />
-                  </a>
+                  <img
+                    src={`http://10.10.3.181:5244/${slider.mainImageUrl}`}
+                    alt="Ana Resim"
+                    style={{
+                      maxWidth: '100px',
+                      maxHeight: '100px',
+                      display: 'block',
+                      margin: '0 auto',
+                    }}
+                  />
+                </CTableDataCell>
+                <CTableDataCell>
+                  <img
+                    src={`http://10.10.3.181:5244/${slider.mobileImageUrl}`}
+                    alt="Mobil Resim"
+                    style={{
+                      maxWidth: '100px',
+                      maxHeight: '100px',
+                      display: 'block',
+                      margin: '0 auto',
+                    }}
+                  />
                 </CTableDataCell>
 
                 <CTableDataCell>

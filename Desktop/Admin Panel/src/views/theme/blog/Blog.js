@@ -233,7 +233,7 @@ function Blog() {
     formData.append('IsActive', isActive)
     formData.append('LargeImage', largeImage)
     formData.append('SmallImage', smallImage)
-    formData.append('Body', body) // body verisini ekleyin
+    formData.append('Body', body)
 
     try {
       const token = localStorage.getItem('token')
@@ -456,7 +456,7 @@ function Blog() {
               className="mb-3"
               aria-label="Select category"
               onChange={handleCategoryChange}
-              value={selectedCategoryId} // Ensure value is set correctly
+              value={selectedCategoryId}
             >
               <option value="">Kategori Seçiniz</option>
               {categories.map((category) => (
@@ -471,7 +471,7 @@ function Blog() {
               className="mb-3"
               aria-label="Select subcategory"
               onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId} // Ensure value is set correctly
+              value={selectedSubCategoryId}
             >
               <option value="">Lütfen Önce Kategori Seçiniz</option>
               {subCategories.map((subCategory) => (
