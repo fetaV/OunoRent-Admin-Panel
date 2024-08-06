@@ -233,20 +233,10 @@ function Blog() {
     formData.append('IsActive', isActive)
     formData.append('LargeImage', largeImage)
     formData.append('SmallImage', smallImage)
+    formData.append('Body', body) // body verisini ekleyin
 
     try {
       const token = localStorage.getItem('token')
-      console.log({
-        blogId,
-        subCategoryId: selectedSubCategoryId,
-        title,
-        tags,
-        slug,
-        orderNumber,
-        isActive,
-        largeImage,
-        smallImage,
-      })
       await axios.put(`${API_BASE_URL}/Blog/${blogId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -318,9 +308,6 @@ function Blog() {
                 onChange={(event, editor) => {
                   const data = editor.getData()
                   setBody(data)
-                }}
-                config={{
-                  contentsCss: '../blog/ckeditor-styles.css', // Stil dosyasının yolunu burada belirtin
                 }}
               />
             </div>
@@ -425,8 +412,10 @@ function Blog() {
               <CKEditor
                 editor={ClassicEditor}
                 data={body}
-                className="text-black"
-                onChange={(event, editor) => setBody(editor.getData())}
+                onChange={(event, editor) => {
+                  const data = editor.getData()
+                  setBody(data)
+                }}
               />
             </div>
             <CFormInput
@@ -513,39 +502,75 @@ function Blog() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Başlık</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Büyük Resim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Küçük Resim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Etiketler</CTableHeaderCell>
-            <CTableHeaderCell scope="col">URL Adresi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Kategori</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Başlık
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Sıra Numarası
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Büyük Resim
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Küçük Resim
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Etiketler
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Slug
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Alt Kategori
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              İşlemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {blogs.map((blog) => (
             <CTableRow key={blog.blogId}>
-              <CTableDataCell>{blog.title}</CTableDataCell>
-              <CTableDataCell>{blog.orderNumber}</CTableDataCell>
-              <CTableDataCell>
-                <img
-                  src={`http://10.10.3.181:5244/${blog.largeImageUrl}`}
-                  alt="Büyük Resim"
-                  style={{ width: '100px', height: 'auto' }}
-                />
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {blog.title}
               </CTableDataCell>
-              <CTableDataCell>
-                <img
-                  src={`http://10.10.3.181:5244/${blog.smallImageUrl}`}
-                  alt="Küçük Resim"
-                  style={{ width: '50px', height: 'auto' }}
-                />
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {blog.orderNumber}
               </CTableDataCell>
-              <CTableDataCell>{blog.tags}</CTableDataCell>
-              <CTableDataCell>{blog.slug}</CTableDataCell>
-              <CTableDataCell>{blog.subCategoryName}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <img
+                    src={`http://10.10.3.181:5244/${blog.largeImageUrl}`}
+                    alt="Büyük Resim"
+                    style={{
+                      width: '100px',
+                      height: 'auto',
+                    }}
+                  />
+                </div>
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <img
+                    src={`http://10.10.3.181:5244/${blog.smallImageUrl}`}
+                    alt="Küçük Resim"
+                    style={{
+                      width: '50px',
+                      height: 'auto',
+                    }}
+                  />
+                </div>
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {blog.tags}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {blog.slug}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {blog.subCategoryName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"
                   className="me-2"
@@ -553,7 +578,7 @@ function Blog() {
                 >
                   Düzenle
                 </CButton>
-                <CButton color="danger" onClick={() => handleDelete(blog.blogId)}>
+                <CButton color="danger text-white" onClick={() => handleDelete(blog.blogId)}>
                   Sil
                 </CButton>
               </CTableDataCell>
