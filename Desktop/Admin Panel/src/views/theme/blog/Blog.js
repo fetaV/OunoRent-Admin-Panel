@@ -528,8 +528,20 @@ function Blog() {
             <CTableRow key={blog.blogId}>
               <CTableDataCell>{blog.title}</CTableDataCell>
               <CTableDataCell>{blog.orderNumber}</CTableDataCell>
-              <CTableDataCell>{blog.largeImage}</CTableDataCell>
-              <CTableDataCell>{blog.smallImage}</CTableDataCell>
+              <CTableDataCell>
+                <img
+                  src={`http://10.10.3.181:5244/${blog.largeImageUrl}`}
+                  alt="Büyük Resim"
+                  style={{ width: '100px', height: 'auto' }}
+                />
+              </CTableDataCell>
+              <CTableDataCell>
+                <img
+                  src={`http://10.10.3.181:5244/${blog.smallImageUrl}`}
+                  alt="Küçük Resim"
+                  style={{ width: '50px', height: 'auto' }}
+                />
+              </CTableDataCell>
               <CTableDataCell>{blog.tags}</CTableDataCell>
               <CTableDataCell>{blog.slug}</CTableDataCell>
               <CTableDataCell>{blog.subCategoryName}</CTableDataCell>
