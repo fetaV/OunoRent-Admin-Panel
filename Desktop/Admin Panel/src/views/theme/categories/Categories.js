@@ -617,15 +617,21 @@ const Categories = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Kategori Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Kategori Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {categories.map((category, index) => (
             <CTableRow key={index}>
-              <CTableDataCell>{category.name}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {category.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"
                   className="me-2"
@@ -671,15 +677,21 @@ const Categories = () => {
           <CTable>
             <CTableHead>
               <CTableRow>
-                <CTableHeaderCell scope="col">Alt Kategori Adı</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  Alt Kategori Adı
+                </CTableHeaderCell>
+                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  Eylemler
+                </CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
               {subCategories.map((subCategory, index) => (
                 <CTableRow key={index}>
-                  <CTableDataCell>{subCategory.name}</CTableDataCell>
-                  <CTableDataCell>
+                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    {subCategory.name}
+                  </CTableDataCell>
+                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                     <CButton
                       color="primary"
                       className="me-2"

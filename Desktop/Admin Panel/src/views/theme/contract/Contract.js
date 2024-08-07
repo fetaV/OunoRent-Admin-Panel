@@ -102,19 +102,33 @@ const Contract = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Sözleşme Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Versiyon</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Sözleşme Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Versiyon
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {contracts.map((contract) => (
             <CTableRow key={contract.contractId}>
-              <CTableDataCell>{contract.name}</CTableDataCell>
-              <CTableDataCell>{contract.version}</CTableDataCell>
-              <CTableDataCell>{contract.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {contract.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {contract.version}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {contract.isActive ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary text-white"
                   className="me-2"

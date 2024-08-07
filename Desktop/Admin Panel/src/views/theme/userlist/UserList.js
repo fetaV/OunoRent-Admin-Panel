@@ -340,15 +340,33 @@ const Typography = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">İsim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Soyisim</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Telefon</CTableHeaderCell>
-            <CTableHeaderCell scope="col">TC No</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Doğum Tarihi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Cinsiyet</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Adres</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              İsim
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Soyisim
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Email
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Telefon
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              TC No
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Doğum Tarihi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Cinsiyet
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
@@ -360,15 +378,31 @@ const Typography = () => {
             })
             return (
               <CTableRow key={index}>
-                <CTableHeaderCell>{user.name}</CTableHeaderCell>
-                <CTableDataCell>{user.surname}</CTableDataCell>
-                <CTableDataCell>{user.email}</CTableDataCell>
-                <CTableDataCell>{user.phoneNumber}</CTableDataCell>
-                <CTableDataCell>{user.tc}</CTableDataCell>
-                <CTableDataCell>{formattedDate}</CTableDataCell>
-                <CTableDataCell>{user.gender}</CTableDataCell>
-                <CTableDataCell>{user.address}</CTableDataCell>
-                <CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.name}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.surname}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.email}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.phoneNumber}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.tc}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {formattedDate}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.gender}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {user.address}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   {' '}
                   <button
                     className="btn btn-primary me-2"

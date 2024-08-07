@@ -380,19 +380,33 @@ function Feature() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Başlık</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Başlık
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Sıra Numarası
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {features.map((feature) => (
             <CTableRow key={feature.featureId}>
-              <CTableDataCell>{feature.featureName}</CTableDataCell>
-              <CTableDataCell>{feature.featureType}</CTableDataCell>
-              <CTableDataCell>{feature.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {feature.featureName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {feature.featureType}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {feature.isActive ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"
                   className="me-2"

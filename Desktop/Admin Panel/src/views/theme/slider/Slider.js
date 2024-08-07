@@ -437,7 +437,7 @@ const Slider = () => {
                 <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   {slider.duration}
                 </CTableDataCell>
-                <CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   <img
                     src={`http://10.10.3.181:5244/${slider.mainImageUrl}`}
                     alt="Mobil Resim"
@@ -460,7 +460,7 @@ const Slider = () => {
                   </div>
                 </CTableDataCell>
 
-                <CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   <CButton
                     color="primary"
                     className="me-2"

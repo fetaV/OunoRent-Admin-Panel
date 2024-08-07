@@ -262,35 +262,81 @@ function Address() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Adres Başlığı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Adres</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Şehir</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Şirket Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">İlçe</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Semt</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Vergi No</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Vergi Dairesi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Adres Tipi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Kullanıcı Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres Başlığı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Şehir
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Şirket Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              İlçe
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Semt
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Vergi No
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Vergi Dairesi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres Tipi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Kullanıcı Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {address.map((address) => (
             <CTableRow key={address.addressId}>
-              <CTableDataCell>{address.title}</CTableDataCell>
-              <CTableDataCell>{address.addressDetail}</CTableDataCell>
-              <CTableDataCell>{address.city}</CTableDataCell>
-              <CTableDataCell>{address.companyName}</CTableDataCell>
-              <CTableDataCell>{address.district}</CTableDataCell>
-              <CTableDataCell>{address.neighborhood}</CTableDataCell>
-              <CTableDataCell>{address.taxNo}</CTableDataCell>
-              <CTableDataCell>{address.taxOffice}</CTableDataCell>
-              <CTableDataCell>{address.type ? 'Kurumsal' : 'Bireysel'}</CTableDataCell>
-              <CTableDataCell>{address.user.name}</CTableDataCell>
-              <CTableDataCell>{address.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.title}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.addressDetail}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.city}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.companyName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.district}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.neighborhood}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.taxNo}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.taxOffice}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.type ? 'Kurumsal' : 'Bireysel'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.user.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.isActive ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"
                   className="me-2"

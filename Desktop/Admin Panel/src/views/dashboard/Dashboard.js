@@ -346,7 +346,7 @@ const Dashboard = () => {
                       <CTableDataCell className="text-center">
                         <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
                       </CTableDataCell>
-                      <CTableDataCell>
+                      <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                         <div>{item.user.name}</div>
                         <div className="small text-body-secondary text-nowrap">
                           <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
@@ -356,7 +356,7 @@ const Dashboard = () => {
                       <CTableDataCell className="text-center">
                         <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
                       </CTableDataCell>
-                      <CTableDataCell>
+                      <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                         <div className="d-flex justify-content-between text-nowrap">
                           <div className="fw-semibold">{item.usage.value}%</div>
                           <div className="ms-3">
@@ -368,7 +368,7 @@ const Dashboard = () => {
                       <CTableDataCell className="text-center">
                         <CIcon size="xl" icon={item.payment.icon} />
                       </CTableDataCell>
-                      <CTableDataCell>
+                      <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                         <div className="small text-body-secondary text-nowrap">Last login</div>
                         <div className="fw-semibold text-nowrap">{item.activity}</div>
                       </CTableDataCell>

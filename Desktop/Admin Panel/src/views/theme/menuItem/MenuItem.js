@@ -112,23 +112,45 @@ const MenuItems = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Menü Başlığı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Sıra Numarası</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Hedef URL</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Kullanıcılara Özel</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Menü Başlığı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Sıra Numarası
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Hedef URL
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Kullanıcılara Özel
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {menuItems.map((item) => (
             <CTableRow key={item.menuItemId}>
-              <CTableDataCell>{item.label}</CTableDataCell>
-              <CTableDataCell>{item.orderNumber}</CTableDataCell>
-              <CTableDataCell>{item.targetUrl}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>{item.onlyToMembers ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.label}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.orderNumber}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.targetUrl}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.isActive ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.onlyToMembers ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary text-white"
                   className="me-2"

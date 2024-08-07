@@ -32,29 +32,51 @@ const Tables = () => {
               <CTable>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -75,56 +97,98 @@ const Tables = () => {
               <CTable>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">Default</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="primary">
                     <CTableHeaderCell scope="row">Primary</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="secondary">
                     <CTableHeaderCell scope="row">Secondary</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="success">
                     <CTableHeaderCell scope="row">Success</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="danger">
                     <CTableHeaderCell scope="row">Danger</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="warning">
                     <CTableHeaderCell scope="row">Warning</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="info">
                     <CTableHeaderCell scope="row">Info</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="light">
                     <CTableHeaderCell scope="row">Light</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow color="dark">
                     <CTableHeaderCell scope="row">Dark</CTableHeaderCell>
-                    <CTableDataCell>Cell</CTableDataCell>
-                    <CTableDataCell>Cell</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Cell
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -146,29 +210,51 @@ const Tables = () => {
               <CTable striped>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -180,29 +266,51 @@ const Tables = () => {
               <CTable color="dark" striped>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -211,29 +319,51 @@ const Tables = () => {
               <CTable color="success" striped>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -255,29 +385,51 @@ const Tables = () => {
               <CTable hover>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -286,29 +438,51 @@ const Tables = () => {
               <CTable color="dark" hover>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -317,29 +491,51 @@ const Tables = () => {
               <CTable striped hover>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -357,31 +553,53 @@ const Tables = () => {
               <CTable>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow active>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2} active>
                       Larry the Bird
                     </CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -390,31 +608,53 @@ const Tables = () => {
               <CTable color="dark">
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow active>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2} active>
                       Larry the Bird
                     </CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -435,29 +675,51 @@ const Tables = () => {
               <CTable bordered>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -472,29 +734,51 @@ const Tables = () => {
               <CTable bordered borderColor="primary">
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -515,29 +799,51 @@ const Tables = () => {
               <CTable borderless>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -546,29 +852,51 @@ const Tables = () => {
               <CTable color="dark" borderless>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -590,29 +918,51 @@ const Tables = () => {
               <CTable small>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -652,46 +1002,46 @@ const Tables = () => {
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: middle;</code> from the table
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: middle;</code> from the table
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: middle;</code> from the table
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This here is some placeholder text, intended to take up quite a bit of
                       vertical space, to demonsCTableRowate how the vertical alignment works in the
                       preceding cells.
                     </CTableDataCell>
                   </CTableRow>
                   <CTableRow align="bottom">
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: bottom;</code> from the table row
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: bottom;</code> from the table row
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: bottom;</code> from the table row
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This here is some placeholder text, intended to take up quite a bit of
                       vertical space, to demonsCTableRowate how the vertical alignment works in the
                       preceding cells.
                     </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: middle;</code> from the table
                     </CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This cell inherits <code>vertical-align: middle;</code> from the table
                     </CTableDataCell>
                     <CTableDataCell align="top">This cell is aligned to the top.</CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       This here is some placeholder text, intended to take up quite a bit of
                       vertical space, to demonsCTableRowate how the vertical alignment works in the
                       preceding cells.
@@ -716,44 +1066,94 @@ const Tables = () => {
               <CTable striped>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell colSpan={4}>
                       <CTable>
                         <CTableHead>
                           <CTableRow>
-                            <CTableHeaderCell scope="col">Header</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Header</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Header</CTableHeaderCell>
+                            <CTableHeaderCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              Header
+                            </CTableHeaderCell>
+                            <CTableHeaderCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              Header
+                            </CTableHeaderCell>
+                            <CTableHeaderCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              Header
+                            </CTableHeaderCell>
                           </CTableRow>
                         </CTableHead>
                         <CTableBody>
                           <CTableRow>
                             <CTableHeaderCell scope="row">A</CTableHeaderCell>
-                            <CTableDataCell>First</CTableDataCell>
-                            <CTableDataCell>Last</CTableDataCell>
+                            <CTableDataCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              First
+                            </CTableDataCell>
+                            <CTableDataCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              Last
+                            </CTableDataCell>
                           </CTableRow>
                           <CTableRow>
                             <CTableHeaderCell scope="row">B</CTableHeaderCell>
-                            <CTableDataCell>First</CTableDataCell>
-                            <CTableDataCell>Last</CTableDataCell>
+                            <CTableDataCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              First
+                            </CTableDataCell>
+                            <CTableDataCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              Last
+                            </CTableDataCell>
                           </CTableRow>
                           <CTableRow>
                             <CTableHeaderCell scope="row">C</CTableHeaderCell>
-                            <CTableDataCell>First</CTableDataCell>
-                            <CTableDataCell>Last</CTableDataCell>
+                            <CTableDataCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              First
+                            </CTableDataCell>
+                            <CTableDataCell
+                              style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                            >
+                              Last
+                            </CTableDataCell>
                           </CTableRow>
                         </CTableBody>
                       </CTable>
@@ -762,7 +1162,9 @@ const Tables = () => {
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -785,30 +1187,56 @@ const Tables = () => {
               <CTable>
                 <CTableHead color="light">
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                    <CTableDataCell>Larry</CTableDataCell>
-                    <CTableDataCell>the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Larry
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      the Bird
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -817,29 +1245,51 @@ const Tables = () => {
               <CTable>
                 <CTableHead color="dark">
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -857,37 +1307,67 @@ const Tables = () => {
               <CTable>
                 <CTableHead color="light">
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
                 <CTableHead>
                   <CTableRow>
-                    <CTableDataCell>Footer</CTableDataCell>
-                    <CTableDataCell>Footer</CTableDataCell>
-                    <CTableDataCell>Footer</CTableDataCell>
-                    <CTableDataCell>Footer</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Footer
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Footer
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Footer
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Footer
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableHead>
               </CTable>
@@ -911,30 +1391,56 @@ const Tables = () => {
                 <CTableCaption>List of users</CTableCaption>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                    <CTableDataCell>Larry</CTableDataCell>
-                    <CTableDataCell>the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Larry
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      the Bird
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
@@ -948,30 +1454,56 @@ const Tables = () => {
                 <CTableCaption>List of users</CTableCaption>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      #
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Class
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
+                    <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Heading
+                    </CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Mark</CTableDataCell>
-                    <CTableDataCell>Otto</CTableDataCell>
-                    <CTableDataCell>@mdo</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Mark
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Otto
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @mdo
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Jacob</CTableDataCell>
-                    <CTableDataCell>Thornton</CTableDataCell>
-                    <CTableDataCell>@fat</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Jacob
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Thornton
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @fat
+                    </CTableDataCell>
                   </CTableRow>
                   <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                    <CTableDataCell>Larry</CTableDataCell>
-                    <CTableDataCell>the Bird</CTableDataCell>
-                    <CTableDataCell>@twitter</CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      Larry
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      the Bird
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      @twitter
+                    </CTableDataCell>
                   </CTableRow>
                 </CTableBody>
               </CTable>
