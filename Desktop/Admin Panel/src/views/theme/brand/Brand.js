@@ -131,27 +131,46 @@ const Brand = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Marka Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Logo</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Markalarda Göster</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Durum</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Eylemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Marka Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Logo
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Markalarda Göster
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {brand.map((item) => (
             <CTableRow key={item.brandId}>
-              <CTableDataCell>{item.name}</CTableDataCell>
-              <CTableDataCell>
-                {item.logo ? (
-                  <img src={`path/to/your/logo/${item.logo}`} alt="Logo" width={50} height={50} />
-                ) : (
-                  'No Logo'
-                )}
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.name}
               </CTableDataCell>
-              <CTableDataCell>{item.showOnBrands ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>{item.isActive ? 'Aktif' : 'Pasif'}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <img
+                  src={`http://10.10.3.181:5244/${item.logo}`}
+                  alt="Mobil Resim"
+                  style={{
+                    width: '50px',
+                    Height: 'auto',
+                  }}
+                />
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.showOnBrands ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {item.isActive ? 'Aktif' : 'Pasif'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary text-white"
                   className="me-2"
@@ -191,6 +210,21 @@ const Brand = () => {
                   : setNewBrand({ ...newBrand, name: e.target.value })
               }
             />
+            {currentBrand && currentBrand.logo && (
+              <div>
+                <label>Mevcut Logo</label>
+                <img
+                  src={`http://10.10.3.181:5244/${currentBrand.logo}`}
+                  alt="Mobil Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               className="mb-3"

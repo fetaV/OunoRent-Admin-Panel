@@ -419,18 +419,6 @@ function Blog() {
               />
             </div>
             <CFormInput
-              type="file"
-              id="largeImage"
-              label="Mobil Resim URL"
-              onChange={(e) => setLargeImage(e.target.files[0])}
-            />
-            <CFormInput
-              type="file"
-              id="smallImage"
-              label="Hedef URL"
-              onChange={(e) => setSmallImage(e.target.files[0])}
-            />
-            <CFormInput
               type="number"
               id="orderNumber"
               label="Sıra Numarası"
@@ -438,9 +426,21 @@ function Blog() {
               onChange={(e) => setOrderNumber(e.target.value)}
             />
             <CFormInput
+              type="file"
+              id="largeImage"
+              label="Büyük Resim"
+              onChange={(e) => setLargeImage(e.target.files[0])}
+            />
+            <CFormInput
+              type="file"
+              id="smallImage"
+              label="Küçük Resim"
+              onChange={(e) => setSmallImage(e.target.files[0])}
+            />
+            <CFormInput
               type="text"
               id="tags"
-              label="Süre"
+              label="Etiket"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
             />

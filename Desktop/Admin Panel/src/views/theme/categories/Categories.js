@@ -252,6 +252,7 @@ const Categories = () => {
           Authorization: `Bearer ${token}`,
         },
       })
+      console.log(response)
       const categoryToEdit = response.data
       setName(categoryToEdit.name)
       setDescription(categoryToEdit.description)
@@ -354,6 +355,21 @@ const Categories = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+            {icon && (
+              <div>
+                <label>Mevcut Logo</label>
+                <img
+                  src={`http://10.10.3.181:5244/${icon}`}
+                  alt="Ana Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               id="editIcon"
@@ -367,12 +383,42 @@ const Categories = () => {
               value={orderNumber}
               onChange={(e) => setOrderNumber(parseInt(e.target.value))}
             />
+            {imageHorizontal && (
+              <div>
+                <label>Mevcut Logo</label>
+                <img
+                  src={`http://10.10.3.181:5244/${imageHorizontal}`}
+                  alt="Ana Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               id="editImageHorizontal"
               label="Web Görsel"
               onChange={(e) => setImageHorizontal(e.target.files[0])}
             />
+            {imageSquare && (
+              <div>
+                <label>Mevcut Logo</label>
+                <img
+                  src={`http://10.10.3.181:5244/${imageSquare}`}
+                  alt="Ana Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               id="editImageSquare"
@@ -524,6 +570,21 @@ const Categories = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+            {icon && (
+              <div>
+                <label>Mevcut Logo</label>
+                <img
+                  src={`http://10.10.3.181:5244/${icon}`}
+                  alt="Ana Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               id="icon"

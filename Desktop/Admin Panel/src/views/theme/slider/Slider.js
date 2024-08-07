@@ -280,16 +280,48 @@ const Slider = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+
+            {mainImageUrl && (
+              <div>
+                <label>Mevcut Ana Resim:</label>
+                <img
+                  src={`http://10.10.3.181:5244/${mainImageUrl}`}
+                  alt="Ana Resim"
+                  style={{
+                    width: '100%',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               id="mainImage"
-              label={`Ana Resim (mevcut: ${mainImageUrl})`}
+              label="Ana Resim"
               onChange={(e) => setMainImage(e.target.files[0])}
             />
+
+            {mobileImageUrl && (
+              <div>
+                <label>Mevcut Mobil Resim:</label>
+                <img
+                  src={`http://10.10.3.181:5244/${mobileImageUrl}`}
+                  alt="Mobil Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               id="mobileImage"
-              label={`Mobil Resim (mevcut: ${mobileImageUrl})`}
+              label="Mobil Resim"
               onChange={(e) => setMobileImage(e.target.files[0])}
             />
 
@@ -408,26 +440,24 @@ const Slider = () => {
                 <CTableDataCell>
                   <img
                     src={`http://10.10.3.181:5244/${slider.mainImageUrl}`}
-                    alt="Ana Resim"
+                    alt="Mobil Resim"
                     style={{
-                      maxWidth: '100px',
-                      maxHeight: '100px',
-                      display: 'block',
-                      margin: '0 auto',
+                      width: '100px',
+                      Height: 'auto',
                     }}
                   />
                 </CTableDataCell>
-                <CTableDataCell>
-                  <img
-                    src={`http://10.10.3.181:5244/${slider.mobileImageUrl}`}
-                    alt="Mobil Resim"
-                    style={{
-                      maxWidth: '100px',
-                      maxHeight: '100px',
-                      display: 'block',
-                      margin: '0 auto',
-                    }}
-                  />
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <img
+                      src={`http://10.10.3.181:5244/${slider.mobileImageUrl}`}
+                      alt="Küçük Resim"
+                      style={{
+                        width: '50px',
+                        height: 'auto',
+                      }}
+                    />
+                  </div>
                 </CTableDataCell>
 
                 <CTableDataCell>

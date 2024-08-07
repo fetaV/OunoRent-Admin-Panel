@@ -66,6 +66,9 @@ const MenuItems = () => {
       const response = await axios.post(`${API_BASE_URL}/menuItem`, newMenuItem)
       console.log('createMenuItem response:', response.data)
       toast.success('Menu item created successfully')
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
       fetchMenuItems()
       setVisible(false)
     } catch (error) {

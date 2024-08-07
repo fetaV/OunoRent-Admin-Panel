@@ -240,7 +240,7 @@ const FeaturedCategories = () => {
             className="mb-3"
             aria-label="Select category"
             onChange={handleCategoryChange}
-            value={selectedCategoryId}
+            value={selectedCategoryId || ''}
           >
             <option value="">Kategori Seçiniz</option>
             {categories.map((category) => (
@@ -249,6 +249,7 @@ const FeaturedCategories = () => {
               </option>
             ))}
           </CFormSelect>
+
           <CForm className="mt-3">
             <CFormInput
               type="number"
