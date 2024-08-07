@@ -37,6 +37,7 @@ const Price = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/price`)
       setPrices(response.data)
+      console.log(response.data)
     } catch (error) {
       console.error('Fetch prices error:', error)
       toast.error('Failed to fetch prices')

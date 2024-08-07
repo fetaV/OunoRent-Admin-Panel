@@ -403,6 +403,9 @@ const Slider = () => {
               Mobil Resim
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -458,6 +461,9 @@ const Slider = () => {
                       }}
                     />
                   </div>
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {slider.isActive ? 'Aktif' : 'Pasif'}
                 </CTableDataCell>
 
                 <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>

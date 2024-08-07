@@ -69,6 +69,7 @@ function UserContract() {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log(response.data)
         setUserContracts(response.data)
       } catch (error) {
         console.error(error)

@@ -281,6 +281,9 @@ const FeaturedCategories = () => {
               Kategori Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -290,6 +293,9 @@ const FeaturedCategories = () => {
             <CTableRow key={index}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {featuredCategory.getCategoryResponse?.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {featuredCategory.isActive ? 'Aktif' : 'Pasif'}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton

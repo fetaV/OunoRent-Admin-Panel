@@ -117,6 +117,7 @@ function Blog() {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log(response.data)
         setBlogs(response.data)
       } catch (error) {
         console.error(error)
@@ -524,7 +525,10 @@ function Blog() {
               Alt Kategori
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              İşlemler
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
             </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
@@ -569,6 +573,9 @@ function Blog() {
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {blog.subCategoryName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {blog.isActive ? 'Aktif' : 'Pasif'}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton

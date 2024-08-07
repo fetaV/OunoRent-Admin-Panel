@@ -63,6 +63,7 @@ const Warehouse = () => {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log('data', response.data)
         setWarehouses(response.data)
       } catch (error) {
         console.error(error)
@@ -96,6 +97,7 @@ const Warehouse = () => {
     })
 
     const warehouseData = response.data
+    console.log('id', warehouseData)
 
     setEditWarehouseId(warehouseId)
     setName(warehouseData.name || '')
@@ -233,6 +235,9 @@ const Warehouse = () => {
               Depo Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -242,6 +247,9 @@ const Warehouse = () => {
             <CTableRow key={index}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {warehouse.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {warehouse.isActive ? 'Aktif' : 'Pasif'}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton

@@ -621,6 +621,9 @@ const Categories = () => {
               Kategori Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -630,6 +633,9 @@ const Categories = () => {
             <CTableRow key={index}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {category.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {category.isActive ? 'Aktif' : 'Pasif'}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
