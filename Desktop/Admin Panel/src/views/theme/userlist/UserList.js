@@ -48,13 +48,15 @@ const Typography = () => {
         password,
         passwordConfirm,
       })
-      setUsers([...users, response.data])
+
       setEmail('')
       setPassword('')
       setPasswordConfirm('')
       setVisible(false)
       toast.success('Başarıyla Kayıt İşleminiz Gerçekleşti!')
-      window.location.reload()
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
     } catch (error) {
       if (error.response && error.response.data.errors) {
         const errorMessage = Object.values(error.response.data.errors).flat().join(' ')
@@ -97,18 +99,17 @@ const Typography = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      setUsers(users.filter((user) => user._id !== id))
-      toast.success('User deleted successfully!')
+      setUsers((prevUsers) => prevUsers.filter((user) => user.userId !== id))
+      toast.success('Kullanıcı başarıyla silindi!')
     } catch (error) {
       console.error(error.response.data)
+      toast.error('Bir hata oluştu.')
     }
   }
 
-  const handleEditModalOpen = (id) => {
-    setEditUserId(id)
-    setVisible2(true)
-
-    const userToEdit = users.find((user) => user.id === id)
+  const handleEditModalOpen = (userId) => {
+    console.log(userId)
+    const userToEdit = users.find((user) => user.userId === userId)
     if (userToEdit) {
       const formattedDate = new Date(userToEdit.birthDate).toISOString().split('T')[0]
       setName(userToEdit.name || '')
@@ -119,6 +120,10 @@ const Typography = () => {
       setBirthDate(formattedDate)
       setGender(userToEdit.gender || '')
       setAddress(userToEdit.address || '')
+      setEditUserId(userId)
+      setVisible2(true)
+    } else {
+      toast.error('Kullanıcı bulunamadı.')
     }
   }
 
@@ -129,7 +134,7 @@ const Typography = () => {
       const response = await axios.put(
         `${API_BASE_URL}/user/${userId}`,
         {
-          id: userId,
+          userId,
           name,
           surname,
           email,
@@ -145,23 +150,18 @@ const Typography = () => {
           },
         },
       )
-      toast.success('User updated successfully!')
-      setInterval(() => {
-        window.location.reload()
-      }, 500)
+      setUsers((prevUsers) => prevUsers.map((user) => (user._id === userId ? response.data : user)))
+      toast.success('Kullanıcı başarıyla güncellendi!')
       setVisible2(false)
-      console.log('User information:', response.data)
     } catch (error) {
       if (error.response && error.response.data.errors) {
         const errorMessage = Object.values(error.response.data.errors).flat().join(' ')
         toast.error(errorMessage)
-        console.error(errorMessage)
-      } else if (error.response.data) {
+      } else if (error.response && error.response.data) {
         const errorMessages = Object.values(error.response.data).flat().join('')
         toast.error(errorMessages)
       } else {
         toast.error('Bir hata oluştu.')
-        console.error(error)
       }
     }
   }
@@ -406,13 +406,16 @@ const Typography = () => {
                   {' '}
                   <button
                     className="btn btn-primary me-2"
-                    onClick={() => handleEditModalOpen(user.id)}
+                    onClick={() => handleEditModalOpen(user.userId)}
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModal2"
                   >
                     Düzenle
                   </button>
-                  <button className="btn btn-danger mr-2" onClick={() => handleDelete(user.id)}>
+                  <button
+                    className="btn btn-danger text-white mr-2"
+                    onClick={() => handleDelete(user.userId)}
+                  >
                     Sil
                   </button>
                 </CTableDataCell>
