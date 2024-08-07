@@ -14,195 +14,321 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSelect,
   CFormSwitch,
+  CFormSelect,
+  CFormTextarea,
+  CRow,
+  CCol,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import API_BASE_URL from '../../../../config'
 
-const WarehouseConnection = () => {
+function WarehouseConnection() {
+  const [warehouseConnection, setwarehouseConnection] = useState([])
+  const [isActive, setIsActive] = useState(false)
+  const [editWareHouseConnectionId, setEditWareHouseConnectionId] = useState(null)
   const [warehouse, setWarehouse] = useState([])
-  const [channels, setchannels] = useState([])
-  const [orderNumber, setOrderNumber] = useState('')
-  const [editchannelId, setEditchannelId] = useState(null)
-  const [selectedChannelId, setSelectedChannelId] = useState(null)
+  const [channel, setChannel] = useState([])
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
-  const [isActive, setIsActive] = useState(false)
+  const [selectedChannelId, setSelectedChannelId] = useState('')
+  const [selectedWarehouse, setSelectedWarehouse] = useState('')
+  const [editwarehouseConnectionData, setEditwarehouseConnectionData] = useState({
+    warehouseConnectionId: '',
+    warehouse: '',
+    title: '',
+    largeImageg: '',
+    smallImage: '',
+    tags: '',
+    slug: '',
+    orderNumber: 0,
+    date: '',
+    isActive: false,
+  })
 
-  const newchannel = async (e) => {
-    console.log('Sending request with data:', {
-      channelId: selectedChannelId,
-      orderNumber: parseInt(orderNumber, 10),
-      isActive,
-    })
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    const formData = {
+      warehouseId: selectedWarehouse,
+      channelId: selectedChannelId,
+      isActive,
+    }
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/channel`, {
-        channelId: selectedChannelId,
-        orderNumber: parseInt(orderNumber, 10),
-        isActive,
+      await axios.post(`${API_BASE_URL}/warehouseConnection`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      setWarehouse([...warehouse, response.data])
-      toast.success('Başarıyla Kayıt İşlemi Gerçekleşti!')
+      toast.success('warehouseConnection başarıyla eklendi!')
       setInterval(() => {
         window.location.reload()
       }, 500)
-      setOrderNumber('')
       setVisible(false)
+      setSelectedChannelId('')
+      setSelectedWarehouse('')
+      setIsActive(false)
     } catch (error) {
       console.error(error)
+      toast.error('warehouseConnection eklenirken bir hata oluştu!')
     }
   }
 
-  const handlechannelChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedChannelId(selectedId)
-  }
-
   useEffect(() => {
-    const fetchchannels = async () => {
+    const fetchwarehouseConnection = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${API_BASE_URL}/warehouseconnection`, {
+        const response = await axios.get(`${API_BASE_URL}/warehouseConnection`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log('channel', response)
-        setchannels(response.data)
+        console.log(response.data)
+        setwarehouseConnection(response.data)
       } catch (error) {
         console.error(error)
       }
     }
 
-    fetchchannels()
+    fetchwarehouseConnection()
   }, [])
 
-  useEffect(() => {
-    const fetchwarehouse = async () => {
-      try {
-        const token = localStorage.getItem('token')
-        const response = await axios.get(`${API_BASE_URL}/channel`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        console.log('channel', response)
-        setWarehouse(response.data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    fetchwarehouse()
-  }, [])
-
-  const handleDelete = async (channelId) => {
+  const fetchWarehouse = async () => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${API_BASE_URL}/channel/${channelId}`, {
+      const response = await axios.get(`${API_BASE_URL}/warehouse`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      setWarehouse(warehouse.filter((channel) => channel.channelId !== channelId))
-      toast.success('Başarıyla Kayıt Silindi!')
+      console.log('warehouse:', response.data) / setWarehouse(response.data)
     } catch (error) {
-      console.error(error.response.data)
+      console.error(
+        'Error fetching warehouse:',
+        error.response ? error.response.data : error.message,
+      )
     }
   }
 
-  const channelEdit = async (channelId) => {
+  const fetchChannel = async (channelId) => {
+    try {
+      console.log('Fetching channel for channelId:', channelId)
+      const token = localStorage.getItem('token')
+      const response = await axios.get(`${API_BASE_URL}/channel`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      console.log('channel response:', response.data)
+      setChannel(response.data)
+    } catch (error) {
+      console.error('Error fetching channel:', error.response ? error.response.data : error.message)
+    }
+  }
+
+  useEffect(() => {
+    fetchWarehouse()
+    fetchChannel(selectedChannelId)
+  }, [])
+
+  const handlechannelChange = (event) => {
+    const selectedId = event.target.value
+    setSelectedChannelId(selectedId)
+    fetchChannel(selectedId)
+  }
+  const handlewarehouseChange = (event) => {
+    const selectedId = event.target.value
+    setSelectedWarehouse(selectedId)
+    console.log(selectedId)
+  }
+
+  const handleDelete = async (warehouseConnectionId) => {
+    try {
+      const token = localStorage.getItem('token')
+      await axios.delete(`${API_BASE_URL}/warehouseConnection/${warehouseConnectionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setwarehouseConnection(
+        warehouseConnection.filter(
+          (warehouseConnection) =>
+            warehouseConnection.warehouseConnectionId !== warehouseConnectionId,
+        ),
+      )
+      toast.success('warehouseConnection başarıyla silindi!')
+    } catch (error) {
+      console.error(error.response.data)
+      toast.error('warehouseConnection silinirken bir hata oluştu!')
+    }
+  }
+
+  const handleEditModalOpen = async (warehouseConnectionId) => {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_BASE_URL}/channel/${channelId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await axios.get(
+      `${API_BASE_URL}/warehouseConnection/${warehouseConnectionId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    })
+    )
+    console.log('idwarehouseConnection', response)
 
-    const channelData = response.data
-
-    setEditchannelId(channelId)
-    setSelectedChannelId(channelData.channelId || '')
-    setOrderNumber(channelData.orderNumber || '')
-    setIsActive(channelData.isActive || false)
+    const warehouseConnectionData = response.data
+    setEditWareHouseConnectionId(warehouseConnectionId)
+    setEditwarehouseConnectionData(warehouseConnectionData)
+    setSelectedWarehouse(warehouseConnectionData.warehouseId || '')
+    setSelectedChannelId(warehouseConnectionData.channelId || '')
+    setIsActive(warehouseConnectionData.isActive || false)
     setVisible2(true)
   }
 
-  const handleEdit = async () => {
-    console.log({
-      channelId: editchannelId,
+  const handleEdit = async (warehouseConnectionId) => {
+    const formData = {
+      warehouseConnectionId,
+      warehouseId: selectedWarehouse,
       channelId: selectedChannelId,
-      orderNumber: parseInt(orderNumber, 10),
       isActive,
-    })
+    }
+
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.put(
-        `${API_BASE_URL}/channel/${editchannelId}`,
-        {
-          channelId: editchannelId,
-          channelId: selectedChannelId,
-          orderNumber: parseInt(orderNumber, 10),
-          isActive,
+      await axios.put(`${API_BASE_URL}/warehouseConnection/${warehouseConnectionId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      setWarehouse(
-        warehouse.map((channel) => (channel.channelId === editchannelId ? response.data : channel)),
-      )
-      toast.success('Kanal başarıyla güncellendi!')
+      })
+      toast.success('warehouseConnection başarıyla güncellendi!')
       setInterval(() => {
         window.location.reload()
       }, 500)
-      setVisible2(false) // Edit modalı kapat
+      setVisible2(false)
     } catch (error) {
-      console.error(error)
-      toast.error(error.message)
+      console.error('Error response:', error.response)
+      if (error.response && error.response.status === 409) {
+        toast.error('Çakışma: warehouseConnection ID zaten mevcut veya veri çakışması yaşandı.')
+      } else {
+        toast.error('warehouseConnection güncellenirken hata oluştu.')
+      }
     }
   }
 
   return (
     <>
       <ToastContainer />
+      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
+        Yeni warehouseConnection Ekle
+      </CButton>
+
+      <CModal
+        visible={visible}
+        onClose={() => setVisible(false)}
+        aria-labelledby="LiveDemoExampleLabel"
+      >
+        <CModalHeader>
+          <CModalTitle id="LiveDemoExampleLabel">Yeni warehouseConnection Ekle</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CForm>
+            <CFormSelect
+              label="Depo"
+              className="mb-3"
+              aria-label="Select warehouse"
+              onChange={handlewarehouseChange}
+              value={selectedWarehouse}
+            >
+              <option value="">Depo Seçiniz</option>
+              {warehouse.map((warehouse) => (
+                <option key={warehouse.warehouseId} value={warehouse.warehouseId}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </CFormSelect>
+
+            <CFormSelect
+              label="Kanal"
+              className="mb-3"
+              aria-label="Select channel"
+              onChange={handlechannelChange}
+              value={selectedChannelId}
+            >
+              <option value="">Kanal Seçiniz</option>
+              {channel.map((channel) => (
+                <option key={channel.channelId} value={channel.channelId}>
+                  {channel.name}
+                </option>
+              ))}
+            </CFormSelect>
+
+            <CFormSwitch
+              id="isActive"
+              label="Aktif"
+              className="mb-3"
+              checked={isActive}
+              onChange={() => setIsActive(!isActive)}
+            />
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setVisible(false)}>
+            Kapat
+          </CButton>
+          <CButton color="primary" onClick={handleSubmit}>
+            Kaydet
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
       <CModal
         visible={visible2}
         onClose={() => setVisible2(false)}
         aria-labelledby="LiveDemoExampleLabel2"
       >
         <CModalHeader>
-          <CModalTitle>Depo Düzenle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel2">warehouseConnection Düzenle</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <CFormSelect
-            label="Kanal"
-            className="mb-3"
-            aria-label="Select channel"
-            onChange={handlechannelChange}
-            value={selectedChannelId}
-          >
-            <option value="">Kanal Seçiniz</option>
-            {channels.map((channel) => (
-              <option key={channel.channelId} value={channel.channelId}>
-                {channel.name}
-              </option>
-            ))}
-          </CFormSelect>
+          <CForm>
+            <CFormSelect
+              label="Depo"
+              className="mb-3"
+              aria-label="Select warehouse"
+              onChange={handlewarehouseChange}
+              value={selectedWarehouse}
+            >
+              <option value="">Depo Seçiniz</option>
+              {warehouse.map((warehouse) => (
+                <option key={warehouse.warehouseId} value={warehouse.warehouseId}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </CFormSelect>
 
-          <CForm className="mt-3">
-            <CFormInput
-              type="text"
-              id="exampleFormControlInput1"
-              label="Sıra No"
-              value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
+            <CFormSelect
+              label="Kanal"
+              className="mb-3"
+              aria-label="Select channel"
+              onChange={handlechannelChange}
+              value={selectedChannelId}
+            >
+              <option value="">Kanal Seçiniz</option>
+              {channel.map((channel) => (
+                <option key={channel.channelId} value={channel.channelId}>
+                  {channel.name}
+                </option>
+              ))}
+            </CFormSelect>
+
+            <CFormSwitch
+              id="isActive"
+              label="Aktif"
+              className="mb-3"
+              checked={isActive}
+              onChange={() => setIsActive(!isActive)}
             />
           </CForm>
         </CModalBody>
@@ -210,59 +336,8 @@ const WarehouseConnection = () => {
           <CButton color="secondary" onClick={() => setVisible2(false)}>
             Kapat
           </CButton>
-          <CButton color="primary" onClick={() => handleEdit(editchannelId)}>
+          <CButton color="primary" onClick={() => handleEdit(editWareHouseConnectionId)}>
             Değişiklikleri Kaydet
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(!visible)}>
-        Yeni Depo Ekle
-      </CButton>
-      <CModal
-        visible={visible}
-        onClose={() => setVisible(false)}
-        aria-labelledby="LiveDemoExampleLabel"
-      >
-        <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni Kanal Ekle</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CFormSelect
-            label="Kanal"
-            className="mb-3"
-            aria-label="Select channel"
-            onChange={handlechannelChange}
-            value={selectedChannelId || ''}
-          >
-            <option value="">Kanal Seçiniz</option>
-            {channels.map((channel) => (
-              <option key={channel.channelId} value={channel.channelId}>
-                {channel.name}
-              </option>
-            ))}
-          </CFormSelect>
-
-          <CForm className="mt-3">
-            <CFormInput
-              type="number"
-              id="exampleFormControlInput1"
-              label="Sıra No"
-              value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
-            />
-          </CForm>
-          <CFormSwitch
-            id="isActive"
-            label="Aktif"
-            className="mt-3"
-            checked={isActive}
-            onChange={() => setIsActive(!isActive)}
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="primary" onClick={newchannel}>
-            Kaydet
           </CButton>
         </CModalFooter>
       </CModal>
@@ -271,7 +346,13 @@ const WarehouseConnection = () => {
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Depo Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Kanal Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Durum
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
@@ -279,23 +360,28 @@ const WarehouseConnection = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {warehouse.map((warehouse, index) => (
-            <CTableRow key={index}>
+          {warehouseConnection.map((warehouseConnection) => (
+            <CTableRow key={warehouseConnection.warehouseConnectionId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {warehouse.name}
+                {warehouseConnection.warehouseName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {warehouseConnection.channelName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {warehouseConnection.isActive ? 'Aktif' : 'Pasif'}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"
                   className="me-2"
-                  onClick={() => channelEdit(warehouse.warehouseId)}
+                  onClick={() => handleEditModalOpen(warehouseConnection.warehouseConnectionId)}
                 >
                   Düzenle
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  className="me-2"
-                  onClick={() => handleDelete(warehouse.warehouseId)}
+                  onClick={() => handleDelete(warehouseConnection.warehouseConnectionId)}
                 >
                   Sil
                 </CButton>
