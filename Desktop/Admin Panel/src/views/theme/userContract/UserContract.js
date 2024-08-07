@@ -15,9 +15,6 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
-  CFormSelect,
-  CRow,
-  CCol,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -25,18 +22,13 @@ import 'react-toastify/dist/ReactToastify.css'
 import API_BASE_URL from '../../../../config'
 
 function UserContract() {
-  const [userContracts, setuserContracts] = useState([])
-  const [userContractName, setuserContractName] = useState('')
-  const [userContractType, setuserContractType] = useState('')
+  const [userContracts, setUserContracts] = useState([])
+  const [userContractName, setUserContractName] = useState('')
+  const [userContractType, setUserContractType] = useState('')
   const [isActive, setIsActive] = useState(false)
-  const [edituserContractId, setEdituserContractId] = useState(null)
-  const [categories, setCategories] = useState([])
-  const [subCategories, setSubCategories] = useState([])
+  const [edituserContractId, setEditUserContractId] = useState(null)
   const [visible, setVisible] = useState(false)
-  const [visible2, setVisible2] = useState(false)
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
-  const [edituserContractData, setEdituserContractData] = useState({
+  const [editUserContractData, setEditUserContractData] = useState({
     userContractId: '',
     subCategoryId: '',
     userContractName: '',
@@ -50,14 +42,11 @@ function UserContract() {
   })
 
   const handleSubmit = async (e) => {
-    console.log({ userContractName, userContractType, subCategoryId: selectedCategoryId })
     e.preventDefault()
     try {
       await axios.post(`${API_BASE_URL}/userContract`, {
         userContractName,
         userContractType,
-        categoryId: selectedCategoryId,
-        subcategoryId: selectedSubCategoryId,
         isActive,
       })
       toast.success('userContract başarıyla eklendi!')
@@ -80,8 +69,7 @@ function UserContract() {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log(response)
-        setuserContracts(response.data)
+        setUserContracts(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -89,60 +77,6 @@ function UserContract() {
 
     fetchuserContracts()
   }, [])
-
-  const fetchCategories = async () => {
-    try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_BASE_URL}/category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Categories:', response.data) / setCategories(response.data)
-    } catch (error) {
-      console.error(
-        'Error fetching categories:',
-        error.response ? error.response.data : error.message,
-      )
-    }
-  }
-
-  const fetchSubCategories = async (categoryId) => {
-    try {
-      console.log('Fetching subcategories for categoryId:', categoryId)
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_BASE_URL}/category/${categoryId}/subcategory`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Subcategories response:', response.data)
-      setSubCategories(response.data)
-    } catch (error) {
-      console.error(
-        'Error fetching subcategories:',
-        error.response ? error.response.data : error.message,
-      )
-    }
-  }
-
-  useEffect(() => {
-    fetchCategories()
-    if (selectedCategoryId) {
-      fetchSubCategories(selectedCategoryId)
-    }
-  }, [selectedCategoryId])
-
-  const handleCategoryChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedCategoryId(selectedId)
-    fetchSubCategories(selectedId)
-  }
-  const handleSubCategoryChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedSubCategoryId(selectedId)
-    console.log(selectedId)
-  }
 
   const handleDelete = async (userContractId) => {
     try {
@@ -152,7 +86,7 @@ function UserContract() {
           Authorization: `Bearer ${token}`,
         },
       })
-      setuserContracts(
+      setUserContracts(
         userContracts.filter((userContract) => userContract.userContractId !== userContractId),
       )
       toast.success('userContract başarıyla silindi!')
@@ -169,212 +103,92 @@ function UserContract() {
         Authorization: `Bearer ${token}`,
       },
     })
-    console.log('iduserContract', response)
-
+    console.log(response)
     const userContractData = response.data
-    setEdituserContractId(userContractId)
-    setEdituserContractData(userContractData)
-    setuserContractName(userContractData.userContractName || '')
-    setuserContractType(userContractData.userContractType || '')
+    setEditUserContractId(userContractId)
+    setEditUserContractData(userContractData)
+    setUserContractName(userContractData.userContractName || '')
+    setUserContractType(userContractData.userContractType || '')
     setIsActive(userContractData.isActive || false)
-    setSelectedSubCategoryId(userContractData.subCategory.subCategoryId || '')
-    setSelectedCategoryId(userContractData.subCategory.categoryId || '')
-    setVisible2(true)
-  }
-
-  const handleEdit = async (userContractId) => {
-    console.log({
-      userContractId,
-      subCategoryId: selectedSubCategoryId,
-      categoryId: selectedCategoryId,
-      userContractName,
-      userContractType,
-      isActive,
-    })
-    try {
-      const token = localStorage.getItem('token')
-      await axios.put(
-        `${API_BASE_URL}/userContract/${userContractId}`,
-        {
-          userContractId,
-          subCategoryId: selectedSubCategoryId,
-          categoryId: selectedCategoryId,
-          userContractName,
-          userContractType,
-          isActive,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      toast.success('userContract başarıyla güncellendi!')
-      setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible2(false)
-    } catch (error) {
-      console.error('Error response:', error.response)
-      if (error.response && error.response.status === 409) {
-        toast.error('Çakışma: userContract ID zaten mevcut veya veri çakışması yaşandı.')
-      } else {
-        toast.error('userContract güncellenirken hata oluştu.')
-      }
-    }
+    setVisible(true)
   }
 
   return (
     <>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
-        Yeni userContract Ekle
-      </CButton>
 
       <CModal
         visible={visible}
         onClose={() => setVisible(false)}
-        aria-labelledby="LiveDemoExampleLabel"
+        aria-labelledby="LiveDemoExampleLabel2"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni userContract Ekle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel2">User Contract Detayları</CModalTitle>
         </CModalHeader>
+
         <CModalBody>
           <CForm>
             <CFormInput
               type="text"
-              className="mb-3"
-              id="userContractName"
-              label="Başlık"
-              value={userContractName}
-              onChange={(e) => setuserContractName(e.target.value)}
+              id="fileName"
+              label="Dosya Adı"
+              value={editUserContractData.fileName || ''}
+              readOnly
             />
             <CFormInput
               type="text"
-              className="mb-3"
-              id="userContractType"
-              label="Metin"
-              value={userContractType}
-              onChange={(e) => setuserContractType(e.target.value)}
+              id="contractName"
+              label="Kontrat Adı"
+              value={editUserContractData.contract?.name || ''}
+              readOnly
             />
-            <CFormSelect
-              label="Kategori"
-              className="mb-3"
-              aria-label="Select category"
-              onChange={handleCategoryChange}
-              value={selectedCategoryId}
-            >
-              <option value="">Kategori Seçiniz</option>
-              {categories.map((category) => (
-                <option key={category.categoryId} value={category.categoryId}>
-                  {category.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSelect
-              label="Alt Kategori"
-              className="mb-3"
-              aria-label="Select subcategory"
-              onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId}
-            >
-              <option value="">Lütfen Önce Kategori Seçiniz</option>
-              {subCategories.map((subCategory) => (
-                <option key={subCategory.subCategoryId} value={subCategory.subCategoryId}>
-                  {subCategory.name}
-                </option>
-              ))}
-            </CFormSelect>
-
+            <CFormInput
+              type="text"
+              id="contractDetails"
+              label="Kontrat İçeriği"
+              value={editUserContractData.contract?.body || ''}
+              readOnly
+            />
+            <CFormInput
+              type="text"
+              id="contractVersion"
+              label="Kontrat Versiyonu"
+              value={editUserContractData.contract?.version || ''}
+              readOnly
+            />
+            <CFormInput
+              type="text"
+              id="userName"
+              label="Kullanıcı Adı"
+              value={editUserContractData.user?.name || ''}
+              readOnly
+            />
+            <CFormInput
+              type="text"
+              id="userEmail"
+              label="Kullanıcı E-Posta"
+              value={editUserContractData.user?.email || ''}
+              readOnly
+            />
+            <CFormInput
+              type="text"
+              id="userPhoneNumber"
+              label="Kullanıcı Telefon Numarası"
+              value={editUserContractData.user?.phoneNumber || ''}
+              readOnly
+            />
             <CFormSwitch
               id="isActive"
               label="Aktif"
-              className="mb-3"
-              checked={isActive}
-              onChange={() => setIsActive(!isActive)}
+              checked={editUserContractData.isActive || false}
+              readOnly
+              disabled
             />
           </CForm>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setVisible(false)}>
             Kapat
-          </CButton>
-          <CButton color="primary" onClick={handleSubmit}>
-            Kaydet
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      <CModal
-        visible={visible2}
-        onClose={() => setVisible2(false)}
-        aria-labelledby="LiveDemoExampleLabel2"
-      >
-        <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">userContract Düzenle</CModalTitle>
-        </CModalHeader>
-
-        <CModalBody>
-          <CForm>
-            <CFormInput
-              type="text"
-              id="userContractName"
-              label="Başlık"
-              value={userContractName}
-              onChange={(e) => setuserContractName(e.target.value)}
-            />
-            <CFormInput
-              type="text"
-              id="userContractType"
-              label="Ana Resim URL"
-              value={userContractType}
-              onChange={(e) => setuserContractType(e.target.value)}
-            />
-            <CFormSelect
-              label="Kategori"
-              className="mb-3"
-              aria-label="Select category"
-              onChange={handleCategoryChange}
-              value={selectedCategoryId || ''} // Ensure value is set correctly
-            >
-              <option value="">Kategori Seçiniz</option>
-              {categories.map((category) => (
-                <option key={category.categoryId} value={category.categoryId}>
-                  {category.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSelect
-              label="Alt Kategori"
-              className="mb-3"
-              aria-label="Select subcategory"
-              onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId || ''} // Ensure value is set correctly
-            >
-              <option value="">Lütfen Önce Kategori Seçiniz</option>
-              {subCategories.map((subCategory) => (
-                <option key={subCategory.subCategoryId} value={subCategory.subCategoryId}>
-                  {subCategory.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSwitch
-              id="isActive"
-              label="Aktif"
-              checked={isActive}
-              onChange={() => setIsActive(!isActive)}
-            />
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible2(false)}>
-            Kapat
-          </CButton>
-          <CButton color="primary" onClick={() => handleEdit(edituserContractId)}>
-            Değişiklikleri Kaydet
           </CButton>
         </CModalFooter>
       </CModal>
@@ -383,13 +197,16 @@ function UserContract() {
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Başlık
+              Kontrat Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Sıra Numarası
+              Kontrat Versiyonu
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Durum
+              Kullanıcı Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Dosya Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
@@ -400,13 +217,16 @@ function UserContract() {
           {userContracts.map((userContract) => (
             <CTableRow key={userContract.userContractId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {userContract.userContractName}
+                {userContract.contract.name}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {userContract.userContractType}
+                {userContract.contract.version}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {userContract.isActive ? 'Aktif' : 'Pasif'}
+                {userContract.user.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {userContract.fileName}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
