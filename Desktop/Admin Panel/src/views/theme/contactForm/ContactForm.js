@@ -14,13 +14,23 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
   CFormTextarea,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import API_BASE_URL from '../../../../config'
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  const formattedDate = date.toLocaleDateString('tr-TR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  const formattedTime = date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  return `${formattedDate} ${formattedTime}`
+}
 
 const ContactForm = () => {
   const [contactForm, setContactForm] = useState([])
@@ -34,6 +44,7 @@ const ContactForm = () => {
   const fetchContactForm = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/contactForm`)
+      console.log(response.data)
       setContactForm(response.data)
     } catch (error) {
       console.error('fetchContactForm error:', error)
@@ -82,7 +93,7 @@ const ContactForm = () => {
               Kategori Konusu
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Metin
+              Tarih
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
@@ -105,7 +116,7 @@ const ContactForm = () => {
                 {item.subjectCategory}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.body}
+                {formatDate(item.formDate)}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton

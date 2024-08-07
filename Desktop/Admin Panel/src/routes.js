@@ -19,6 +19,10 @@ const Channel = React.lazy(() => import('./views/theme/channel/Channel'))
 const Contract = React.lazy(() => import('./views/theme/contract/Contract'))
 const Price = React.lazy(() => import('./views/theme/price/Price'))
 const UserContract = React.lazy(() => import('./views/theme/userContract/UserContract'))
+const Warehouse = React.lazy(() => import('./views/theme/warehouse/Warehouse'))
+const WarehouseConnection = React.lazy(
+  () => import('./views/theme/warehouseConnection/WarehouseConnection'),
+)
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -85,6 +89,8 @@ const routes = [
   { path: '/theme/contract', name: 'Contract', element: Contract },
   { path: '/theme/price', name: 'Price', element: Price },
   { path: '/theme/userContract', name: 'UserContract', element: UserContract },
+  { path: '/theme/warehouse', name: 'Warehouse', element: Warehouse },
+  { path: '/theme/warehouseConnection', name: 'WarehouseConnection', element: WarehouseConnection },
   { path: '/theme/footer', name: 'Footer', element: Footer },
   { path: '/theme/faq', name: 'Faq', element: Faq },
   { path: '/base', name: 'Base', element: Cards, exact: true },
