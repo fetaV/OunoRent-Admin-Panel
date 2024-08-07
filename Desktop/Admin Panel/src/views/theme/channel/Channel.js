@@ -197,6 +197,21 @@ const Channel = () => {
                   : setNewChannel({ ...newChannel, name: e.target.value })
               }
             />
+            {currentChannel && currentChannel.logo && (
+              <div>
+                <label>Mevcut Logo</label>
+                <img
+                  src={`http://10.10.3.181:5244/${currentChannel.logo}`}
+                  alt="Mobil Resim"
+                  style={{
+                    maxWidth: '100px',
+                    maxHeight: '100px',
+                    display: 'block',
+                    margin: '0 auto',
+                  }}
+                />
+              </div>
+            )}
             <CFormInput
               type="file"
               className="mb-3"
