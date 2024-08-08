@@ -23,6 +23,8 @@ import API_BASE_URL from '../../../../config'
 
 function Address() {
   const [address, setAddress] = useState([])
+  const [filteredAddress, setFilteredAddress] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [addressName, setAddressName] = useState('')
   const [addressType, setAddressType] = useState('')
   const [editAddressId, setEditAddressId] = useState(null)
@@ -49,6 +51,7 @@ function Address() {
         })
         console.log(response)
         setAddress(response.data)
+        setFilteredAddress(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -56,6 +59,24 @@ function Address() {
 
     fetchaddress()
   }, [])
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = address.filter(
+      (addr) =>
+        addr.title.toLowerCase().includes(lowercasedQuery) ||
+        addr.addressDetail.toLowerCase().includes(lowercasedQuery) ||
+        addr.city.toLowerCase().includes(lowercasedQuery) ||
+        addr.companyName.toLowerCase().includes(lowercasedQuery) ||
+        addr.district.toLowerCase().includes(lowercasedQuery) ||
+        addr.neighborhood.toLowerCase().includes(lowercasedQuery) ||
+        addr.taxNo.toString().toLowerCase().includes(lowercasedQuery) ||
+        addr.taxOffice.toLowerCase().includes(lowercasedQuery) ||
+        (addr.type ? 'kurumsal' : 'bireysel').includes(lowercasedQuery) ||
+        addr.user.name.toLowerCase().includes(lowercasedQuery),
+    )
+    setFilteredAddress(filteredData)
+  }, [searchQuery, address])
 
   const handleDelete = async (addressId) => {
     try {
@@ -66,6 +87,7 @@ function Address() {
         },
       })
       setAddress(address.filter((address) => address.addressId !== addressId))
+      setFilteredAddress(filteredAddress.filter((address) => address.addressId !== addressId))
       toast.success('address başarıyla silindi!')
     } catch (error) {
       console.error(error.response.data)
@@ -152,6 +174,13 @@ function Address() {
   return (
     <>
       <ToastContainer />
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CModal
         visible={visible2}
@@ -249,8 +278,8 @@ function Address() {
           <CButton color="secondary" onClick={() => setVisible2(false)}>
             Kapat
           </CButton>
-          <CButton color="primary" onClick={() => handleEdit(editAddressId)}>
-            Değişiklikleri Kaydet
+          <CButton color="primary" onClick={handleEdit}>
+            Kaydet
           </CButton>
         </CModalFooter>
       </CModal>
@@ -258,84 +287,41 @@ function Address() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Adres Başlığı
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Adres
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Şehir
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Şirket Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              İlçe
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Semt
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Vergi No
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Vergi Dairesi
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Adres Tipi
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Kullanıcı Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Eylemler
-            </CTableHeaderCell>
+            <CTableHeaderCell scope="col">Adres Başlığı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Adres Detayı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Şehir</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Şirket Adı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">İlçe</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Semt</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Vergi No</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Vergi Dairesi</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Tip</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Kullanıcı Adı</CTableHeaderCell>
+            <CTableHeaderCell scope="col">İşlemler</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {address.map((address) => (
+          {filteredAddress.map((address, index) => (
             <CTableRow key={address.addressId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.title}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.addressDetail}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.city}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.companyName}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.district}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.neighborhood}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.taxNo}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.taxOffice}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.type ? 'Kurumsal' : 'Bireysel'}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.user.name}
-              </CTableDataCell>
-
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell>{address.title}</CTableDataCell>
+              <CTableDataCell>{address.addressDetail}</CTableDataCell>
+              <CTableDataCell>{address.city}</CTableDataCell>
+              <CTableDataCell>{address.companyName}</CTableDataCell>
+              <CTableDataCell>{address.district}</CTableDataCell>
+              <CTableDataCell>{address.neighborhood}</CTableDataCell>
+              <CTableDataCell>{address.taxNo}</CTableDataCell>
+              <CTableDataCell>{address.taxOffice}</CTableDataCell>
+              <CTableDataCell>{address.type ? 'Kurumsal' : 'Bireysel'}</CTableDataCell>
+              <CTableDataCell>{address.user.name}</CTableDataCell>
+              <CTableDataCell>
                 <CButton
                   color="primary"
-                  className="me-2"
+                  size="sm"
                   onClick={() => handleEditModalOpen(address.addressId)}
                 >
                   Düzenle
                 </CButton>
-                <CButton color="danger text-white" onClick={() => handleDelete(address.addressId)}>
+                <CButton color="danger" size="sm" onClick={() => handleDelete(address.addressId)}>
                   Sil
                 </CButton>
               </CTableDataCell>
