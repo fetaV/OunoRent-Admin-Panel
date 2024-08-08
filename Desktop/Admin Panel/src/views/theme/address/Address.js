@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSelect,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -23,14 +25,14 @@ import API_BASE_URL from '../../../../config'
 
 function Address() {
   const [address, setAddress] = useState([])
-  const [filteredAddress, setFilteredAddress] = useState([])
-  const [searchQuery, setSearchQuery] = useState('')
   const [addressName, setAddressName] = useState('')
   const [addressType, setAddressType] = useState('')
   const [editAddressId, setEditAddressId] = useState(null)
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredAddress, setFilteredAddress] = useState([])
   const [editAddressData, setEditAddressData] = useState({
     addressId: '',
     addressName: '',
@@ -39,6 +41,27 @@ function Address() {
     orderNumber: 0,
     date: '',
   })
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = address.filter(
+      (addr) =>
+        addr.title.toLowerCase().includes(lowercasedQuery) ||
+        addr.addressDetail.toLowerCase().includes(lowercasedQuery) ||
+        addr.city.toLowerCase().includes(lowercasedQuery) ||
+        addr.companyName.toLowerCase().includes(lowercasedQuery) ||
+        addr.district.toLowerCase().includes(lowercasedQuery) ||
+        addr.neighborhood.toLowerCase().includes(lowercasedQuery) ||
+        addr.taxNo.toString().toLowerCase().includes(lowercasedQuery) ||
+        addr.taxOffice.toLowerCase().includes(lowercasedQuery) ||
+        (addr.type ? 'kurumsal' : 'bireysel').includes(lowercasedQuery) ||
+        addr.user.name.toLowerCase().includes(lowercasedQuery),
+    )
+    setFilteredAddress(filteredData)
+  }, [searchQuery, address])
 
   useEffect(() => {
     const fetchaddress = async () => {
@@ -59,24 +82,6 @@ function Address() {
 
     fetchaddress()
   }, [])
-
-  useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = address.filter(
-      (addr) =>
-        addr.title.toLowerCase().includes(lowercasedQuery) ||
-        addr.addressDetail.toLowerCase().includes(lowercasedQuery) ||
-        addr.city.toLowerCase().includes(lowercasedQuery) ||
-        addr.companyName.toLowerCase().includes(lowercasedQuery) ||
-        addr.district.toLowerCase().includes(lowercasedQuery) ||
-        addr.neighborhood.toLowerCase().includes(lowercasedQuery) ||
-        addr.taxNo.toString().toLowerCase().includes(lowercasedQuery) ||
-        addr.taxOffice.toLowerCase().includes(lowercasedQuery) ||
-        (addr.type ? 'kurumsal' : 'bireysel').includes(lowercasedQuery) ||
-        addr.user.name.toLowerCase().includes(lowercasedQuery),
-    )
-    setFilteredAddress(filteredData)
-  }, [searchQuery, address])
 
   const handleDelete = async (addressId) => {
     try {
@@ -171,13 +176,19 @@ function Address() {
     }
   }
 
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredAddress.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredAddress.length / itemsPerPage)
+
   return (
     <>
       <ToastContainer />
       <CFormInput
         type="text"
         id="search"
-        placeholder="Arama"
+        label="Arama"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -278,8 +289,8 @@ function Address() {
           <CButton color="secondary" onClick={() => setVisible2(false)}>
             Kapat
           </CButton>
-          <CButton color="primary" onClick={handleEdit}>
-            Kaydet
+          <CButton color="primary" onClick={() => handleEdit(editAddressId)}>
+            Değişiklikleri Kaydet
           </CButton>
         </CModalFooter>
       </CModal>
@@ -287,41 +298,83 @@ function Address() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">Adres Başlığı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Adres Detayı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Şehir</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Şirket Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">İlçe</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Semt</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Vergi No</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Vergi Dairesi</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Tip</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Kullanıcı Adı</CTableHeaderCell>
-            <CTableHeaderCell scope="col">İşlemler</CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres Başlığı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Şehir
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Şirket Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              İlçe
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Semt
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Vergi No
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Vergi Dairesi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Adres Tipi
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Kullanıcı Adı
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Eylemler
+            </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {filteredAddress.map((address, index) => (
+          {currentItems.map((address) => (
             <CTableRow key={address.addressId}>
-              <CTableDataCell>{address.title}</CTableDataCell>
-              <CTableDataCell>{address.addressDetail}</CTableDataCell>
-              <CTableDataCell>{address.city}</CTableDataCell>
-              <CTableDataCell>{address.companyName}</CTableDataCell>
-              <CTableDataCell>{address.district}</CTableDataCell>
-              <CTableDataCell>{address.neighborhood}</CTableDataCell>
-              <CTableDataCell>{address.taxNo}</CTableDataCell>
-              <CTableDataCell>{address.taxOffice}</CTableDataCell>
-              <CTableDataCell>{address.type ? 'Kurumsal' : 'Bireysel'}</CTableDataCell>
-              <CTableDataCell>{address.user.name}</CTableDataCell>
-              <CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.title}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.addressDetail}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.city}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.companyName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.district}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.neighborhood}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.taxNo}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.taxOffice}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.type ? 'Kurumsal' : 'Bireysel'}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {address.user.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"
-                  size="sm"
+                  className="me-2"
                   onClick={() => handleEditModalOpen(address.addressId)}
                 >
                   Düzenle
                 </CButton>
-                <CButton color="danger" size="sm" onClick={() => handleDelete(address.addressId)}>
+                <CButton color="danger text-white" onClick={() => handleDelete(address.addressId)}>
                   Sil
                 </CButton>
               </CTableDataCell>
@@ -329,6 +382,25 @@ function Address() {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3"
+        align="center"
+        items={totalPages}
+        activePage={currentPage}
+        onPageChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }
