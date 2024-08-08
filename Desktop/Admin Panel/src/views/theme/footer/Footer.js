@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -32,10 +34,27 @@ const Footer = () => {
     isActive: false,
   })
   const [visible, setVisible] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredFooter, setFilteredFooter] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   useEffect(() => {
     fetchfooter()
   }, [])
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = footer.filter(
+      (footer) =>
+        (footer.label && footer.label.toLowerCase().includes(lowercasedQuery)) ||
+        (footer.targetUrl && footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
+        (footer.column && footer.column.toLowerCase().includes(lowercasedQuery)) ||
+        (footer.orderNumber &&
+          footer.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
+    )
+    setFilteredFooter(filteredData)
+  }, [searchQuery, footer])
 
   const fetchfooter = async () => {
     try {
@@ -86,12 +105,24 @@ const Footer = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredFooter.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredFooter.length / itemsPerPage)
+
   return (
     <div>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
         Yeni Footer Ekle
       </CButton>
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CTable>
         <CTableHead>
@@ -117,7 +148,7 @@ const Footer = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {footer.map((item) => (
+          {currentItems.map((item) => (
             <CTableRow key={item.footerItemId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.label}
@@ -132,7 +163,18 @@ const Footer = () => {
                 {item.targetUrl}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
+                    color: item.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -156,6 +198,25 @@ const Footer = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
@@ -201,12 +262,22 @@ const Footer = () => {
             />
 
             <CFormSwitch
-              label="Durum"
-              checked={currentFooter ? currentFooter.isActive : newFooter.isActive}
-              onChange={(e) =>
+              id="isActive"
+              label={
                 currentFooter
-                  ? setCurrentFooter({ ...currentFooter, isActive: e.target.checked })
-                  : setNewFooter({ ...newFooter, isActive: e.target.checked })
+                  ? currentFooter.isActive
+                    ? 'Aktif'
+                    : 'Pasif'
+                  : newFooter.isActive
+                    ? 'Aktif'
+                    : 'Pasif'
+              }
+              className="mb-3"
+              checked={currentFooter ? currentFooter.isActive : newFooter.isActive}
+              onChange={() =>
+                currentFooter
+                  ? setCurrentFooter({ ...currentFooter, isActive: !currentFooter.isActive })
+                  : setNewFooter({ ...newFooter, isActive: !newFooter.isActive })
               }
             />
           </CForm>

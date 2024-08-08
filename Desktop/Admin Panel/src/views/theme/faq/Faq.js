@@ -48,7 +48,7 @@ const Faq = () => {
     const filteredData = faq.filter(
       (item) =>
         item.label.toLowerCase().includes(lowercasedQuery) ||
-        item.orderNumber.toString().includes(lowercasedQuery), // Convert to string before checking
+        item.orderNumber.toString().includes(lowercasedQuery),
     )
     setFilteredFaq(filteredData)
   }, [searchQuery, faq])
