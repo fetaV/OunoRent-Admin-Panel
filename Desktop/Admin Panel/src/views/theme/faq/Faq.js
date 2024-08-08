@@ -52,6 +52,8 @@ const Faq = () => {
   const fetchActiveFaq = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/faq/GetActive`)
+      console.log(response)
+
       setActiveFaq(response.data)
     } catch (error) {
       console.error('getActiveFaq error:', error)

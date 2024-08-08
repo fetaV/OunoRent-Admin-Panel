@@ -180,7 +180,7 @@ function UserContract() {
             />
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               checked={editUserContractData.isActive || false}
               readOnly
               disabled

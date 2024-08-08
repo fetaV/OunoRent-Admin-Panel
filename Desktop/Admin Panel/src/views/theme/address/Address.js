@@ -14,10 +14,7 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
   CFormSelect,
-  CRow,
-  CCol,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -28,7 +25,6 @@ function Address() {
   const [address, setAddress] = useState([])
   const [addressName, setAddressName] = useState('')
   const [addressType, setAddressType] = useState('')
-  const [isActive, setIsActive] = useState(false)
   const [editAddressId, setEditAddressId] = useState(null)
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
@@ -40,7 +36,6 @@ function Address() {
     slug: '',
     orderNumber: 0,
     date: '',
-    isActive: false,
   })
 
   useEffect(() => {
@@ -99,12 +94,10 @@ function Address() {
         taxNo: addressData.taxNo || 0,
         taxOffice: addressData.taxOffice || '',
         companyName: addressData.companyName || '',
-        userId: addressData.user.userId || '', // userId'yi doğru şekilde ayarlayın
-        isActive: addressData.isActive || false,
+        userId: addressData.user.userId || '',
       })
       setAddressName(addressData.title || '')
       setAddressType(addressData.type || 0)
-      setIsActive(addressData.isActive || false)
       setSelectedSubCategoryId(addressData.neighborhood || '')
       setSelectedCategoryId(addressData.district || '')
       setVisible2(true)
@@ -126,7 +119,6 @@ function Address() {
       taxOffice: editAddressData.taxOffice,
       companyName: editAddressData.companyName,
       userId: editAddressData.userId,
-      isActive: isActive,
     }
 
     try {
@@ -179,13 +171,16 @@ function Address() {
               value={addressName}
               onChange={(e) => setAddressName(e.target.value)}
             />
-            <CFormInput
-              type="number"
+            <CFormSelect
               id="type"
               label="Adres Tipi"
               value={addressType}
               onChange={(e) => setAddressType(e.target.value)}
-            />
+            >
+              <option value="0">Bireysel</option>
+              <option value="1">Kurumsal</option>
+            </CFormSelect>
+
             <CFormInput
               type="text"
               id="city"
@@ -216,22 +211,29 @@ function Address() {
                 setEditAddressData({ ...editAddressData, addressDetail: e.target.value })
               }
             />
-            <CFormInput
-              type="number"
-              id="taxNo"
-              label="Vergi No"
-              value={editAddressData.taxNo}
-              onChange={(e) => setEditAddressData({ ...editAddressData, taxNo: e.target.value })}
-            />
-            <CFormInput
-              type="text"
-              id="taxOffice"
-              label="Vergi Dairesi"
-              value={editAddressData.taxOffice}
-              onChange={(e) =>
-                setEditAddressData({ ...editAddressData, taxOffice: e.target.value })
-              }
-            />
+            {addressType !== 0 && (
+              <>
+                <CFormInput
+                  type="number"
+                  id="taxNo"
+                  label="Vergi No"
+                  value={editAddressData.taxNo}
+                  onChange={(e) =>
+                    setEditAddressData({ ...editAddressData, taxNo: e.target.value })
+                  }
+                />
+                <CFormInput
+                  type="text"
+                  id="taxOffice"
+                  label="Vergi Dairesi"
+                  value={editAddressData.taxOffice}
+                  onChange={(e) =>
+                    setEditAddressData({ ...editAddressData, taxOffice: e.target.value })
+                  }
+                />
+              </>
+            )}
+
             <CFormInput
               type="text"
               id="companyName"
@@ -240,12 +242,6 @@ function Address() {
               onChange={(e) =>
                 setEditAddressData({ ...editAddressData, companyName: e.target.value })
               }
-            />
-            <CFormSwitch
-              id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
-              checked={isActive}
-              onChange={() => setIsActive(!isActive)}
             />
           </CForm>
         </CModalBody>
