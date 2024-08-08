@@ -193,7 +193,7 @@ const Faq = () => {
         align="center"
         items={totalPages}
         activePage={currentPage}
-        onPageChange={(page) => setCurrentPage(page)}
+        onChange={(page) => setCurrentPage(page)}
       >
         {[...Array(totalPages).keys()].map((page) => (
           <CPaginationItem

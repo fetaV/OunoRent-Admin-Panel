@@ -14,8 +14,9 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSelect,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -30,6 +31,20 @@ const Warehouse = () => {
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
   const [isActive, setIsActive] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredWarehouse, setFilteredWarehouse] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  const sortedWarehouses = warehouses.sort((a, b) => {
+    if (a.isActive === b.isActive) {
+      return 0
+    } else if (a.isActive && !b.isActive) {
+      return -1
+    } else {
+      return 1
+    }
+  })
 
   const newWarehouse = async (e) => {
     e.preventDefault()
@@ -40,6 +55,7 @@ const Warehouse = () => {
         isActive,
       })
       setWarehouses([...warehouses, response.data])
+      setFilteredWarehouse([...warehouses, response.data])
       toast.success('Başarıyla Kayıt İşlemi Gerçekleşti!')
       setInterval(() => {
         window.location.reload()
@@ -54,6 +70,14 @@ const Warehouse = () => {
   }
 
   useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = warehouses.filter((warehouses) =>
+      warehouses.name?.toLowerCase().includes(lowercasedQuery),
+    )
+    setFilteredWarehouse(filteredData)
+  }, [searchQuery, warehouses])
+
+  useEffect(() => {
     const fetchWarehouses = async () => {
       try {
         const token = localStorage.getItem('token')
@@ -64,6 +88,7 @@ const Warehouse = () => {
         })
         console.log('data', response.data)
         setWarehouses(response.data)
+        setFilteredWarehouse(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -81,6 +106,7 @@ const Warehouse = () => {
         },
       })
       setWarehouses(warehouses.filter((warehouse) => warehouse.warehouseId !== warehouseId))
+      setFilteredWarehouse(warehouses.filter((warehouse) => warehouse.warehouseId !== warehouseId))
       toast.success('Başarıyla Kayıt Silindi!')
     } catch (error) {
       console.error(error.response.data)
@@ -127,6 +153,11 @@ const Warehouse = () => {
           warehouse.warehouseId === editWarehouseId ? response.data : warehouse,
         ),
       )
+      setFilteredWarehouse(
+        warehouses.map((warehouse) =>
+          warehouse.warehouseId === editWarehouseId ? response.data : warehouse,
+        ),
+      )
       toast.success('Kanal başarıyla güncellendi!')
       setInterval(() => {
         window.location.reload()
@@ -138,6 +169,10 @@ const Warehouse = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredWarehouse.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredWarehouse.length / itemsPerPage)
   return (
     <>
       <ToastContainer />
@@ -226,6 +261,13 @@ const Warehouse = () => {
           </CButton>
         </CModalFooter>
       </CModal>
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CTable>
         <CTableHead>
@@ -242,45 +284,65 @@ const Warehouse = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {warehouses.map((warehouse, index) => (
-            <CTableRow key={index}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {warehouse.name}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: warehouse.isActive ? '#d4edda' : '#f8d7da',
-                    color: warehouse.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${warehouse.isActive ? '#c3e6cb' : '#f5c6cb'}`,
-                  }}
-                >
-                  {warehouse.isActive ? 'Aktif' : 'Pasif'}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <CButton
-                  color="primary"
-                  className="me-2"
-                  onClick={() => warehouseEdit(warehouse.warehouseId)}
-                >
-                  Düzenle
-                </CButton>
-                <CButton
-                  color="danger text-white"
-                  className="me-2"
-                  onClick={() => handleDelete(warehouse.warehouseId)}
-                >
-                  Sil
-                </CButton>
-              </CTableDataCell>
-            </CTableRow>
-          ))}
+          {currentItems
+            .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+            .map((warehouse, index) => (
+              <CTableRow key={index}>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {warehouse.name}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      backgroundColor: warehouse.isActive ? '#d4edda' : '#f8d7da',
+                      color: warehouse.isActive ? '#155724' : '#721c24',
+                      border: `1px solid ${warehouse.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    }}
+                  >
+                    {warehouse.isActive ? 'Aktif' : 'Pasif'}
+                  </div>
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CButton
+                    color="primary"
+                    className="me-2"
+                    onClick={() => warehouseEdit(warehouse.warehouseId)}
+                  >
+                    Düzenle
+                  </CButton>
+                  <CButton
+                    color="danger text-white"
+                    className="me-2"
+                    onClick={() => handleDelete(warehouse.warehouseId)}
+                  >
+                    Sil
+                  </CButton>
+                </CTableDataCell>
+              </CTableRow>
+            ))}
         </CTableBody>
       </CTable>
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }

@@ -170,11 +170,11 @@ const ContactForm = () => {
       </CTable>
       <CPagination
         aria-label="Page navigation"
-        className="mt-3"
+        className="mt-3 btn border-0"
         align="center"
         items={totalPages}
         activePage={currentPage}
-        onPageChange={(page) => setCurrentPage(page)}
+        onChange={(page) => setCurrentPage(page)}
       >
         {[...Array(totalPages).keys()].map((page) => (
           <CPaginationItem

@@ -385,54 +385,56 @@ function WarehouseConnection() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems.map((warehouseConnection) => (
-            <CTableRow key={warehouseConnection.warehouseConnectionId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {warehouseConnection.warehouseName}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {warehouseConnection.channelName}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: warehouseConnection.isActive ? '#d4edda' : '#f8d7da',
-                    color: warehouseConnection.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${warehouseConnection.isActive ? '#c3e6cb' : '#f5c6cb'}`,
-                  }}
-                >
-                  {warehouseConnection.isActive ? 'Aktif' : 'Pasif'}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <CButton
-                  color="primary"
-                  className="me-2"
-                  onClick={() => handleEditModalOpen(warehouseConnection.warehouseConnectionId)}
-                >
-                  Düzenle
-                </CButton>
-                <CButton
-                  color="danger text-white"
-                  onClick={() => handleDelete(warehouseConnection.warehouseConnectionId)}
-                >
-                  Sil
-                </CButton>
-              </CTableDataCell>
-            </CTableRow>
-          ))}
+          {currentItems
+            .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+            .map((warehouseConnection) => (
+              <CTableRow key={warehouseConnection.warehouseConnectionId}>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {warehouseConnection.warehouseName}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {warehouseConnection.channelName}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      backgroundColor: warehouseConnection.isActive ? '#d4edda' : '#f8d7da',
+                      color: warehouseConnection.isActive ? '#155724' : '#721c24',
+                      border: `1px solid ${warehouseConnection.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    }}
+                  >
+                    {warehouseConnection.isActive ? 'Aktif' : 'Pasif'}
+                  </div>
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CButton
+                    color="primary"
+                    className="me-2"
+                    onClick={() => handleEditModalOpen(warehouseConnection.warehouseConnectionId)}
+                  >
+                    Düzenle
+                  </CButton>
+                  <CButton
+                    color="danger text-white"
+                    onClick={() => handleDelete(warehouseConnection.warehouseConnectionId)}
+                  >
+                    Sil
+                  </CButton>
+                </CTableDataCell>
+              </CTableRow>
+            ))}
         </CTableBody>
       </CTable>
       <CPagination
         aria-label="Page navigation"
-        className="mt-3"
+        className="mt-3 btn border-0"
         align="center"
         items={totalPages}
-        activePage={currentPage}
-        onPageChange={(page) => setCurrentPage(page)}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
       >
         {[...Array(totalPages).keys()].map((page) => (
           <CPaginationItem
