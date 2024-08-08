@@ -176,7 +176,6 @@ function Address() {
     }
   }
 
-  // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = filteredAddress.slice(indexOfFirstItem, indexOfLastItem)
@@ -188,7 +187,7 @@ function Address() {
       <CFormInput
         type="text"
         id="search"
-        label="Arama"
+        placeholder="Arama"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />

@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormTextarea,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -36,6 +38,23 @@ const ContactForm = () => {
   const [contactForm, setContactForm] = useState([])
   const [currentMenuItem, setCurrentMenuItem] = useState(null)
   const [visible, setVisible] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredContactForm, setFilteredContactForm] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = contactForm.filter(
+      (contactForm) =>
+        contactForm.email.toLowerCase().includes(lowercasedQuery) ||
+        contactForm.name.toLowerCase().includes(lowercasedQuery) ||
+        contactForm.subject.toLowerCase().includes(lowercasedQuery) ||
+        contactForm.subjectCategory.toLowerCase().includes(lowercasedQuery) ||
+        contactForm.formDate.toLowerCase().includes(lowercasedQuery),
+    )
+    setFilteredContactForm(filteredData)
+  }, [searchQuery, contactForm])
 
   useEffect(() => {
     fetchContactForm()
@@ -46,6 +65,7 @@ const ContactForm = () => {
       const response = await axios.get(`${API_BASE_URL}/contactForm`)
       console.log(response.data)
       setContactForm(response.data)
+      setFilteredContactForm(response.data)
     } catch (error) {
       console.error('fetchContactForm error:', error)
       toast.error('Failed to fetch contact form items')
@@ -74,9 +94,20 @@ const ContactForm = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredContactForm.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredContactForm.length / itemsPerPage)
   return (
     <div>
       <ToastContainer />
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -101,7 +132,7 @@ const ContactForm = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {contactForm.map((item) => (
+          {currentItems.map((item) => (
             <CTableRow key={item.contactFormId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.name}
@@ -137,6 +168,24 @@ const ContactForm = () => {
           ))}
         </CTableBody>
       </CTable>
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3"
+        align="center"
+        items={totalPages}
+        activePage={currentPage}
+        onPageChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
@@ -177,6 +226,7 @@ const ContactForm = () => {
                 type="text"
                 className="mb-3"
                 label="Metin"
+                rows={8}
                 value={currentMenuItem.body}
                 readOnly
               />
