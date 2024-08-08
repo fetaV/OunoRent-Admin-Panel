@@ -53,11 +53,13 @@ function WarehouseConnection() {
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = warehouseConnection.filter(
-      (warehouseConnection) =>
-        warehouseConnection.channelName.toLowerCase().includes(lowercasedQuery) ||
-        warehouseConnection.warehouseName.toLowerCase().includes(lowercasedQuery),
-    )
+    const filteredData = warehouseConnection
+      .filter(
+        (warehouseConnection) =>
+          warehouseConnection.channelName.toLowerCase().includes(lowercasedQuery) ||
+          warehouseConnection.warehouseName.toLowerCase().includes(lowercasedQuery),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
     setFilteredWarehouseConnection(filteredData)
   }, [searchQuery, warehouseConnection])
 
@@ -385,47 +387,45 @@ function WarehouseConnection() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems
-            .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-            .map((warehouseConnection) => (
-              <CTableRow key={warehouseConnection.warehouseConnectionId}>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  {warehouseConnection.warehouseName}
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  {warehouseConnection.channelName}
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  <div
-                    style={{
-                      display: 'inline-block',
-                      padding: '5px 10px',
-                      borderRadius: '8px',
-                      backgroundColor: warehouseConnection.isActive ? '#d4edda' : '#f8d7da',
-                      color: warehouseConnection.isActive ? '#155724' : '#721c24',
-                      border: `1px solid ${warehouseConnection.isActive ? '#c3e6cb' : '#f5c6cb'}`,
-                    }}
-                  >
-                    {warehouseConnection.isActive ? 'Aktif' : 'Pasif'}
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  <CButton
-                    color="primary"
-                    className="me-2"
-                    onClick={() => handleEditModalOpen(warehouseConnection.warehouseConnectionId)}
-                  >
-                    Düzenle
-                  </CButton>
-                  <CButton
-                    color="danger text-white"
-                    onClick={() => handleDelete(warehouseConnection.warehouseConnectionId)}
-                  >
-                    Sil
-                  </CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
+          {currentItems.map((warehouseConnection) => (
+            <CTableRow key={warehouseConnection.warehouseConnectionId}>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {warehouseConnection.warehouseName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {warehouseConnection.channelName}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: warehouseConnection.isActive ? '#d4edda' : '#f8d7da',
+                    color: warehouseConnection.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${warehouseConnection.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {warehouseConnection.isActive ? 'Aktif' : 'Pasif'}
+                </div>
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CButton
+                  color="primary"
+                  className="me-2"
+                  onClick={() => handleEditModalOpen(warehouseConnection.warehouseConnectionId)}
+                >
+                  Düzenle
+                </CButton>
+                <CButton
+                  color="danger text-white"
+                  onClick={() => handleDelete(warehouseConnection.warehouseConnectionId)}
+                >
+                  Sil
+                </CButton>
+              </CTableDataCell>
+            </CTableRow>
+          ))}
         </CTableBody>
       </CTable>
       <CPagination

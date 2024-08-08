@@ -45,14 +45,16 @@ const Footer = () => {
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = footer.filter(
-      (footer) =>
-        (footer.label && footer.label.toLowerCase().includes(lowercasedQuery)) ||
-        (footer.targetUrl && footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
-        (footer.column && footer.column.toLowerCase().includes(lowercasedQuery)) ||
-        (footer.orderNumber &&
-          footer.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
-    )
+    const filteredData = footer
+      .filter(
+        (footer) =>
+          (footer.label && footer.label.toLowerCase().includes(lowercasedQuery)) ||
+          (footer.targetUrl && footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
+          (footer.column && footer.column.toLowerCase().includes(lowercasedQuery)) ||
+          (footer.orderNumber &&
+            footer.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
     setFilteredFooter(filteredData)
   }, [searchQuery, footer])
 

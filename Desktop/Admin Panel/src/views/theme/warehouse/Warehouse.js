@@ -71,9 +71,9 @@ const Warehouse = () => {
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = warehouses.filter((warehouses) =>
-      warehouses.name?.toLowerCase().includes(lowercasedQuery),
-    )
+    const filteredData = warehouses
+      .filter((warehouses) => warehouses.name?.toLowerCase().includes(lowercasedQuery))
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
     setFilteredWarehouse(filteredData)
   }, [searchQuery, warehouses])
 
@@ -284,45 +284,43 @@ const Warehouse = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems
-            .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-            .map((warehouse, index) => (
-              <CTableRow key={index}>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  {warehouse.name}
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  <div
-                    style={{
-                      display: 'inline-block',
-                      padding: '5px 10px',
-                      borderRadius: '8px',
-                      backgroundColor: warehouse.isActive ? '#d4edda' : '#f8d7da',
-                      color: warehouse.isActive ? '#155724' : '#721c24',
-                      border: `1px solid ${warehouse.isActive ? '#c3e6cb' : '#f5c6cb'}`,
-                    }}
-                  >
-                    {warehouse.isActive ? 'Aktif' : 'Pasif'}
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  <CButton
-                    color="primary"
-                    className="me-2"
-                    onClick={() => warehouseEdit(warehouse.warehouseId)}
-                  >
-                    Düzenle
-                  </CButton>
-                  <CButton
-                    color="danger text-white"
-                    className="me-2"
-                    onClick={() => handleDelete(warehouse.warehouseId)}
-                  >
-                    Sil
-                  </CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
+          {currentItems.map((warehouse, index) => (
+            <CTableRow key={index}>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {warehouse.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: warehouse.isActive ? '#d4edda' : '#f8d7da',
+                    color: warehouse.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${warehouse.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {warehouse.isActive ? 'Aktif' : 'Pasif'}
+                </div>
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CButton
+                  color="primary"
+                  className="me-2"
+                  onClick={() => warehouseEdit(warehouse.warehouseId)}
+                >
+                  Düzenle
+                </CButton>
+                <CButton
+                  color="danger text-white"
+                  className="me-2"
+                  onClick={() => handleDelete(warehouse.warehouseId)}
+                >
+                  Sil
+                </CButton>
+              </CTableDataCell>
+            </CTableRow>
+          ))}
         </CTableBody>
       </CTable>
       <CPagination

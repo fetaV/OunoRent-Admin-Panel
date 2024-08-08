@@ -45,11 +45,14 @@ const Faq = () => {
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = faq.filter(
-      (item) =>
-        item.label.toLowerCase().includes(lowercasedQuery) ||
-        item.orderNumber.toString().includes(lowercasedQuery),
-    )
+    const filteredData = faq
+      .filter(
+        (item) =>
+          item.label.toLowerCase().includes(lowercasedQuery) ||
+          item.orderNumber.toString().includes(lowercasedQuery),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+
     setFilteredFaq(filteredData)
   }, [searchQuery, faq])
 
@@ -148,42 +151,44 @@ const Faq = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems.map((item) => (
-            <CTableRow key={item.faqId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.label}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.orderNumber}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
-                    color: item.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
-                  }}
-                >
-                  {item.isActive ? 'Aktif' : 'Pasif'}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <CButton
-                  color="primary text-white"
-                  className="me-2"
-                  onClick={() => handleEditButtonClick(item.faqId)}
-                >
-                  Düzenle
-                </CButton>
-                <CButton color="danger text-white" onClick={() => handleDeleteFaq(item.faqId)}>
-                  Sil
-                </CButton>
-              </CTableDataCell>
-            </CTableRow>
-          ))}
+          {currentItems
+            .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+            .map((item) => (
+              <CTableRow key={item.faqId}>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {item.label}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {item.orderNumber}
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
+                      color: item.isActive ? '#155724' : '#721c24',
+                      border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    }}
+                  >
+                    {item.isActive ? 'Aktif' : 'Pasif'}
+                  </div>
+                </CTableDataCell>
+                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CButton
+                    color="primary text-white"
+                    className="me-2"
+                    onClick={() => handleEditButtonClick(item.faqId)}
+                  >
+                    Düzenle
+                  </CButton>
+                  <CButton color="danger text-white" onClick={() => handleDeleteFaq(item.faqId)}>
+                    Sil
+                  </CButton>
+                </CTableDataCell>
+              </CTableRow>
+            ))}
         </CTableBody>
       </CTable>
 
