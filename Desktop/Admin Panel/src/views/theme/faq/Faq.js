@@ -16,6 +16,8 @@ import {
   CFormInput,
   CFormSwitch,
   CFormTextarea,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -24,8 +26,11 @@ import API_BASE_URL from '../../../../config'
 
 const Faq = () => {
   const [faq, setFaq] = useState([])
-  const [activeFaq, setActiveFaq] = useState([])
   const [currentFaq, setCurrentFaq] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredFaq, setFilteredFaq] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
   const [newFaq, setNewFaq] = useState({
     label: '',
     text: '',
@@ -33,31 +38,34 @@ const Faq = () => {
     isActive: false,
   })
   const [visible, setVisible] = useState(false)
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredFaq.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredFaq.length / itemsPerPage)
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = faq.filter(
+      (item) =>
+        item.label.toLowerCase().includes(lowercasedQuery) ||
+        item.orderNumber.toString().includes(lowercasedQuery), // Convert to string before checking
+    )
+    setFilteredFaq(filteredData)
+  }, [searchQuery, faq])
 
   useEffect(() => {
     fetchFaq()
-    fetchActiveFaq()
   }, [])
 
   const fetchFaq = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/faq`)
+      console.log(response)
       setFaq(response.data)
+      setFilteredFaq(response.data)
     } catch (error) {
       console.error('getFaq error:', error)
       toast.error('Failed to fetch FAQ items')
-    }
-  }
-
-  const fetchActiveFaq = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/faq/GetActive`)
-      console.log(response)
-
-      setActiveFaq(response.data)
-    } catch (error) {
-      console.error('getActiveFaq error:', error)
-      toast.error('Failed to fetch active FAQ items')
     }
   }
 
@@ -110,9 +118,17 @@ const Faq = () => {
   return (
     <div>
       <ToastContainer />
+
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
         Yeni FAQ Ekle
       </CButton>
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CTable>
         <CTableHead>
@@ -132,7 +148,7 @@ const Faq = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {faq.map((item) => (
+          {currentItems.map((item) => (
             <CTableRow key={item.faqId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.label}
@@ -141,7 +157,18 @@ const Faq = () => {
                 {item.orderNumber}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
+                    color: item.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -159,6 +186,25 @@ const Faq = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3"
+        align="center"
+        items={totalPages}
+        activePage={currentPage}
+        onPageChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
