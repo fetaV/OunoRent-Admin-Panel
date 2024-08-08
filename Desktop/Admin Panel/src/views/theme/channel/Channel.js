@@ -158,7 +158,18 @@ const Channel = () => {
                 />
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
+                    color: item.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
