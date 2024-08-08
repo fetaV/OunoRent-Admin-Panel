@@ -27,7 +27,6 @@ const Warehouse = () => {
   const [name, setName] = useState('')
   const [logoWarehouseId, setLogoWarehouseId] = useState(0)
   const [editWarehouseId, setEditWarehouseId] = useState(null)
-  const [selectedWarehouseId, setSelectedWarehouseId] = useState(null)
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
   const [isActive, setIsActive] = useState(false)
@@ -249,7 +248,18 @@ const Warehouse = () => {
                 {warehouse.name}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {warehouse.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: warehouse.isActive ? '#d4edda' : '#f8d7da',
+                    color: warehouse.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${warehouse.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {warehouse.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
