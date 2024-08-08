@@ -372,7 +372,7 @@ function Blog() {
             </CFormSelect>
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               className="mb-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -484,7 +484,7 @@ function Blog() {
 
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -575,7 +575,18 @@ function Blog() {
                 {blog.subCategoryName}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {blog.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: blog.isActive ? '#d4edda' : '#f8d7da',
+                    color: blog.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${blog.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {blog.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton

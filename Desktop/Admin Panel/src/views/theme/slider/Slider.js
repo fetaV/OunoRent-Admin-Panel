@@ -247,7 +247,7 @@ const Slider = () => {
             />
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -362,7 +362,7 @@ const Slider = () => {
             />
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />

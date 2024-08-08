@@ -180,7 +180,7 @@ function WarehouseConnection() {
     const warehouseConnectionData = response.data
     setEditWareHouseConnectionId(warehouseConnectionId)
     setEditwarehouseConnectionData(warehouseConnectionData)
-    setSelectedWarehouse(warehouseConnectionData.warehouseId || '')
+    setSelectedWarehouse(warehouseConnectionData.warehouseName || '')
     setSelectedChannelId(warehouseConnectionData.channelId || '')
     setIsActive(warehouseConnectionData.isActive || false)
     setVisible2(true)
@@ -266,7 +266,7 @@ function WarehouseConnection() {
 
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               className="mb-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -325,7 +325,7 @@ function WarehouseConnection() {
 
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               className="mb-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}

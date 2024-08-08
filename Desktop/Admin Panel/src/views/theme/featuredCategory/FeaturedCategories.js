@@ -261,7 +261,7 @@ const FeaturedCategories = () => {
           </CForm>
           <CFormSwitch
             id="isActive"
-            label="Aktif"
+            label={isActive ? 'Aktif' : 'Pasif'}
             className="mt-3"
             checked={isActive}
             onChange={() => setIsActive(!isActive)}

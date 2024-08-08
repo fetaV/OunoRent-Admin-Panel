@@ -287,7 +287,7 @@ function Feature() {
 
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               className="mb-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -361,7 +361,7 @@ function Feature() {
 
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />

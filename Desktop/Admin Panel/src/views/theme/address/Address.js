@@ -243,7 +243,7 @@ function Address() {
             />
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -293,9 +293,6 @@ function Address() {
               Kullanıcı Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Durum
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -333,9 +330,7 @@ function Address() {
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {address.user.name}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {address.isActive ? 'Aktif' : 'Pasif'}
-              </CTableDataCell>
+
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
                   color="primary"

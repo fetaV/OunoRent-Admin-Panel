@@ -168,7 +168,7 @@ const Warehouse = () => {
             />
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -214,7 +214,7 @@ const Warehouse = () => {
             />
             <CFormSwitch
               id="isActive"
-              label="Aktif"
+              label={isActive ? 'Aktif' : 'Pasif'}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
