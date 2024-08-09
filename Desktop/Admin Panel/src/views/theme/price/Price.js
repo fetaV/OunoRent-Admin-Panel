@@ -41,7 +41,7 @@ const Price = () => {
       .filter(
         (price) =>
           (price.barcode && price.barcode.toLowerCase().includes(lowercasedQuery)) ||
-          (price.logoPrice && price.logoPrice.toLowerCase().includes(lowercasedQuery)),
+          (price.logoPrice && price.logoPrice.toString().toLowerCase().includes(lowercasedQuery)),
       )
       .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
     setFilteredPrice(filteredData)
