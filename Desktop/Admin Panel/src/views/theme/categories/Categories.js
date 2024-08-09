@@ -14,6 +14,8 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -34,9 +36,29 @@ const Categories = () => {
   const [visible3, setVisible3] = useState(false)
   const [visible4, setVisible4] = useState(false)
   const [parentCategoryId, setParentCategoryId] = useState(null)
-  const [subCategories, setSubCategories] = useState('')
+  const [subCategories, setSubCategories] = useState([])
   const [editSubCategoryId, setEditSubCategoryId] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuerySubCategories, setSearchQuerySubCategories] = useState('')
+  const [filteredCategories, setFilteredCategories] = useState([])
+  const [filteredSubCategories, setFilteredSubCategories] = useState([])
+  const [currentPageCategories, setCurrentPageCategories] = useState(1)
+  const [currentPageSubCategories, setCurrentPageSubCategories] = useState(1)
+  const itemsPerPage = 5
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = categories
+      .filter(
+        (categories) =>
+          (categories.name && categories.name.toLowerCase().includes(lowercasedQuery)) ||
+          (categories.orderNumber &&
+            categories.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredCategories(filteredData)
+  }, [searchQuery, categories])
 
   const newCategory = async (e) => {
     e.preventDefault()
@@ -89,7 +111,7 @@ const Categories = () => {
 
   const handleSubCategoryEdit = (categoryId) => {
     setParentCategoryId(categoryId)
-    setVisible4(true) // Modal'ı aç
+    setVisible4(true)
   }
 
   const newSubCategory = async (e) => {
@@ -145,8 +167,8 @@ const Categories = () => {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log(response)
         setCategories(response.data)
+        setFilteredCategories(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -354,6 +376,26 @@ const Categories = () => {
       console.error('Error occurred while downloading file:', error)
     }
   }
+
+  const indexOfLastItemCategories = currentPageCategories * itemsPerPage
+  const indexOfFirstItemCategories = indexOfLastItemCategories - itemsPerPage
+  const currentItems = filteredCategories.slice(
+    indexOfFirstItemCategories,
+    indexOfLastItemCategories,
+  )
+  const totalPagesCategories = Math.ceil(filteredCategories.length / itemsPerPage)
+
+  // Pagination and filtering logic for subcategories
+  const indexOfLastItemSubCategories = currentPageSubCategories * itemsPerPage
+  const indexOfFirstItemSubCategories = indexOfLastItemSubCategories - itemsPerPage
+  const filteredSubCategory = subCategories.filter((subCategory) =>
+    subCategory.name.toLowerCase().includes(searchQuerySubCategories.toLowerCase()),
+  )
+  const currentItemsSubCategories = filteredSubCategory.slice(
+    indexOfFirstItemSubCategories,
+    indexOfLastItemSubCategories,
+  )
+  const totalPagesSubCategories = Math.ceil(filteredSubCategory.length / itemsPerPage)
 
   return (
     <>
@@ -647,6 +689,14 @@ const Categories = () => {
         </CModalFooter>
       </CModal>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -665,7 +715,7 @@ const Categories = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {categories.map((category, index) => (
+          {currentItems.map((category, index) => (
             <CTableRow key={index}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {category.name}
@@ -674,7 +724,18 @@ const Categories = () => {
                 {category.orderNumber}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {category.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: categories.isActive ? '#f8d7da' : '#d4edda',
+                    color: categories.isActive ? '#721c24' : '#155724',
+                    border: `1px solid ${categories.isActive ? '#f5c6cb' : '#c3e6cb'}`,
+                  }}
+                >
+                  {categories.isActive ? 'Pasif' : 'Aktif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -716,9 +777,36 @@ const Categories = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPagesCategories}
+        active={currentPageCategories}
+        onChange={(page) => setCurrentPageCategories(page)}
+      >
+        {[...Array(totalPagesCategories).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPageCategories}
+            onClick={() => setCurrentPageCategories(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
+
       {selectedCategoryId && subCategories.length > 0 && (
         <>
           <h3>Alt Kategoriler</h3>
+          <CFormInput
+            type="text"
+            id="search"
+            placeholder="Arama"
+            value={searchQuerySubCategories}
+            onChange={(e) => setSearchQuerySubCategories(e.target.value)}
+          />
           <CTable>
             <CTableHead>
               <CTableRow>
@@ -726,15 +814,38 @@ const Categories = () => {
                   Alt Kategori Adı
                 </CTableHeaderCell>
                 <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  Sıra
+                </CTableHeaderCell>
+                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  Durum
+                </CTableHeaderCell>
+                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   Eylemler
                 </CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {subCategories.map((subCategory, index) => (
+              {currentItemsSubCategories.map((subCategory, index) => (
                 <CTableRow key={index}>
                   <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                     {subCategory.name}
+                  </CTableDataCell>
+                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    {subCategory.orderNumber}
+                  </CTableDataCell>
+                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    <div
+                      style={{
+                        display: 'inline-block',
+                        padding: '5px 10px',
+                        borderRadius: '8px',
+                        backgroundColor: subCategories.isActive ? '#f8d7da' : '#d4edda',
+                        color: subCategories.isActive ? '#721c24' : '#155724',
+                        border: `1px solid ${subCategories.isActive ? '#f5c6cb' : '#c3e6cb'}`,
+                      }}
+                    >
+                      {subCategories.isActive ? 'Pasif' : 'Aktif'}
+                    </div>
                   </CTableDataCell>
                   <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                     <CButton
@@ -760,6 +871,24 @@ const Categories = () => {
               ))}
             </CTableBody>
           </CTable>
+          <CPagination
+            aria-label="Page navigation"
+            className="mt-3 btn border-0"
+            align="center"
+            items={totalPagesSubCategories}
+            active={currentPageSubCategories}
+            onChange={(page) => setCurrentPageSubCategories(page)}
+          >
+            {[...Array(totalPagesSubCategories).keys()].map((page) => (
+              <CPaginationItem
+                key={page + 1}
+                active={page + 1 === currentPageSubCategories}
+                onClick={() => setCurrentPageSubCategories(page + 1)}
+              >
+                {page + 1}
+              </CPaginationItem>
+            ))}
+          </CPagination>
         </>
       )}
     </>

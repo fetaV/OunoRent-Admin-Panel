@@ -197,7 +197,7 @@ const Faq = () => {
         className="mt-3"
         align="center"
         items={totalPages}
-        activePage={currentPage}
+        active={currentPage}
         onChange={(page) => setCurrentPage(page)}
       >
         {[...Array(totalPages).keys()].map((page) => (

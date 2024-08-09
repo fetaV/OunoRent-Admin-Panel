@@ -173,7 +173,7 @@ const ContactForm = () => {
         className="mt-3 btn border-0"
         align="center"
         items={totalPages}
-        activePage={currentPage}
+        active={currentPage}
         onChange={(page) => setCurrentPage(page)}
       >
         {[...Array(totalPages).keys()].map((page) => (
