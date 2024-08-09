@@ -50,7 +50,7 @@ const Footer = () => {
         (footer) =>
           (footer.label && footer.label.toLowerCase().includes(lowercasedQuery)) ||
           (footer.targetUrl && footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
-          (footer.column && footer.column.toLowerCase().includes(lowercasedQuery)) ||
+          (footer.column && footer.column.toString().toLowerCase().includes(lowercasedQuery)) ||
           (footer.orderNumber &&
             footer.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
       )
