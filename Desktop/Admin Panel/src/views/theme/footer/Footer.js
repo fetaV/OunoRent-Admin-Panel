@@ -239,18 +239,6 @@ const Footer = () => {
               }
             />
             <CFormInput
-              type="text"
-              className="mb-3"
-              placeholder="Target URL"
-              label="Hedef URL"
-              value={currentFooter ? currentFooter.targetUrl : newFooter.targetUrl}
-              onChange={(e) =>
-                currentFooter
-                  ? setCurrentFooter({ ...currentFooter, targetUrl: e.target.value })
-                  : setNewFooter({ ...newFooter, targetUrl: e.target.value })
-              }
-            />
-            <CFormInput
               type="number"
               className="mb-3"
               placeholder="Order Number"
@@ -260,6 +248,30 @@ const Footer = () => {
                 currentFooter
                   ? setCurrentFooter({ ...currentFooter, orderNumber: +e.target.value })
                   : setNewFooter({ ...newFooter, orderNumber: +e.target.value })
+              }
+            />
+            <CFormInput
+              type="number"
+              className="mb-3"
+              placeholder="Order Number"
+              label="Sıra Numarası"
+              value={currentFooter ? currentFooter.column : newFooter.column}
+              onChange={(e) =>
+                currentFooter
+                  ? setCurrentFooter({ ...currentFooter, column: +e.target.value })
+                  : setNewFooter({ ...newFooter, column: +e.target.value })
+              }
+            />
+            <CFormInput
+              type="text"
+              className="mb-3"
+              placeholder="Target URL"
+              label="Hedef URL"
+              value={currentFooter ? currentFooter.targetUrl : newFooter.targetUrl}
+              onChange={(e) =>
+                currentFooter
+                  ? setCurrentFooter({ ...currentFooter, targetUrl: e.target.value })
+                  : setNewFooter({ ...newFooter, targetUrl: e.target.value })
               }
             />
 
