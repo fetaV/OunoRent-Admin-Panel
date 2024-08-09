@@ -15,7 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
-  CFormTextarea,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -33,6 +34,18 @@ const Channel = () => {
   })
   const [visible, setVisible] = useState(false)
   const [logoFile, setLogoFile] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredChannel, setFilteredChannel] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = channel
+      .filter((channel) => channel.name && channel.name.toLowerCase().includes(lowercasedQuery))
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredChannel(filteredData)
+  }, [searchQuery, channel])
 
   useEffect(() => {
     fetchChannel()
@@ -117,12 +130,25 @@ const Channel = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredChannel.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredChannel.length / itemsPerPage)
+
   return (
     <div>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
         Yeni Kanal Ekle
       </CButton>
+
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CTable>
         <CTableHead>
@@ -142,7 +168,7 @@ const Channel = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {channel.map((item) => (
+          {currentItems.map((item) => (
             <CTableRow key={item.channelId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.name}
@@ -190,6 +216,25 @@ const Channel = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>

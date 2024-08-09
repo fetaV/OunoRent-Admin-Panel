@@ -44,7 +44,7 @@ const Categories = () => {
     const formData = new FormData()
     formData.append('name', name)
     formData.append('description', description)
-    formData.append('icon', icon) // icon bir dosya olduğunda
+    formData.append('icon', icon)
     formData.append('orderNumber', orderNumber)
     if (imageHorizontal) {
       formData.append('imageHorizontal', imageHorizontal)
@@ -145,6 +145,7 @@ const Categories = () => {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log(response)
         setCategories(response.data)
       } catch (error) {
         console.error(error)
@@ -328,6 +329,32 @@ const Categories = () => {
     }
   }
 
+  const downloadExcel = async () => {
+    try {
+      const response = await fetch('http://10.10.3.181:5244/api/Category/exportCategories', {
+        method: 'GET',
+        headers: {
+          Accept: '*/*',
+        },
+      })
+
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'Categories.xlsx'
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+      } else {
+        console.error('Failed to download file:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error occurred while downloading file:', error)
+    }
+  }
+
   return (
     <>
       <ToastContainer />
@@ -434,9 +461,15 @@ const Categories = () => {
         </CModalFooter>
       </CModal>
 
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(!visible)}>
-        Yeni Kategori Ekle
-      </CButton>
+      <div className="d-flex justify-content-between w-100 mb-3">
+        <CButton color="primary" onClick={() => setVisible(!visible)}>
+          Yeni Kategori Ekle
+        </CButton>
+        <CButton color="success text-white" onClick={downloadExcel}>
+          Excel İndir
+        </CButton>
+      </div>
+
       <CModal
         visible={visible}
         onClose={() => setVisible(false)}
@@ -621,6 +654,9 @@ const Categories = () => {
               Kategori Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              Sıra
+            </CTableHeaderCell>
+            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Durum
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
@@ -633,6 +669,9 @@ const Categories = () => {
             <CTableRow key={index}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {category.name}
+              </CTableDataCell>
+              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                {category.orderNumber}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {category.isActive ? 'Aktif' : 'Pasif'}
