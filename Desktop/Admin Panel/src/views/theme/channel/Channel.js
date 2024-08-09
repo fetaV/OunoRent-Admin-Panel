@@ -121,7 +121,7 @@ const Channel = () => {
     <div>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
-        Yeni Channel Ekle
+        Yeni Kanal Ekle
       </CButton>
 
       <CTable>

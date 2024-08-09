@@ -14,6 +14,8 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -28,6 +30,22 @@ const Price = () => {
     logoPrice: 0,
   })
   const [visible, setVisible] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredPrice, setFilteredPrice] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = prices
+      .filter(
+        (price) =>
+          (price.barcode && price.barcode.toLowerCase().includes(lowercasedQuery)) ||
+          (price.logoPrice && price.logoPrice.toLowerCase().includes(lowercasedQuery)),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredPrice(filteredData)
+  }, [searchQuery, prices])
 
   useEffect(() => {
     fetchPrices()
@@ -37,6 +55,7 @@ const Price = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/price`)
       setPrices(response.data)
+      setFilteredPrice(response.data)
       console.log(response.data)
     } catch (error) {
       console.error('Fetch prices error:', error)
@@ -90,12 +109,25 @@ const Price = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredPrice.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredPrice.length / itemsPerPage)
+
   return (
     <div>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
         Yeni Price Ekle
       </CButton>
+
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CTable>
         <CTableHead>
@@ -112,7 +144,7 @@ const Price = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {prices.map((price) => (
+          {currentItems.map((price) => (
             <CTableRow key={price.priceId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {price.barcode}
@@ -136,6 +168,25 @@ const Price = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
