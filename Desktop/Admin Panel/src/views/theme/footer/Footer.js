@@ -40,7 +40,7 @@ const Footer = () => {
   const itemsPerPage = 10
 
   useEffect(() => {
-    fetchfooter()
+    fetchFooter()
   }, [])
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const Footer = () => {
     setFilteredFooter(filteredData)
   }, [searchQuery, footer])
 
-  const fetchfooter = async () => {
+  const fetchFooter = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/footerItem`)
       console.log('getfooter response:', response.data)
@@ -74,7 +74,10 @@ const Footer = () => {
       const response = await axios.post(`${API_BASE_URL}/footerItem`, newFooter)
       console.log('createFooter response:', response.data)
       toast.success('Menu item created successfully')
-      fetchfooter()
+      setInterval(() => {
+        window.location.reload()
+      }, 500)
+      fetchFooter()
       setVisible(false)
     } catch (error) {
       console.error('createFooter error:', error)
@@ -87,7 +90,7 @@ const Footer = () => {
       const response = await axios.put(`${API_BASE_URL}/footerItem/${FooterId}`, currentFooter)
       console.log('updateFooter response:', response.data)
       toast.success('Menu item updated successfully')
-      fetchfooter()
+      fetchFooter()
       setVisible(false)
     } catch (error) {
       console.error('updateFooter error:', error)
@@ -100,7 +103,7 @@ const Footer = () => {
       const response = await axios.delete(`${API_BASE_URL}/footerItem/${FooterId}`)
       console.log('deleteFooter response:', response.data)
       toast.success('Menu item deleted successfully')
-      fetchfooter()
+      fetchFooter()
     } catch (error) {
       console.error('deleteFooter error:', error)
       toast.error('Failed to delete menu item')
@@ -253,8 +256,8 @@ const Footer = () => {
             <CFormInput
               type="number"
               className="mb-3"
-              placeholder="Order Number"
-              label="Sıra Numarası"
+              placeholder="Sütun"
+              label="Sütun"
               value={currentFooter ? currentFooter.column : newFooter.column}
               onChange={(e) =>
                 currentFooter

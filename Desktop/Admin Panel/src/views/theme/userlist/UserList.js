@@ -18,6 +18,8 @@ import {
   CRow,
   CCol,
   CFormTextarea,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -39,6 +41,10 @@ const Typography = () => {
   const [editUserId, setEditUserId] = useState(null)
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredFooter, setFilteredFooter] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -71,6 +77,20 @@ const Typography = () => {
       }
     }
   }
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = users
+      .filter(
+        (user) =>
+          (user.address && user.address.toLowerCase().includes(lowercasedQuery)) ||
+          (user.email && user.email.toLowerCase().includes(lowercasedQuery)) ||
+          (user.name && user.name.toString().toLowerCase().includes(lowercasedQuery)) ||
+          (user.surname && user.surname.toString().toLowerCase().includes(lowercasedQuery)),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredFooter(filteredData)
+  }, [searchQuery, users])
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -140,8 +160,6 @@ const Typography = () => {
           email,
           phoneNumber,
           address,
-          tc,
-          gender,
           birthDate: utcBirthDate,
         },
         {
@@ -150,6 +168,15 @@ const Typography = () => {
           },
         },
       )
+      console.log({
+        userId,
+        name,
+        surname,
+        email,
+        phoneNumber,
+        address,
+        birthDate: utcBirthDate,
+      })
       setUsers((prevUsers) => prevUsers.map((user) => (user._id === userId ? response.data : user)))
       toast.success('Kullanıcı başarıyla güncellendi!')
       setVisible2(false)
@@ -165,6 +192,11 @@ const Typography = () => {
       }
     }
   }
+
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredFooter.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredFooter.length / itemsPerPage)
 
   return (
     <>
@@ -220,30 +252,6 @@ const Typography = () => {
               <CCol>
                 <CForm>
                   <CFormInput
-                    type="text"
-                    id="exampleFormControlInput1"
-                    label="Telefon Numarası"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </CForm>
-              </CCol>
-              <CCol>
-                <CForm>
-                  <CFormInput
-                    type="text"
-                    id="exampleFormControlInput1"
-                    label="TC No"
-                    value={tc}
-                    onChange={(e) => setTc(e.target.value)}
-                  />
-                </CForm>
-              </CCol>
-            </CRow>
-            <CRow className="mt-3">
-              <CCol>
-                <CForm>
-                  <CFormInput
                     type="date"
                     id="exampleFormControlInput1"
                     label="Doğum Tarihi"
@@ -251,17 +259,17 @@ const Typography = () => {
                     onChange={(e) => setBirthDate(e.target.value)}
                   />
                 </CForm>
-              </CCol>
-              <CCol>
-                <CForm>
-                  <CFormInput
-                    type="text"
-                    id="exampleFormControlInput1"
-                    label="Cinsiyet"
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                  />
-                </CForm>
+                <CCol>
+                  <CForm>
+                    <CFormInput
+                      type="text"
+                      id="exampleFormControlInput1"
+                      label="Telefon Numarası"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
+                  </CForm>
+                </CCol>
               </CCol>
             </CRow>
             <CRow className="mt-3">
@@ -337,6 +345,15 @@ const Typography = () => {
           </CModalFooter>
         </CModal>
       </>
+
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -353,13 +370,7 @@ const Typography = () => {
               Telefon
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              TC No
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Doğum Tarihi
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Cinsiyet
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Adres
@@ -370,7 +381,7 @@ const Typography = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {users.map((user, index) => {
+          {currentItems.map((user, index) => {
             const formattedDate = new Date(user.birthDate).toLocaleDateString('tr-TR', {
               day: '2-digit',
               month: 'long',
@@ -391,13 +402,7 @@ const Typography = () => {
                   {user.phoneNumber}
                 </CTableDataCell>
                 <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  {user.tc}
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   {formattedDate}
-                </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  {user.gender}
                 </CTableDataCell>
                 <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   {user.address}
@@ -424,6 +429,25 @@ const Typography = () => {
           })}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }
