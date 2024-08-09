@@ -16,6 +16,11 @@ import {
   CFormInput,
   CPagination,
   CPaginationItem,
+  CFormSwitch,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -42,7 +47,7 @@ const Categories = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchQuerySubCategories, setSearchQuerySubCategories] = useState('')
   const [filteredCategories, setFilteredCategories] = useState([])
-  const [filteredSubCategories, setFilteredSubCategories] = useState([])
+  const [isActive, setIsActive] = useState(false)
   const [currentPageCategories, setCurrentPageCategories] = useState(1)
   const [currentPageSubCategories, setCurrentPageSubCategories] = useState(1)
   const itemsPerPage = 5
@@ -494,6 +499,13 @@ const Categories = () => {
               label="Mobil Görsel"
               onChange={(e) => setImageSquare(e.target.files[0])}
             />
+
+            <CFormSwitch
+              id="isActive"
+              label={isActive ? 'Aktif' : 'Pasif'}
+              checked={isActive}
+              onChange={() => setIsActive(!isActive)}
+            />
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -561,6 +573,13 @@ const Categories = () => {
               label="Mobil Görsel"
               onChange={(e) => setImageSquare(e.target.files[0])}
             />
+            <CFormSwitch
+              id="isActive"
+              label={isActive ? 'Aktif' : 'Pasif'}
+              className="mt-3"
+              checked={isActive}
+              onChange={() => setIsActive(!isActive)}
+            />
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -612,6 +631,13 @@ const Categories = () => {
               label="Sıra No"
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
+            />
+            <CFormSwitch
+              id="isActive"
+              label={isActive ? 'Aktif' : 'Pasif'}
+              className="mt-3"
+              checked={isActive}
+              onChange={() => setIsActive(!isActive)}
             />
           </CForm>
         </CModalBody>
@@ -673,6 +699,14 @@ const Categories = () => {
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
             />
+
+            <CFormSwitch
+              id="isActive"
+              label={isActive ? 'Aktif' : 'Pasif'}
+              className="mt-3"
+              checked={isActive}
+              onChange={() => setIsActive(!isActive)}
+            />
           </CForm>
         </CModalBody>
 
@@ -682,7 +716,7 @@ const Categories = () => {
           </CButton>
           <CButton
             color="primary"
-            onClick={() => editSubCategory(parentCategoryId, editSubCategoryId)} // Corrected parentCategoryId and editSubCategoryId parameters
+            onClick={() => editSubCategory(parentCategoryId, editSubCategoryId)}
           >
             Değişiklikleri Kaydet
           </CButton>
@@ -738,40 +772,42 @@ const Categories = () => {
                 </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <CButton
-                  color="primary"
-                  className="me-2"
-                  onClick={() => categoryEdit(category.categoryId)}
-                >
-                  Düzenle
-                </CButton>
-                <CButton
-                  color="danger text-white"
-                  className="me-2"
-                  onClick={() => handleDelete(category.categoryId)}
-                >
-                  Sil
-                </CButton>
-                <CButton
-                  color="info text-white"
-                  onClick={() => handleSubCategoryEdit(category.categoryId)}
-                >
-                  Alt Kategori Ekle
-                </CButton>
-                <CButton
-                  color="success text-white"
-                  className="ms-2"
-                  onClick={() => {
-                    setParentCategoryId(category.categoryId)
-                    if (category.subCategories && category.subCategories.length > 0) {
-                      setSelectedCategoryId(category.categoryId)
-                    } else {
-                      toast.info('Alt kategori verisi bulunmamaktadır')
-                    }
-                  }}
-                >
-                  Alt Kategorileri Göster
-                </CButton>
+                <CDropdown>
+                  <CDropdownToggle color="primary">Seçenekler</CDropdownToggle>
+                  <CDropdownMenu>
+                    <CDropdownItem
+                      className="btn"
+                      onClick={() => categoryEdit(category.categoryId)}
+                    >
+                      Düzenle
+                    </CDropdownItem>
+                    <CDropdownItem
+                      className="btn"
+                      onClick={() => handleDelete(category.categoryId)}
+                    >
+                      Sil
+                    </CDropdownItem>
+                    <CDropdownItem
+                      className="btn"
+                      onClick={() => handleSubCategoryEdit(category.categoryId)}
+                    >
+                      Alt Kategori Ekle
+                    </CDropdownItem>
+                    <CDropdownItem
+                      className="btn"
+                      onClick={() => {
+                        setParentCategoryId(category.categoryId)
+                        if (category.subCategories && category.subCategories.length > 0) {
+                          setSelectedCategoryId(category.categoryId)
+                        } else {
+                          toast.info('Alt kategori verisi bulunmamaktadır')
+                        }
+                      }}
+                    >
+                      Alt Kategorileri Göster
+                    </CDropdownItem>
+                  </CDropdownMenu>
+                </CDropdown>
               </CTableDataCell>
             </CTableRow>
           ))}
