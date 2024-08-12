@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -31,6 +33,19 @@ const Brand = () => {
     isActive: false,
   })
   const [visible, setVisible] = useState(false)
+  const [isActive, setIsActive] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredBrand, setFilteredBrand] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = brand
+      .filter((brand) => brand.name?.toLowerCase().includes(lowercasedQuery))
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredBrand(filteredData)
+  }, [searchQuery, brand])
 
   useEffect(() => {
     fetchBrand()
@@ -40,6 +55,7 @@ const Brand = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/brand`)
       setBrand(response.data)
+      setFilteredBrand(response.data)
     } catch (error) {
       console.error('Fetch brand error:', error)
       toast.error('Failed to fetch brand items')
@@ -121,6 +137,11 @@ const Brand = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredBrand.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredBrand.length / itemsPerPage)
+
   return (
     <div>
       <ToastContainer />
@@ -128,6 +149,13 @@ const Brand = () => {
         Yeni Brand Ekle
       </CButton>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -149,7 +177,7 @@ const Brand = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {brand.map((item) => (
+          {currentItems.map((item) => (
             <CTableRow key={item.brandId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.name}
@@ -165,10 +193,32 @@ const Brand = () => {
                 />
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.showOnBrands ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.showOnBrands ? '#d4edda' : '#f8d7da',
+                    color: item.showOnBrands ? '#155724' : '#721c24',
+                    border: `1px solid ${item.showOnBrands ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.showOnBrands ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
+                    color: item.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -186,6 +236,25 @@ const Brand = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal
         visible={visible}
@@ -244,8 +313,18 @@ const Brand = () => {
                   : setNewBrand({ ...newBrand, showOnBrands: e.target.checked })
               }
             />
+
             <CFormSwitch
-              label="Durum"
+              id="isActive"
+              label={
+                currentBrand
+                  ? currentBrand.isActive
+                    ? 'Aktif'
+                    : 'Pasif'
+                  : newBrand.isActive
+                    ? 'Aktif'
+                    : 'Pasif'
+              }
               checked={currentBrand ? currentBrand.isActive : newBrand.isActive}
               onChange={(e) =>
                 currentBrand
