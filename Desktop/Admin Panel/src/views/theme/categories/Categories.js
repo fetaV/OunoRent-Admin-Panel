@@ -46,6 +46,7 @@ const Categories = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchQuerySubCategories, setSearchQuerySubCategories] = useState('')
+  const [selectedCategoryName, setSelectedCategoryName] = useState('')
   const [filteredCategories, setFilteredCategories] = useState([])
   const [isActive, setIsActive] = useState(false)
   const [currentPageCategories, setCurrentPageCategories] = useState(1)
@@ -722,7 +723,7 @@ const Categories = () => {
           </CButton>
         </CModalFooter>
       </CModal>
-
+      <h3>Kategoriler</h3>
       <CFormInput
         type="text"
         id="search"
@@ -730,7 +731,6 @@ const Categories = () => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -797,6 +797,7 @@ const Categories = () => {
                       className="btn"
                       onClick={() => {
                         setParentCategoryId(category.categoryId)
+                        setSelectedCategoryName(category.name)
                         if (category.subCategories && category.subCategories.length > 0) {
                           setSelectedCategoryId(category.categoryId)
                         } else {
@@ -835,7 +836,9 @@ const Categories = () => {
 
       {selectedCategoryId && subCategories.length > 0 && (
         <>
-          <h3>Alt Kategoriler</h3>
+          <h3>
+            Alt Kategoriler <b className="text-primary"> ({selectedCategoryName})</b>
+          </h3>
           <CFormInput
             type="text"
             id="search"
