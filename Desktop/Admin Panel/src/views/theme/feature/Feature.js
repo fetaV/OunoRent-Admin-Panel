@@ -16,8 +16,8 @@ import {
   CFormInput,
   CFormSwitch,
   CFormSelect,
-  CRow,
-  CCol,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -36,6 +36,10 @@ function Feature() {
   const [visible2, setVisible2] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredFeature, setFilteredFeature] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
   const [editfeatureData, setEditfeatureData] = useState({
     featureId: '',
     subCategoryId: '',
@@ -48,6 +52,19 @@ function Feature() {
     date: '',
     isActive: false,
   })
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = features
+      .filter(
+        (feature) =>
+          (feature.featureName || '').toLowerCase().includes(lowercasedQuery) ||
+          (feature.featureType || '').toLowerCase().includes(lowercasedQuery),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+
+    setFilteredFeature(filteredData)
+  }, [searchQuery, features])
 
   const handleSubmit = async (e) => {
     console.log({ featureName, featureType, subCategoryId: selectedCategoryId })
@@ -222,11 +239,16 @@ function Feature() {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredFeature.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredFeature.length / itemsPerPage)
+
   return (
     <>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
-        Yeni feature Ekle
+        Yeni Özellik Ekle
       </CButton>
 
       <CModal
@@ -235,7 +257,7 @@ function Feature() {
         aria-labelledby="LiveDemoExampleLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni feature Ekle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel">Yeni Özellik Ekle</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -310,7 +332,7 @@ function Feature() {
         aria-labelledby="LiveDemoExampleLabel2"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">feature Düzenle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel2">Özellik Düzenle</CModalTitle>
         </CModalHeader>
 
         <CModalBody>
@@ -325,7 +347,7 @@ function Feature() {
             <CFormInput
               type="text"
               id="featureType"
-              label="Ana Resim URL"
+              label="Özellik Tipi"
               value={featureType}
               onChange={(e) => setFeatureType(e.target.value)}
             />
@@ -377,14 +399,22 @@ function Feature() {
         </CModalFooter>
       </CModal>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Başlık
+              Özellik Adı
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Sıra Numarası
+              Özellik Tipi
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Durum
@@ -395,7 +425,7 @@ function Feature() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {features.map((feature) => (
+          {currentItems.map((feature) => (
             <CTableRow key={feature.featureId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {feature.featureName}
@@ -404,7 +434,18 @@ function Feature() {
                 {feature.featureType}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {feature.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: feature.isActive ? '#d4edda' : '#f8d7da',
+                    color: feature.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${feature.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {feature.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -422,6 +463,25 @@ function Feature() {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }

@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -37,6 +39,19 @@ const Slider = () => {
   const [editSliderId, setEditSliderId] = useState(null)
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredSlider, setFilteredSlider] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = sliders
+      .filter((slider) => (slider.title || '').toLowerCase().includes(lowercasedQuery))
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+
+    setFilteredSlider(filteredData)
+  }, [searchQuery, sliders])
 
   const handleSubmit = async (e) => {
     const token = localStorage.getItem('token')
@@ -91,6 +106,7 @@ const Slider = () => {
         })
         console.log(response)
         setSliders(response.data)
+        setFilteredSlider(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -108,6 +124,7 @@ const Slider = () => {
         },
       })
       setSliders(sliders.filter((slider) => slider.sliderId !== sliderId))
+      setFilteredSlider(sliders.filter((slider) => slider.sliderId !== sliderId))
       toast.success('Slider başarıyla silindi!')
     } catch (error) {
       console.error(error.response.data)
@@ -144,7 +161,7 @@ const Slider = () => {
     formData.append('duration', duration)
     formData.append('activeFrom', formatToUTC(activeFrom))
     formData.append('activeTo', formatToUTC(activeTo))
-    formData.append('isActive', isActive)
+    formData.append('IsActive', isActive)
     if (mainImage) {
       formData.append('mainImage', mainImage)
     }
@@ -174,6 +191,11 @@ const Slider = () => {
       }
     }
   }
+
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredSlider.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredSlider.length / itemsPerPage)
 
   return (
     <>
@@ -227,7 +249,7 @@ const Slider = () => {
             <CFormInput
               type="number"
               id="duration"
-              label="Süre"
+              label="Süre(sn)"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
             />
@@ -342,7 +364,7 @@ const Slider = () => {
             <CFormInput
               type="number"
               id="duration"
-              label="Süre"
+              label="Süre(sn)"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
             />
@@ -378,6 +400,14 @@ const Slider = () => {
         </CModalFooter>
       </CModal>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -394,7 +424,7 @@ const Slider = () => {
               Bitiş Tarihi
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Ekranda Durma Süresi
+              Ekranda Durma Süresi(sn)
             </CTableHeaderCell>
             <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               Web Resim
@@ -411,7 +441,7 @@ const Slider = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {sliders.map((slider) => {
+          {currentItems.map((slider) => {
             const activeFrom = new Date(slider.activeFrom).toLocaleDateString('tr-TR', {
               day: '2-digit',
               month: 'long',
@@ -463,7 +493,18 @@ const Slider = () => {
                   </div>
                 </CTableDataCell>
                 <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  {slider.isActive ? 'Aktif' : 'Pasif'}
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      backgroundColor: slider.isActive ? '#d4edda' : '#f8d7da',
+                      color: slider.isActive ? '#155724' : '#721c24',
+                      border: `1px solid ${slider.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    }}
+                  >
+                    {slider.isActive ? 'Aktif' : 'Pasif'}
+                  </div>
                 </CTableDataCell>
 
                 <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
@@ -483,6 +524,25 @@ const Slider = () => {
           })}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }

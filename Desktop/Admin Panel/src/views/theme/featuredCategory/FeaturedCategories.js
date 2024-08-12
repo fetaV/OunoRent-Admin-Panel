@@ -42,9 +42,10 @@ const FeaturedCategories = () => {
     const lowercasedQuery = searchQuery.toLowerCase()
     const filteredData = featuredCategories
       .filter((featuredCategory) =>
-        featuredCategory.getCategoryResponse.name?.toLowerCase().includes(lowercasedQuery),
+        (featuredCategory.getCategoryResponse?.name || '').toLowerCase().includes(lowercasedQuery),
       )
       .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+
     setFilteredFeaturedCategories(filteredData)
   }, [searchQuery, featuredCategories])
 
@@ -62,6 +63,7 @@ const FeaturedCategories = () => {
         isActive,
       })
       setFeaturedCategories([...featuredCategories, response.data])
+      setFilteredFeaturedCategories([...featuredCategories, response.data])
       toast.success('Başarıyla Kayıt İşlemi Gerçekleşti!')
       setInterval(() => {
         window.location.reload()
