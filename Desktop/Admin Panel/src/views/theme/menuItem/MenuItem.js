@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -33,6 +35,18 @@ const MenuItems = () => {
     isActive: false,
   })
   const [visible, setVisible] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredMenuItem, setFilteredMenuItem] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = menuItems
+      .filter((menuItem) => menuItem.label?.toLowerCase().includes(lowercasedQuery))
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredMenuItem(filteredData)
+  }, [searchQuery, menuItems])
 
   useEffect(() => {
     fetchMenuItems()
@@ -44,6 +58,7 @@ const MenuItems = () => {
       const response = await axios.get(`${API_BASE_URL}/menuItem`)
       console.log('getMenuItems response:', response.data)
       setMenuItems(response.data)
+      setFilteredMenuItem(response.data)
     } catch (error) {
       console.error('getMenuItems error:', error)
       toast.error('Failed to fetch menu items')
@@ -102,12 +117,25 @@ const MenuItems = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredMenuItem.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredMenuItem.length / itemsPerPage)
+
   return (
     <div>
       <ToastContainer />
       <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
         Yeni Menü Ekle
       </CButton>
+
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       <CTable>
         <CTableHead>
@@ -133,7 +161,7 @@ const MenuItems = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {menuItems.map((item) => (
+          {currentItems.map((item) => (
             <CTableRow key={item.menuItemId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.label}
@@ -145,10 +173,32 @@ const MenuItems = () => {
                 {item.targetUrl}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
+                    color: item.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.onlyToMembers ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: item.onlyToMembers ? '#d4edda' : '#f8d7da',
+                    color: item.onlyToMembers ? '#155724' : '#721c24',
+                    border: `1px solid ${item.onlyToMembers ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {item.onlyToMembers ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -172,6 +222,25 @@ const MenuItems = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>

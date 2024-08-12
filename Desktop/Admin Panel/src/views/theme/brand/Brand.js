@@ -33,7 +33,6 @@ const Brand = () => {
     isActive: false,
   })
   const [visible, setVisible] = useState(false)
-  const [isActive, setIsActive] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredBrand, setFilteredBrand] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
