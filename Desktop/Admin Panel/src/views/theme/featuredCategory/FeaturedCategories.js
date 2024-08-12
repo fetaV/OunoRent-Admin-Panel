@@ -16,6 +16,8 @@ import {
   CFormInput,
   CFormSelect,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -31,6 +33,20 @@ const FeaturedCategories = () => {
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
   const [isActive, setIsActive] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredFeaturedCategories, setFilteredFeaturedCategories] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = featuredCategories
+      .filter((featuredCategory) =>
+        featuredCategory.getCategoryResponse.name?.toLowerCase().includes(lowercasedQuery),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredFeaturedCategories(filteredData)
+  }, [searchQuery, featuredCategories])
 
   const newCategory = async (e) => {
     console.log('Sending request with data:', {
@@ -73,6 +89,7 @@ const FeaturedCategories = () => {
         })
         console.log('categoryyy', response)
         setCategories(response.data)
+        setFilteredFeaturedCategories(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -176,6 +193,11 @@ const FeaturedCategories = () => {
     }
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredFeaturedCategories.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredFeaturedCategories.length / itemsPerPage)
+
   return (
     <>
       <ToastContainer />
@@ -274,6 +296,14 @@ const FeaturedCategories = () => {
         </CModalFooter>
       </CModal>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -289,13 +319,24 @@ const FeaturedCategories = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {featuredCategories.map((featuredCategory, index) => (
+          {currentItems.map((featuredCategory, index) => (
             <CTableRow key={index}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {featuredCategory.getCategoryResponse?.name}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {featuredCategory.isActive ? 'Aktif' : 'Pasif'}
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    backgroundColor: featuredCategory.isActive ? '#d4edda' : '#f8d7da',
+                    color: featuredCategory.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${featuredCategory.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  {featuredCategory.isActive ? 'Aktif' : 'Pasif'}
+                </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 <CButton
@@ -317,6 +358,25 @@ const FeaturedCategories = () => {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }
