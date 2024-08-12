@@ -72,7 +72,7 @@ function WarehouseConnection() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/warehouseConnection`, formData, {
+      await axios.post(`${API_BASE_URL}/warehouse/warehouseConnection`, formData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -95,7 +95,7 @@ function WarehouseConnection() {
     const fetchwarehouseConnection = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${API_BASE_URL}/warehouseConnection`, {
+        const response = await axios.get(`${API_BASE_URL}/warehouse/warehouseConnection`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -162,7 +162,7 @@ function WarehouseConnection() {
   const handleDelete = async (warehouseConnectionId) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`${API_BASE_URL}/warehouseConnection/${warehouseConnectionId}`, {
+      await axios.delete(`${API_BASE_URL}/warehouse/warehouseConnection/${warehouseConnectionId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -183,7 +183,7 @@ function WarehouseConnection() {
   const handleEditModalOpen = async (warehouseConnectionId) => {
     const token = localStorage.getItem('token')
     const response = await axios.get(
-      `${API_BASE_URL}/warehouseConnection/${warehouseConnectionId}`,
+      `${API_BASE_URL}/warehouse/warehouseConnection/${warehouseConnectionId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -211,12 +211,16 @@ function WarehouseConnection() {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.put(`${API_BASE_URL}/warehouseConnection/${warehouseConnectionId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      await axios.put(
+        `${API_BASE_URL}/warehouse/warehouseConnection/${warehouseConnectionId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      })
+      )
       toast.success('warehouseConnection başarıyla güncellendi!')
       setInterval(() => {
         window.location.reload()

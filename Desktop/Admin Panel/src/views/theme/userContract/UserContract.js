@@ -15,6 +15,8 @@ import {
   CForm,
   CFormInput,
   CFormSwitch,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -40,25 +42,28 @@ function UserContract() {
     date: '',
     isActive: false,
   })
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredUserContract, setFilteredUserContract] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      await axios.post(`${API_BASE_URL}/userContract`, {
-        userContractName,
-        userContractType,
-        isActive,
-      })
-      toast.success('userContract başarıyla eklendi!')
-      setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible(false)
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to add Slider')
-    }
-  }
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+    const filteredData = userContracts
+      .filter(
+        (userContract) =>
+          (userContract.fileName &&
+            userContract.fileName.toLowerCase().includes(lowercasedQuery)) ||
+          (userContract.user.name &&
+            userContract.user.name.toLowerCase().includes(lowercasedQuery)) ||
+          (userContract.contract.name &&
+            userContract.contract.name.toLowerCase().includes(lowercasedQuery)) ||
+          (userContract.contract.version &&
+            userContract.contract.version.toString().toLowerCase().includes(lowercasedQuery)),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+    setFilteredUserContract(filteredData)
+  }, [searchQuery, userContracts])
 
   useEffect(() => {
     const fetchuserContracts = async () => {
@@ -71,6 +76,7 @@ function UserContract() {
         })
         console.log(response.data)
         setUserContracts(response.data)
+        setFilteredUserContract(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -88,6 +94,9 @@ function UserContract() {
         },
       })
       setUserContracts(
+        userContracts.filter((userContract) => userContract.userContractId !== userContractId),
+      )
+      setFilteredUserContract(
         userContracts.filter((userContract) => userContract.userContractId !== userContractId),
       )
       toast.success('userContract başarıyla silindi!')
@@ -113,6 +122,11 @@ function UserContract() {
     setIsActive(userContractData.isActive || false)
     setVisible(true)
   }
+
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredUserContract.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredUserContract.length / itemsPerPage)
 
   return (
     <>
@@ -194,6 +208,14 @@ function UserContract() {
         </CModalFooter>
       </CModal>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -215,7 +237,7 @@ function UserContract() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {userContracts.map((userContract) => (
+          {currentItems.map((userContract) => (
             <CTableRow key={userContract.userContractId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {userContract.contract.name}
@@ -248,6 +270,25 @@ function UserContract() {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }
