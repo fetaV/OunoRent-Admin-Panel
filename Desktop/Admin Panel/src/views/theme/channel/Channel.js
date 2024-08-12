@@ -275,12 +275,21 @@ const Channel = () => {
               onChange={(e) => setLogoFile(e.target.files[0])}
             />
             <CFormSwitch
-              label="Durum"
+              id="isActive"
+              label={
+                currentChannel
+                  ? currentChannel.isActive
+                    ? 'Aktif'
+                    : 'Pasif'
+                  : newChannel.isActive
+                    ? 'Aktif'
+                    : 'Pasif'
+              }
               checked={currentChannel ? currentChannel.isActive : newChannel.isActive}
               onChange={(e) =>
                 currentChannel
                   ? setCurrentChannel({ ...currentChannel, isActive: e.target.checked })
-                  : setNewChannel({ ...newChannel, isActive: e.target.checked })
+                  : setNewChannel({ ...newBrand, isActive: e.target.checked })
               }
             />
           </CForm>

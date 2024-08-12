@@ -173,6 +173,7 @@ const Categories = () => {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log(response.data)
         setCategories(response.data)
         setFilteredCategories(response.data)
       } catch (error) {
@@ -245,6 +246,7 @@ const Categories = () => {
       formData.append('description', description)
       formData.append('icon', icon)
       formData.append('orderNumber', orderNumber)
+      formData.append('isActive', isActive)
 
       await axios.put(
         `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`,
@@ -289,6 +291,7 @@ const Categories = () => {
       setOrderNumber(categoryToEdit.orderNumber)
       setImageHorizontal(categoryToEdit.imageHorizontal)
       setImageSquare(categoryToEdit.imageSquare)
+      setIsActive(categoryToEdit.isActive)
       setVisible2(true)
     } catch (error) {
       console.error(error)
@@ -343,13 +346,14 @@ const Categories = () => {
           },
         },
       )
-
+      console.log(response)
       const subCategoryToEdit = response.data
       setEditSubCategoryId(subCategoryId)
       setName(subCategoryToEdit.name || '')
       setDescription(subCategoryToEdit.description || '')
       setIcon(subCategoryToEdit.icon || '')
       setOrderNumber(subCategoryToEdit.orderNumber || '')
+      setIsActive(subCategoryToEdit.isActive || '')
       setVisible3(true)
     } catch (error) {
       console.error(error)
@@ -763,12 +767,12 @@ const Categories = () => {
                     display: 'inline-block',
                     padding: '5px 10px',
                     borderRadius: '8px',
-                    backgroundColor: categories.isActive ? '#f8d7da' : '#d4edda',
-                    color: categories.isActive ? '#721c24' : '#155724',
-                    border: `1px solid ${categories.isActive ? '#f5c6cb' : '#c3e6cb'}`,
+                    backgroundColor: category.isActive ? '#d4edda' : '#f8d7da',
+                    color: category.isActive ? '#155724' : '#721c24',
+                    border: `1px solid ${category.isActive ? '#c3e6cb' : '#f5c6cb'}`,
                   }}
                 >
-                  {categories.isActive ? 'Pasif' : 'Aktif'}
+                  {category.isActive ? 'Aktif' : 'Pasif'}
                 </div>
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
@@ -878,12 +882,12 @@ const Categories = () => {
                         display: 'inline-block',
                         padding: '5px 10px',
                         borderRadius: '8px',
-                        backgroundColor: subCategories.isActive ? '#f8d7da' : '#d4edda',
-                        color: subCategories.isActive ? '#721c24' : '#155724',
-                        border: `1px solid ${subCategories.isActive ? '#f5c6cb' : '#c3e6cb'}`,
+                        backgroundColor: subCategory.isActive ? '#d4edda' : '#f8d7da',
+                        color: subCategory.isActive ? '#155724' : '#721c24',
+                        border: `1px solid ${subCategory.isActive ? '#c3e6cb' : '#f5c6cb'}`,
                       }}
                     >
-                      {subCategories.isActive ? 'Pasif' : 'Aktif'}
+                      {subCategory.isActive ? 'Aktif' : 'Pasif'}
                     </div>
                   </CTableDataCell>
                   <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
