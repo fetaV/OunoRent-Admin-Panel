@@ -16,9 +16,10 @@ import {
   CFormInput,
   CFormSwitch,
   CFormSelect,
-  CFormTextarea,
   CRow,
   CCol,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -57,6 +58,25 @@ function Blog() {
     date: '',
     isActive: false,
   })
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filteredBlog, setFilteredBlog] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase()
+
+    const filteredData = blogs
+      .filter(
+        (blog) =>
+          blog.title?.toLowerCase().includes(lowercasedQuery) ||
+          blog.tags?.toLowerCase().includes(lowercasedQuery) ||
+          blog.subCategoryName?.toLowerCase().includes(lowercasedQuery),
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+
+    setFilteredBlog(filteredData)
+  }, [searchQuery, blogs])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -119,6 +139,7 @@ function Blog() {
         })
         console.log(response.data)
         setBlogs(response.data)
+        setFilteredBlog(response.data)
       } catch (error) {
         console.error(error)
       }
@@ -190,6 +211,7 @@ function Blog() {
         },
       })
       setBlogs(blogs.filter((blog) => blog.blogId !== blogId))
+      setFilteredBlog(blogs.filter((blog) => blog.blogId !== blogId))
       toast.success('Blog başarıyla silindi!')
     } catch (error) {
       console.error(error.response.data)
@@ -258,6 +280,11 @@ function Blog() {
       }
     }
   }
+
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredBlog.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredBlog.length / itemsPerPage)
 
   return (
     <>
@@ -500,6 +527,14 @@ function Blog() {
         </CModalFooter>
       </CModal>
 
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -533,7 +568,7 @@ function Blog() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {blogs.map((blog) => (
+          {currentItems.map((blog) => (
             <CTableRow key={blog.blogId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {blog.title}
@@ -604,6 +639,25 @@ function Blog() {
           ))}
         </CTableBody>
       </CTable>
+
+      <CPagination
+        aria-label="Page navigation"
+        className="mt-3 btn border-0"
+        align="center"
+        items={totalPages}
+        active={currentPage}
+        onChange={(page) => setCurrentPage(page)}
+      >
+        {[...Array(totalPages).keys()].map((page) => (
+          <CPaginationItem
+            key={page + 1}
+            active={page + 1 === currentPage}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </CPaginationItem>
+        ))}
+      </CPagination>
     </>
   )
 }

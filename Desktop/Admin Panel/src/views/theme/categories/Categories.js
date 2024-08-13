@@ -51,7 +51,7 @@ const Categories = () => {
   const [isActive, setIsActive] = useState(false)
   const [currentPageCategories, setCurrentPageCategories] = useState(1)
   const [currentPageSubCategories, setCurrentPageSubCategories] = useState(1)
-  const itemsPerPage = 5
+  const itemsPerPage = 10
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase()
