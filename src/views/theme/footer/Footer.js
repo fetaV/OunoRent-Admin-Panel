@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -17,108 +19,126 @@ import {
   CFormSwitch,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 
 const Footer = () => {
-  const [footer, setFooter] = useState([])
-  const [currentFooter, setCurrentFooter] = useState(null)
+  const [footer, setFooter] = useState([]);
+  const [currentFooter, setCurrentFooter] = useState(null);
   const [newFooter, setNewFooter] = useState({
-    label: '',
-    targetUrl: '',
+    label: "",
+    targetUrl: "",
     orderNumber: 0,
     onlyToMembers: false,
     isActive: false,
-  })
-  const [visible, setVisible] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredFooter, setFilteredFooter] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  });
+  const [visible, setVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredFooter, setFilteredFooter] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchFooter()
-  }, [])
+    fetchFooter();
+  }, []);
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
+    const lowercasedQuery = searchQuery.toLowerCase();
     const filteredData = footer
       .filter(
         (footer) =>
-          (footer.label && footer.label.toLowerCase().includes(lowercasedQuery)) ||
-          (footer.targetUrl && footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
-          (footer.column && footer.column.toString().toLowerCase().includes(lowercasedQuery)) ||
+          (footer.label &&
+            footer.label.toLowerCase().includes(lowercasedQuery)) ||
+          (footer.targetUrl &&
+            footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
+          (footer.column &&
+            footer.column.toString().toLowerCase().includes(lowercasedQuery)) ||
           (footer.orderNumber &&
-            footer.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
+            footer.orderNumber
+              .toString()
+              .toLowerCase()
+              .includes(lowercasedQuery))
       )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-    setFilteredFooter(filteredData)
-  }, [searchQuery, footer])
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
+    setFilteredFooter(filteredData);
+  }, [searchQuery, footer]);
 
   const fetchFooter = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/footerItem`)
-      console.log('getfooter response:', response.data)
-      setFooter(response.data)
+      const response = await axios.get(`${API_BASE_URL}/footerItem`);
+      console.log("getfooter response:", response.data);
+      setFooter(response.data);
     } catch (error) {
-      console.error('getfooter error:', error)
-      toast.error('Failed to fetch menu items')
+      console.error("getfooter error:", error);
+      toast.error("Failed to fetch menu items");
     }
-  }
+  };
 
   const handleCreateFooter = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/footerItem`, newFooter)
-      console.log('createFooter response:', response.data)
-      toast.success('Menu item created successfully')
+      const response = await axios.post(
+        `${API_BASE_URL}/footerItem`,
+        newFooter
+      );
+      console.log("createFooter response:", response.data);
+      toast.success("Menu item created successfully");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      fetchFooter()
-      setVisible(false)
+        window.location.reload();
+      }, 500);
+      fetchFooter();
+      setVisible(false);
     } catch (error) {
-      console.error('createFooter error:', error)
-      toast.error('Failed to create menu item')
+      console.error("createFooter error:", error);
+      toast.error("Failed to create menu item");
     }
-  }
+  };
 
   const handleUpdateFooter = async (FooterId) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/footerItem/${FooterId}`, currentFooter)
-      console.log('updateFooter response:', response.data)
-      toast.success('Menu item updated successfully')
-      fetchFooter()
-      setVisible(false)
+      const response = await axios.put(
+        `${API_BASE_URL}/footerItem/${FooterId}`,
+        currentFooter
+      );
+      console.log("updateFooter response:", response.data);
+      toast.success("Menu item updated successfully");
+      fetchFooter();
+      setVisible(false);
     } catch (error) {
-      console.error('updateFooter error:', error)
-      toast.error('Failed to update menu item')
+      console.error("updateFooter error:", error);
+      toast.error("Failed to update menu item");
     }
-  }
+  };
 
   const handleDeleteFooter = async (FooterId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/footerItem/${FooterId}`)
-      console.log('deleteFooter response:', response.data)
-      toast.success('Menu item deleted successfully')
-      fetchFooter()
+      const response = await axios.delete(
+        `${API_BASE_URL}/footerItem/${FooterId}`
+      );
+      console.log("deleteFooter response:", response.data);
+      toast.success("Menu item deleted successfully");
+      fetchFooter();
     } catch (error) {
-      console.error('deleteFooter error:', error)
-      toast.error('Failed to delete menu item')
+      console.error("deleteFooter error:", error);
+      toast.error("Failed to delete menu item");
     }
-  }
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredFooter.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredFooter.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredFooter.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredFooter.length / itemsPerPage);
 
   return (
     <div>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
+      <CButton
+        color="primary"
+        className="mb-3"
+        onClick={() => setVisible(true)}
+      >
         Yeni Footer Ekle
       </CButton>
       <CFormInput
@@ -132,22 +152,34 @@ const Footer = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Menü Başlığı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Sıra Numarası
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Sütun
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Hedef URL
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Durum
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -155,48 +187,60 @@ const Footer = () => {
         <CTableBody>
           {currentItems.map((item) => (
             <CTableRow key={item.footerItemId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.label}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.orderNumber}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.column}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.targetUrl}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <div
                   style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
-                    color: item.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
+                    color: item.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                   }}
                 >
-                  {item.isActive ? 'Aktif' : 'Pasif'}
+                  {item.isActive ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CButton
                   color="primary text-white"
                   className="me-2"
                   onClick={() => {
-                    setCurrentFooter(item)
-                    setVisible(true)
+                    setCurrentFooter(item);
+                    setVisible(true);
                   }}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   onClick={() => handleDeleteFooter(item.footerItemId)}
                 >
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -225,7 +269,9 @@ const Footer = () => {
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
-          <CModalTitle>{currentFooter ? 'Edit Menu Item' : 'Create Menu Item'}</CModalTitle>
+          <CModalTitle>
+            {currentFooter ? "Edit Menu Item" : "Create Menu Item"}
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -237,7 +283,10 @@ const Footer = () => {
               value={currentFooter ? currentFooter.label : newFooter.label}
               onChange={(e) =>
                 currentFooter
-                  ? setCurrentFooter({ ...currentFooter, label: e.target.value })
+                  ? setCurrentFooter({
+                      ...currentFooter,
+                      label: e.target.value,
+                    })
                   : setNewFooter({ ...newFooter, label: e.target.value })
               }
             />
@@ -246,10 +295,17 @@ const Footer = () => {
               className="mb-3"
               placeholder="Order Number"
               label="Sıra Numarası"
-              value={currentFooter ? currentFooter.orderNumber : newFooter.orderNumber}
+              value={
+                currentFooter
+                  ? currentFooter.orderNumber
+                  : newFooter.orderNumber
+              }
               onChange={(e) =>
                 currentFooter
-                  ? setCurrentFooter({ ...currentFooter, orderNumber: +e.target.value })
+                  ? setCurrentFooter({
+                      ...currentFooter,
+                      orderNumber: +e.target.value,
+                    })
                   : setNewFooter({ ...newFooter, orderNumber: +e.target.value })
               }
             />
@@ -261,7 +317,10 @@ const Footer = () => {
               value={currentFooter ? currentFooter.column : newFooter.column}
               onChange={(e) =>
                 currentFooter
-                  ? setCurrentFooter({ ...currentFooter, column: +e.target.value })
+                  ? setCurrentFooter({
+                      ...currentFooter,
+                      column: +e.target.value,
+                    })
                   : setNewFooter({ ...newFooter, column: +e.target.value })
               }
             />
@@ -270,10 +329,15 @@ const Footer = () => {
               className="mb-3"
               placeholder="Target URL"
               label="Hedef URL"
-              value={currentFooter ? currentFooter.targetUrl : newFooter.targetUrl}
+              value={
+                currentFooter ? currentFooter.targetUrl : newFooter.targetUrl
+              }
               onChange={(e) =>
                 currentFooter
-                  ? setCurrentFooter({ ...currentFooter, targetUrl: e.target.value })
+                  ? setCurrentFooter({
+                      ...currentFooter,
+                      targetUrl: e.target.value,
+                    })
                   : setNewFooter({ ...newFooter, targetUrl: e.target.value })
               }
             />
@@ -283,18 +347,26 @@ const Footer = () => {
               label={
                 currentFooter
                   ? currentFooter.isActive
-                    ? 'Aktif'
-                    : 'Pasif'
+                    ? "Aktif"
+                    : "Pasif"
                   : newFooter.isActive
-                    ? 'Aktif'
-                    : 'Pasif'
+                    ? "Aktif"
+                    : "Pasif"
               }
               className="mb-3"
-              checked={currentFooter ? currentFooter.isActive : newFooter.isActive}
+              checked={
+                currentFooter ? currentFooter.isActive : newFooter.isActive
+              }
               onChange={() =>
                 currentFooter
-                  ? setCurrentFooter({ ...currentFooter, isActive: !currentFooter.isActive })
-                  : setNewFooter({ ...newFooter, isActive: !newFooter.isActive })
+                  ? setCurrentFooter({
+                      ...currentFooter,
+                      isActive: !currentFooter.isActive,
+                    })
+                  : setNewFooter({
+                      ...newFooter,
+                      isActive: !newFooter.isActive,
+                    })
               }
             />
           </CForm>
@@ -306,15 +378,17 @@ const Footer = () => {
           <CButton
             color="primary"
             onClick={() =>
-              currentFooter ? handleUpdateFooter(currentFooter.footerItemId) : handleCreateFooter()
+              currentFooter
+                ? handleUpdateFooter(currentFooter.footerItemId)
+                : handleCreateFooter()
             }
           >
-            {currentFooter ? 'Save Changes' : 'Create'}
+            {currentFooter ? "Save Changes" : "Create"}
           </CButton>
         </CModalFooter>
       </CModal>
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

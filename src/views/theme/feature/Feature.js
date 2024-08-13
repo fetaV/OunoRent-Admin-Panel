@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -18,57 +20,61 @@ import {
   CFormSelect,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 
 function Feature() {
-  const [features, setFeatures] = useState([])
-  const [featureName, setFeatureName] = useState('')
-  const [featureType, setFeatureType] = useState('')
-  const [isActive, setIsActive] = useState(false)
-  const [editFeatureId, setEditFeatureId] = useState(null)
-  const [categories, setCategories] = useState([])
-  const [subCategories, setSubCategories] = useState([])
-  const [visible, setVisible] = useState(false)
-  const [visible2, setVisible2] = useState(false)
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredFeature, setFilteredFeature] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [features, setFeatures] = useState([]);
+  const [featureName, setFeatureName] = useState("");
+  const [featureType, setFeatureType] = useState("");
+  const [isActive, setIsActive] = useState(false);
+  const [editFeatureId, setEditFeatureId] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [visible2, setVisible2] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredFeature, setFilteredFeature] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [editfeatureData, setEditfeatureData] = useState({
-    featureId: '',
-    subCategoryId: '',
-    featureName: '',
-    largeImagegUrl: '',
-    smallImageUrl: '',
-    tags: '',
-    slug: '',
+    featureId: "",
+    subCategoryId: "",
+    featureName: "",
+    largeImagegUrl: "",
+    smallImageUrl: "",
+    tags: "",
+    slug: "",
     orderNumber: 0,
-    date: '',
+    date: "",
     isActive: false,
-  })
+  });
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
+    const lowercasedQuery = searchQuery.toLowerCase();
     const filteredData = features
       .filter(
         (feature) =>
-          (feature.featureName || '').toLowerCase().includes(lowercasedQuery) ||
-          (feature.featureType || '').toLowerCase().includes(lowercasedQuery),
+          (feature.featureName || "").toLowerCase().includes(lowercasedQuery) ||
+          (feature.featureType || "").toLowerCase().includes(lowercasedQuery)
       )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
 
-    setFilteredFeature(filteredData)
-  }, [searchQuery, features])
+    setFilteredFeature(filteredData);
+  }, [searchQuery, features]);
 
   const handleSubmit = async (e) => {
-    console.log({ featureName, featureType, subCategoryId: selectedCategoryId })
-    e.preventDefault()
+    console.log({
+      featureName,
+      featureType,
+      subCategoryId: selectedCategoryId,
+    });
+    e.preventDefault();
     try {
       await axios.post(`${API_BASE_URL}/feature`, {
         featureName,
@@ -76,126 +82,131 @@ function Feature() {
         categoryId: selectedCategoryId,
         subcategoryId: selectedSubCategoryId,
         isActive,
-      })
-      toast.success('feature başarıyla eklendi!')
+      });
+      toast.success("feature başarıyla eklendi!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible(false)
+        window.location.reload();
+      }, 500);
+      setVisible(false);
     } catch (error) {
-      console.error(error)
-      toast.error('Failed to add Slider')
+      console.error(error);
+      toast.error("Failed to add Slider");
     }
-  }
+  };
 
   useEffect(() => {
     const fetchfeatures = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/feature`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        console.log(response)
-        setFeatures(response.data)
+        });
+        console.log(response);
+        setFeatures(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
-    fetchfeatures()
-  }, [])
+    fetchfeatures();
+  }, []);
 
   const fetchCategories = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       const response = await axios.get(`${API_BASE_URL}/category`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      console.log('Categories:', response.data) / setCategories(response.data)
+      });
+      console.log("Categories:", response.data) / setCategories(response.data);
     } catch (error) {
       console.error(
-        'Error fetching categories:',
-        error.response ? error.response.data : error.message,
-      )
+        "Error fetching categories:",
+        error.response ? error.response.data : error.message
+      );
     }
-  }
+  };
 
   const fetchSubCategories = async (categoryId) => {
     try {
-      console.log('Fetching subcategories for categoryId:', categoryId)
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_BASE_URL}/category/${categoryId}/subcategory`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('Subcategories response:', response.data)
-      setSubCategories(response.data)
+      console.log("Fetching subcategories for categoryId:", categoryId);
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${API_BASE_URL}/category/${categoryId}/subcategory`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Subcategories response:", response.data);
+      setSubCategories(response.data);
     } catch (error) {
       console.error(
-        'Error fetching subcategories:',
-        error.response ? error.response.data : error.message,
-      )
+        "Error fetching subcategories:",
+        error.response ? error.response.data : error.message
+      );
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCategories()
+    fetchCategories();
     if (selectedCategoryId) {
-      fetchSubCategories(selectedCategoryId)
+      fetchSubCategories(selectedCategoryId);
     }
-  }, [selectedCategoryId])
+  }, [selectedCategoryId]);
 
   const handleCategoryChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedCategoryId(selectedId)
-    fetchSubCategories(selectedId)
-  }
+    const selectedId = event.target.value;
+    setSelectedCategoryId(selectedId);
+    fetchSubCategories(selectedId);
+  };
   const handleSubCategoryChange = (event) => {
-    const selectedId = event.target.value
-    setSelectedSubCategoryId(selectedId)
-    console.log(selectedId)
-  }
+    const selectedId = event.target.value;
+    setSelectedSubCategoryId(selectedId);
+    console.log(selectedId);
+  };
 
   const handleDelete = async (featureId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.delete(`${API_BASE_URL}/feature/${featureId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      setFeatures(features.filter((feature) => feature.featureId !== featureId))
-      toast.success('feature başarıyla silindi!')
+      });
+      setFeatures(
+        features.filter((feature) => feature.featureId !== featureId)
+      );
+      toast.success("feature başarıyla silindi!");
     } catch (error) {
-      console.error(error.response.data)
-      toast.error('feature silinirken bir hata oluştu!')
+      console.error(error.response.data);
+      toast.error("feature silinirken bir hata oluştu!");
     }
-  }
+  };
 
   const handleEditModalOpen = async (featureId) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     const response = await axios.get(`${API_BASE_URL}/feature/${featureId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-    console.log('idfeature', response)
+    });
+    console.log("idfeature", response);
 
-    const featureData = response.data
-    setEditFeatureId(featureId)
-    setEditfeatureData(featureData)
-    setFeatureName(featureData.featureName || '')
-    setFeatureType(featureData.featureType || '')
-    setIsActive(featureData.isActive || false)
-    setSelectedSubCategoryId(featureData.subCategory.subCategoryId || '')
-    setSelectedCategoryId(featureData.subCategory.categoryId || '')
-    setVisible2(true)
-  }
+    const featureData = response.data;
+    setEditFeatureId(featureId);
+    setEditfeatureData(featureData);
+    setFeatureName(featureData.featureName || "");
+    setFeatureType(featureData.featureType || "");
+    setIsActive(featureData.isActive || false);
+    setSelectedSubCategoryId(featureData.subCategory.subCategoryId || "");
+    setSelectedCategoryId(featureData.subCategory.categoryId || "");
+    setVisible2(true);
+  };
 
   const handleEdit = async (featureId) => {
     console.log({
@@ -205,9 +216,9 @@ function Feature() {
       featureName,
       featureType,
       isActive,
-    })
+    });
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.put(
         `${API_BASE_URL}/feature/${featureId}`,
         {
@@ -222,32 +233,38 @@ function Feature() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
-      )
-      toast.success('Feature başarıyla güncellendi!')
+        }
+      );
+      toast.success("Feature başarıyla güncellendi!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible2(false)
+        window.location.reload();
+      }, 500);
+      setVisible2(false);
     } catch (error) {
-      console.error('Error response:', error.response)
+      console.error("Error response:", error.response);
       if (error.response && error.response.status === 409) {
-        toast.error('Çakışma: Feature ID zaten mevcut veya veri çakışması yaşandı.')
+        toast.error(
+          "Çakışma: Feature ID zaten mevcut veya veri çakışması yaşandı."
+        );
       } else {
-        toast.error('Feature güncellenirken hata oluştu.')
+        toast.error("Feature güncellenirken hata oluştu.");
       }
     }
-  }
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredFeature.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredFeature.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredFeature.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredFeature.length / itemsPerPage);
 
   return (
     <>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
+      <CButton
+        color="primary"
+        className="mb-3"
+        onClick={() => setVisible(true)}
+      >
         Yeni Özellik Ekle
       </CButton>
 
@@ -301,7 +318,10 @@ function Feature() {
             >
               <option value="">Lütfen Önce Kategori Seçiniz</option>
               {subCategories.map((subCategory) => (
-                <option key={subCategory.subCategoryId} value={subCategory.subCategoryId}>
+                <option
+                  key={subCategory.subCategoryId}
+                  value={subCategory.subCategoryId}
+                >
                   {subCategory.name}
                 </option>
               ))}
@@ -309,7 +329,7 @@ function Feature() {
 
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               className="mb-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -356,7 +376,7 @@ function Feature() {
               className="mb-3"
               aria-label="Select category"
               onChange={handleCategoryChange}
-              value={selectedCategoryId || ''} // Ensure value is set correctly
+              value={selectedCategoryId || ""} // Ensure value is set correctly
             >
               <option value="">Kategori Seçiniz</option>
               {categories.map((category) => (
@@ -371,11 +391,14 @@ function Feature() {
               className="mb-3"
               aria-label="Select subcategory"
               onChange={handleSubCategoryChange}
-              value={selectedSubCategoryId || ''} // Ensure value is set correctly
+              value={selectedSubCategoryId || ""} // Ensure value is set correctly
             >
               <option value="">Lütfen Önce Kategori Seçiniz</option>
               {subCategories.map((subCategory) => (
-                <option key={subCategory.subCategoryId} value={subCategory.subCategoryId}>
+                <option
+                  key={subCategory.subCategoryId}
+                  value={subCategory.subCategoryId}
+                >
                   {subCategory.name}
                 </option>
               ))}
@@ -383,7 +406,7 @@ function Feature() {
 
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -410,16 +433,24 @@ function Feature() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Özellik Adı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Özellik Tipi
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Durum
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -427,36 +458,47 @@ function Feature() {
         <CTableBody>
           {currentItems.map((feature) => (
             <CTableRow key={feature.featureId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {feature.featureName}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {feature.featureType}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <div
                   style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: feature.isActive ? '#d4edda' : '#f8d7da',
-                    color: feature.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${feature.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: feature.isActive ? "#d4edda" : "#f8d7da",
+                    color: feature.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${feature.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                   }}
                 >
-                  {feature.isActive ? 'Aktif' : 'Pasif'}
+                  {feature.isActive ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CButton
                   color="primary"
                   className="me-2"
                   onClick={() => handleEditModalOpen(feature.featureId)}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
-                <CButton color="danger text-white" onClick={() => handleDelete(feature.featureId)}>
-                  Sil
+                <CButton
+                  color="danger text-white"
+                  onClick={() => handleDelete(feature.featureId)}
+                >
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -483,7 +525,7 @@ function Feature() {
         ))}
       </CPagination>
     </>
-  )
+  );
 }
 
-export default Feature
+export default Feature;

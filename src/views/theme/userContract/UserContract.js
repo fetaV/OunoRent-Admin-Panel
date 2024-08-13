@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilNotes, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -17,116 +19,124 @@ import {
   CFormSwitch,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 
 function UserContract() {
-  const [userContracts, setUserContracts] = useState([])
-  const [userContractName, setUserContractName] = useState('')
-  const [userContractType, setUserContractType] = useState('')
-  const [isActive, setIsActive] = useState(false)
-  const [edituserContractId, setEditUserContractId] = useState(null)
-  const [visible, setVisible] = useState(false)
+  const [userContracts, setUserContracts] = useState([]);
+  const [userContractName, setUserContractName] = useState("");
+  const [userContractType, setUserContractType] = useState("");
+  const [edituserContractId, setEditUserContractId] = useState(null);
+  const [visible, setVisible] = useState(false);
   const [editUserContractData, setEditUserContractData] = useState({
-    userContractId: '',
-    subCategoryId: '',
-    userContractName: '',
-    largeImagegUrl: '',
-    smallImageUrl: '',
-    tags: '',
-    slug: '',
+    userContractId: "",
+    subCategoryId: "",
+    userContractName: "",
+    largeImagegUrl: "",
+    smallImageUrl: "",
+    tags: "",
+    slug: "",
     orderNumber: 0,
-    date: '',
-    isActive: false,
-  })
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredUserContract, setFilteredUserContract] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+    date: "",
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredUserContract, setFilteredUserContract] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = userContracts
-      .filter(
-        (userContract) =>
-          (userContract.fileName &&
-            userContract.fileName.toLowerCase().includes(lowercasedQuery)) ||
-          (userContract.user.name &&
-            userContract.user.name.toLowerCase().includes(lowercasedQuery)) ||
-          (userContract.contract.name &&
-            userContract.contract.name.toLowerCase().includes(lowercasedQuery)) ||
-          (userContract.contract.version &&
-            userContract.contract.version.toString().toLowerCase().includes(lowercasedQuery)),
-      )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-    setFilteredUserContract(filteredData)
-  }, [searchQuery, userContracts])
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const filteredData = userContracts.filter(
+      (userContract) =>
+        (userContract.fileName &&
+          userContract.fileName.toLowerCase().includes(lowercasedQuery)) ||
+        (userContract.user.name &&
+          userContract.user.name.toLowerCase().includes(lowercasedQuery)) ||
+        (userContract.contract.name &&
+          userContract.contract.name.toLowerCase().includes(lowercasedQuery)) ||
+        (userContract.contract.version &&
+          userContract.contract.version
+            .toString()
+            .toLowerCase()
+            .includes(lowercasedQuery))
+    );
+    setFilteredUserContract(filteredData);
+  }, [searchQuery, userContracts]);
 
   useEffect(() => {
     const fetchuserContracts = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/userContract`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        console.log(response.data)
-        setUserContracts(response.data)
-        setFilteredUserContract(response.data)
+        });
+        console.log(response.data);
+        setUserContracts(response.data);
+        setFilteredUserContract(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
-    fetchuserContracts()
-  }, [])
+    fetchuserContracts();
+  }, []);
 
   const handleDelete = async (userContractId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.delete(`${API_BASE_URL}/userContract/${userContractId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
       setUserContracts(
-        userContracts.filter((userContract) => userContract.userContractId !== userContractId),
-      )
+        userContracts.filter(
+          (userContract) => userContract.userContractId !== userContractId
+        )
+      );
       setFilteredUserContract(
-        userContracts.filter((userContract) => userContract.userContractId !== userContractId),
-      )
-      toast.success('userContract başarıyla silindi!')
+        userContracts.filter(
+          (userContract) => userContract.userContractId !== userContractId
+        )
+      );
+      toast.success("userContract başarıyla silindi!");
     } catch (error) {
-      console.error(error.response.data)
-      toast.error('userContract silinirken bir hata oluştu!')
+      console.error(error.response.data);
+      toast.error("userContract silinirken bir hata oluştu!");
     }
-  }
+  };
 
   const handleEditModalOpen = async (userContractId) => {
-    const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_BASE_URL}/userContract/${userContractId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    console.log(response)
-    const userContractData = response.data
-    setEditUserContractId(userContractId)
-    setEditUserContractData(userContractData)
-    setUserContractName(userContractData.userContractName || '')
-    setUserContractType(userContractData.userContractType || '')
-    setIsActive(userContractData.isActive || false)
-    setVisible(true)
-  }
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `${API_BASE_URL}/userContract/${userContractId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
+    const userContractData = response.data;
+    setEditUserContractId(userContractId);
+    setEditUserContractData(userContractData);
+    setUserContractName(userContractData.userContractName || "");
+    setUserContractType(userContractData.userContractType || "");
+    setVisible(true);
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredUserContract.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredUserContract.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUserContract.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredUserContract.length / itemsPerPage);
 
   return (
     <>
@@ -138,7 +148,9 @@ function UserContract() {
         aria-labelledby="LiveDemoExampleLabel2"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">User Contract Detayları</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel2">
+            User Contract Detayları
+          </CModalTitle>
         </CModalHeader>
 
         <CModalBody>
@@ -147,57 +159,50 @@ function UserContract() {
               type="text"
               id="fileName"
               label="Dosya Adı"
-              value={editUserContractData.fileName || ''}
+              value={editUserContractData.fileName || ""}
               readOnly
             />
             <CFormInput
               type="text"
               id="contractName"
               label="Kontrat Adı"
-              value={editUserContractData.contract?.name || ''}
+              value={editUserContractData.contract?.name || ""}
               readOnly
             />
             <CFormInput
               type="text"
               id="contractDetails"
               label="Kontrat İçeriği"
-              value={editUserContractData.contract?.body || ''}
+              value={editUserContractData.contract?.body || ""}
               readOnly
             />
             <CFormInput
               type="text"
               id="contractVersion"
               label="Kontrat Versiyonu"
-              value={editUserContractData.contract?.version || ''}
+              value={editUserContractData.contract?.version || ""}
               readOnly
             />
             <CFormInput
               type="text"
               id="userName"
               label="Kullanıcı Adı"
-              value={editUserContractData.user?.name || ''}
+              value={editUserContractData.user?.name || ""}
               readOnly
             />
             <CFormInput
               type="text"
               id="userEmail"
               label="Kullanıcı E-Posta"
-              value={editUserContractData.user?.email || ''}
+              value={editUserContractData.user?.email || ""}
               readOnly
             />
             <CFormInput
               type="text"
               id="userPhoneNumber"
               label="Kullanıcı Telefon Numarası"
-              value={editUserContractData.user?.phoneNumber || ''}
+              value={editUserContractData.user?.phoneNumber || ""}
               readOnly
-            />
-            <CFormSwitch
-              id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
-              checked={editUserContractData.isActive || false}
-              readOnly
-              disabled
             />
           </CForm>
         </CModalBody>
@@ -219,19 +224,29 @@ function UserContract() {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Kontrat Adı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Kontrat Versiyonu
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Kullanıcı Adı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Dosya Adı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -239,31 +254,43 @@ function UserContract() {
         <CTableBody>
           {currentItems.map((userContract) => (
             <CTableRow key={userContract.userContractId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {userContract.contract.name}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {userContract.contract.version}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {userContract.user.name}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {userContract.fileName}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CButton
                   color="primary"
                   className="me-2"
-                  onClick={() => handleEditModalOpen(userContract.userContractId)}
+                  onClick={() =>
+                    handleEditModalOpen(userContract.userContractId)
+                  }
                 >
-                  Düzenle
+                  <CIcon icon={cilNotes} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   onClick={() => handleDelete(userContract.userContractId)}
                 >
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -290,7 +317,7 @@ function UserContract() {
         ))}
       </CPagination>
     </>
-  )
+  );
 }
 
-export default UserContract
+export default UserContract;

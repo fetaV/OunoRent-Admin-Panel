@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -17,115 +19,132 @@ import {
   CFormSwitch,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 
 const MenuItems = () => {
-  const [menuItems, setMenuItems] = useState([])
-  const [activeMenuItems, setActiveMenuItems] = useState([])
-  const [currentMenuItem, setCurrentMenuItem] = useState(null)
+  const [menuItems, setMenuItems] = useState([]);
+  const [activeMenuItems, setActiveMenuItems] = useState([]);
+  const [currentMenuItem, setCurrentMenuItem] = useState(null);
   const [newMenuItem, setNewMenuItem] = useState({
-    label: '',
-    targetUrl: '',
+    label: "",
+    targetUrl: "",
     orderNumber: 0,
     onlyToMembers: false,
     isActive: false,
-  })
-  const [visible, setVisible] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredMenuItem, setFilteredMenuItem] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  });
+  const [visible, setVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredMenuItem, setFilteredMenuItem] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
+    const lowercasedQuery = searchQuery.toLowerCase();
     const filteredData = menuItems
-      .filter((menuItem) => menuItem.label?.toLowerCase().includes(lowercasedQuery))
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-    setFilteredMenuItem(filteredData)
-  }, [searchQuery, menuItems])
+      .filter((menuItem) =>
+        menuItem.label?.toLowerCase().includes(lowercasedQuery)
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
+    setFilteredMenuItem(filteredData);
+  }, [searchQuery, menuItems]);
 
   useEffect(() => {
-    fetchMenuItems()
-    fetchActiveMenuItems()
-  }, [])
+    fetchMenuItems();
+    fetchActiveMenuItems();
+  }, []);
 
   const fetchMenuItems = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/menuItem`)
-      console.log('getMenuItems response:', response.data)
-      setMenuItems(response.data)
-      setFilteredMenuItem(response.data)
+      const response = await axios.get(`${API_BASE_URL}/menuItem`);
+      console.log("getMenuItems response:", response.data);
+      setMenuItems(response.data);
+      setFilteredMenuItem(response.data);
     } catch (error) {
-      console.error('getMenuItems error:', error)
-      toast.error('Failed to fetch menu items')
+      console.error("getMenuItems error:", error);
+      toast.error("Failed to fetch menu items");
     }
-  }
+  };
 
   const fetchActiveMenuItems = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/menuItem/GetActive`)
-      console.log('getActiveMenuItems response:', response.data)
-      setActiveMenuItems(response.data)
+      const response = await axios.get(`${API_BASE_URL}/menuItem/GetActive`);
+      console.log("getActiveMenuItems response:", response.data);
+      setActiveMenuItems(response.data);
     } catch (error) {
-      console.error('getActiveMenuItems error:', error)
-      toast.error('Failed to fetch active menu items')
+      console.error("getActiveMenuItems error:", error);
+      toast.error("Failed to fetch active menu items");
     }
-  }
+  };
 
   const handleCreateMenuItem = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/menuItem`, newMenuItem)
-      console.log('createMenuItem response:', response.data)
-      toast.success('Menu item created successfully')
+      const response = await axios.post(
+        `${API_BASE_URL}/menuItem`,
+        newMenuItem
+      );
+      console.log("createMenuItem response:", response.data);
+      toast.success("Menu item created successfully");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      fetchMenuItems()
-      setVisible(false)
+        window.location.reload();
+      }, 500);
+      fetchMenuItems();
+      setVisible(false);
     } catch (error) {
-      console.error('createMenuItem error:', error)
-      toast.error('Failed to create menu item')
+      console.error("createMenuItem error:", error);
+      toast.error("Failed to create menu item");
     }
-  }
+  };
 
   const handleUpdateMenuItem = async (menuItemId) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/menuItem/${menuItemId}`, currentMenuItem)
-      console.log('updateMenuItem response:', response.data)
-      toast.success('Menu item updated successfully')
-      fetchMenuItems()
-      setVisible(false)
+      const response = await axios.put(
+        `${API_BASE_URL}/menuItem/${menuItemId}`,
+        currentMenuItem
+      );
+      console.log("updateMenuItem response:", response.data);
+      toast.success("Menu item updated successfully");
+      fetchMenuItems();
+      setVisible(false);
     } catch (error) {
-      console.error('updateMenuItem error:', error)
-      toast.error('Failed to update menu item')
+      console.error("updateMenuItem error:", error);
+      toast.error("Failed to update menu item");
     }
-  }
+  };
 
   const handleDeleteMenuItem = async (menuItemId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/menuItem/${menuItemId}`)
-      console.log('deleteMenuItem response:', response.data)
-      toast.success('Menu item deleted successfully')
-      fetchMenuItems()
+      const response = await axios.delete(
+        `${API_BASE_URL}/menuItem/${menuItemId}`
+      );
+      console.log("deleteMenuItem response:", response.data);
+      toast.success("Menu item deleted successfully");
+      fetchMenuItems();
     } catch (error) {
-      console.error('deleteMenuItem error:', error)
-      toast.error('Failed to delete menu item')
+      console.error("deleteMenuItem error:", error);
+      toast.error("Failed to delete menu item");
     }
-  }
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredMenuItem.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredMenuItem.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredMenuItem.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredMenuItem.length / itemsPerPage);
 
   return (
     <div>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
+      <CButton
+        color="primary"
+        className="mb-3"
+        onClick={() => setVisible(true)}
+      >
         Yeni Menü Ekle
       </CButton>
 
@@ -140,22 +159,34 @@ const MenuItems = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Menü Başlığı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Sıra Numarası
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Hedef URL
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Durum
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Kullanıcılara Özel
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -163,59 +194,71 @@ const MenuItems = () => {
         <CTableBody>
           {currentItems.map((item) => (
             <CTableRow key={item.menuItemId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.label}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.orderNumber}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {item.targetUrl}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <div
                   style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
-                    color: item.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
+                    color: item.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                   }}
                 >
-                  {item.isActive ? 'Aktif' : 'Pasif'}
+                  {item.isActive ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <div
                   style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: item.onlyToMembers ? '#d4edda' : '#f8d7da',
-                    color: item.onlyToMembers ? '#155724' : '#721c24',
-                    border: `1px solid ${item.onlyToMembers ? '#c3e6cb' : '#f5c6cb'}`,
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: item.onlyToMembers ? "#d4edda" : "#f8d7da",
+                    color: item.onlyToMembers ? "#155724" : "#721c24",
+                    border: `1px solid ${item.onlyToMembers ? "#c3e6cb" : "#f5c6cb"}`,
                   }}
                 >
-                  {item.onlyToMembers ? 'Aktif' : 'Pasif'}
+                  {item.onlyToMembers ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CButton
                   color="primary text-white"
                   className="me-2"
                   onClick={() => {
-                    setCurrentMenuItem(item)
-                    setVisible(true)
+                    setCurrentMenuItem(item);
+                    setVisible(true);
                   }}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   onClick={() => handleDeleteMenuItem(item.menuItemId)}
                 >
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -244,7 +287,9 @@ const MenuItems = () => {
 
       <CModal visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
-          <CModalTitle>{currentMenuItem ? 'Edit Menu Item' : 'Create Menu Item'}</CModalTitle>
+          <CModalTitle>
+            {currentMenuItem ? "Edit Menu Item" : "Create Menu Item"}
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
@@ -253,10 +298,15 @@ const MenuItems = () => {
               className="mb-3"
               placeholder="Label"
               label="Menü Başlığı"
-              value={currentMenuItem ? currentMenuItem.label : newMenuItem.label}
+              value={
+                currentMenuItem ? currentMenuItem.label : newMenuItem.label
+              }
               onChange={(e) =>
                 currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, label: e.target.value })
+                  ? setCurrentMenuItem({
+                      ...currentMenuItem,
+                      label: e.target.value,
+                    })
                   : setNewMenuItem({ ...newMenuItem, label: e.target.value })
               }
             />
@@ -265,11 +315,21 @@ const MenuItems = () => {
               className="mb-3"
               placeholder="Target URL"
               label="Hedef URL"
-              value={currentMenuItem ? currentMenuItem.targetUrl : newMenuItem.targetUrl}
+              value={
+                currentMenuItem
+                  ? currentMenuItem.targetUrl
+                  : newMenuItem.targetUrl
+              }
               onChange={(e) =>
                 currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, targetUrl: e.target.value })
-                  : setNewMenuItem({ ...newMenuItem, targetUrl: e.target.value })
+                  ? setCurrentMenuItem({
+                      ...currentMenuItem,
+                      targetUrl: e.target.value,
+                    })
+                  : setNewMenuItem({
+                      ...newMenuItem,
+                      targetUrl: e.target.value,
+                    })
               }
             />
             <CFormInput
@@ -277,29 +337,59 @@ const MenuItems = () => {
               className="mb-3"
               placeholder="Order Number"
               label="Sıra Numarası"
-              value={currentMenuItem ? currentMenuItem.orderNumber : newMenuItem.orderNumber}
+              value={
+                currentMenuItem
+                  ? currentMenuItem.orderNumber
+                  : newMenuItem.orderNumber
+              }
               onChange={(e) =>
                 currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, orderNumber: +e.target.value })
-                  : setNewMenuItem({ ...newMenuItem, orderNumber: +e.target.value })
+                  ? setCurrentMenuItem({
+                      ...currentMenuItem,
+                      orderNumber: +e.target.value,
+                    })
+                  : setNewMenuItem({
+                      ...newMenuItem,
+                      orderNumber: +e.target.value,
+                    })
               }
             />
             <CFormSwitch
               label="Durum"
-              checked={currentMenuItem ? currentMenuItem.isActive : newMenuItem.isActive}
+              checked={
+                currentMenuItem
+                  ? currentMenuItem.isActive
+                  : newMenuItem.isActive
+              }
               onChange={(e) =>
                 currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, isActive: e.target.checked })
-                  : setNewMenuItem({ ...newMenuItem, isActive: e.target.checked })
+                  ? setCurrentMenuItem({
+                      ...currentMenuItem,
+                      isActive: e.target.checked,
+                    })
+                  : setNewMenuItem({
+                      ...newMenuItem,
+                      isActive: e.target.checked,
+                    })
               }
             />
             <CFormSwitch
               label="Kullanıcılara Özel"
-              checked={currentMenuItem ? currentMenuItem.onlyToMembers : newMenuItem.onlyToMembers}
+              checked={
+                currentMenuItem
+                  ? currentMenuItem.onlyToMembers
+                  : newMenuItem.onlyToMembers
+              }
               onChange={(e) =>
                 currentMenuItem
-                  ? setCurrentMenuItem({ ...currentMenuItem, onlyToMembers: e.target.checked })
-                  : setNewMenuItem({ ...newMenuItem, onlyToMembers: e.target.checked })
+                  ? setCurrentMenuItem({
+                      ...currentMenuItem,
+                      onlyToMembers: e.target.checked,
+                    })
+                  : setNewMenuItem({
+                      ...newMenuItem,
+                      onlyToMembers: e.target.checked,
+                    })
               }
             />
           </CForm>
@@ -316,12 +406,12 @@ const MenuItems = () => {
                 : handleCreateMenuItem()
             }
           >
-            {currentMenuItem ? 'Save Changes' : 'Create'}
+            {currentMenuItem ? "Save Changes" : "Create"}
           </CButton>
         </CModalFooter>
       </CModal>
     </div>
-  )
-}
+  );
+};
 
-export default MenuItems
+export default MenuItems;

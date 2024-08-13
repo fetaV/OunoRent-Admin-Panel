@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -17,190 +19,197 @@ import {
   CFormSwitch,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
-
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 const Slider = () => {
-  const [sliders, setSliders] = useState([])
-  const [title, setTitle] = useState('')
-  const [mainImageUrl, setMainImageUrl] = useState('')
-  const [mobileImageUrl, setMobileImageUrl] = useState('')
-  const [targetUrl, setTargetUrl] = useState('')
-  const [orderNumber, setOrderNumber] = useState('')
-  const [duration, setDuration] = useState('')
-  const [activeFrom, setActiveFrom] = useState('')
-  const [activeTo, setActiveTo] = useState('')
-  const [isActive, setIsActive] = useState(false)
-  const [mainImage, setMainImage] = useState(null)
-  const [mobileImage, setMobileImage] = useState(null)
-  const [editSliderId, setEditSliderId] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const [visible2, setVisible2] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredSlider, setFilteredSlider] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [sliders, setSliders] = useState([]);
+  const [title, setTitle] = useState("");
+  const [mainImageUrl, setMainImageUrl] = useState("");
+  const [mobileImageUrl, setMobileImageUrl] = useState("");
+  const [targetUrl, setTargetUrl] = useState("");
+  const [orderNumber, setOrderNumber] = useState("");
+  const [duration, setDuration] = useState("");
+  const [activeFrom, setActiveFrom] = useState("");
+  const [activeTo, setActiveTo] = useState("");
+  const [isActive, setIsActive] = useState(false);
+  const [mainImage, setMainImage] = useState(null);
+  const [mobileImage, setMobileImage] = useState(null);
+  const [editSliderId, setEditSliderId] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [visible2, setVisible2] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredSlider, setFilteredSlider] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
+    const lowercasedQuery = searchQuery.toLowerCase();
     const filteredData = sliders
-      .filter((slider) => (slider.title || '').toLowerCase().includes(lowercasedQuery))
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+      .filter((slider) =>
+        (slider.title || "").toLowerCase().includes(lowercasedQuery)
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
 
-    setFilteredSlider(filteredData)
-  }, [searchQuery, sliders])
+    setFilteredSlider(filteredData);
+  }, [searchQuery, sliders]);
 
   const handleSubmit = async (e) => {
-    const token = localStorage.getItem('token')
-    e.preventDefault()
+    const token = localStorage.getItem("token");
+    e.preventDefault();
 
     const formatToUTC = (dateStr) => {
-      const date = new Date(dateStr)
-      return date.toISOString()
-    }
+      const date = new Date(dateStr);
+      return date.toISOString();
+    };
 
-    const formData = new FormData()
-    formData.append('title', title)
-    formData.append('targetUrl', targetUrl)
-    formData.append('orderNumber', orderNumber)
-    formData.append('duration', duration)
-    formData.append('activeFrom', formatToUTC(activeFrom))
-    formData.append('activeTo', formatToUTC(activeTo))
-    formData.append('isActive', isActive)
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("targetUrl", targetUrl);
+    formData.append("orderNumber", orderNumber);
+    formData.append("duration", duration);
+    formData.append("activeFrom", formatToUTC(activeFrom));
+    formData.append("activeTo", formatToUTC(activeTo));
+    formData.append("isActive", isActive);
     if (mainImage) {
-      formData.append('mainImage', mainImage)
+      formData.append("mainImage", mainImage);
     }
     if (mobileImage) {
-      formData.append('mobileImage', mobileImage)
+      formData.append("mobileImage", mobileImage);
     }
 
     try {
       await axios.post(`${API_BASE_URL}/Slider`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      })
-      toast.success('Slider successfully added!')
+      });
+      toast.success("Slider successfully added!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible(false)
+        window.location.reload();
+      }, 500);
+      setVisible(false);
     } catch (error) {
-      console.error(error)
-      toast.error('Failed to add slider')
+      console.error(error);
+      toast.error("Failed to add slider");
     }
-  }
+  };
 
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/Slider`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        console.log(response)
-        setSliders(response.data)
-        setFilteredSlider(response.data)
+        });
+        console.log(response);
+        setSliders(response.data);
+        setFilteredSlider(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
-    fetchSliders()
-  }, [])
+    fetchSliders();
+  }, []);
 
   const handleDelete = async (sliderId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.delete(`${API_BASE_URL}/slider/${sliderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      setSliders(sliders.filter((slider) => slider.sliderId !== sliderId))
-      setFilteredSlider(sliders.filter((slider) => slider.sliderId !== sliderId))
-      toast.success('Slider başarıyla silindi!')
+      });
+      setSliders(sliders.filter((slider) => slider.sliderId !== sliderId));
+      setFilteredSlider(
+        sliders.filter((slider) => slider.sliderId !== sliderId)
+      );
+      toast.success("Slider başarıyla silindi!");
     } catch (error) {
-      console.error(error.response.data)
-      toast.error('Slider silinirken bir hata oluştu!')
+      console.error(error.response.data);
+      toast.error("Slider silinirken bir hata oluştu!");
     }
-  }
+  };
 
   const handleEditModalOpen = (sliderId) => {
-    setEditSliderId(sliderId)
-    const sliderToEdit = sliders.find((slider) => slider.sliderId === sliderId)
-    setTitle(sliderToEdit.title)
-    setMainImageUrl(sliderToEdit.mainImageUrl)
-    setTargetUrl(sliderToEdit.targetUrl)
-    setOrderNumber(sliderToEdit.orderNumber)
-    setDuration(sliderToEdit.duration)
-    setActiveFrom(sliderToEdit.activeFrom)
-    setActiveTo(sliderToEdit.activeTo)
-    setIsActive(sliderToEdit.isActive)
-    setMobileImageUrl(sliderToEdit.mobileImageUrl)
-    setVisible2(true)
-  }
+    setEditSliderId(sliderId);
+    const sliderToEdit = sliders.find((slider) => slider.sliderId === sliderId);
+    setTitle(sliderToEdit.title);
+    setMainImageUrl(sliderToEdit.mainImageUrl);
+    setTargetUrl(sliderToEdit.targetUrl);
+    setOrderNumber(sliderToEdit.orderNumber);
+    setDuration(sliderToEdit.duration);
+    setActiveFrom(sliderToEdit.activeFrom);
+    setActiveTo(sliderToEdit.activeTo);
+    setIsActive(sliderToEdit.isActive);
+    setMobileImageUrl(sliderToEdit.mobileImageUrl);
+    setVisible2(true);
+  };
 
   const handleEdit = async (sliderId) => {
     const formatToUTC = (dateStr) => {
-      const date = new Date(dateStr)
-      return date.toISOString()
-    }
+      const date = new Date(dateStr);
+      return date.toISOString();
+    };
 
-    const formData = new FormData()
-    formData.append('title', title)
-    formData.append('sliderId', sliderId)
-    formData.append('targetUrl', targetUrl)
-    formData.append('orderNumber', orderNumber)
-    formData.append('duration', duration)
-    formData.append('activeFrom', formatToUTC(activeFrom))
-    formData.append('activeTo', formatToUTC(activeTo))
-    formData.append('IsActive', isActive)
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("sliderId", sliderId);
+    formData.append("targetUrl", targetUrl);
+    formData.append("orderNumber", orderNumber);
+    formData.append("duration", duration);
+    formData.append("activeFrom", formatToUTC(activeFrom));
+    formData.append("activeTo", formatToUTC(activeTo));
+    formData.append("IsActive", isActive);
     if (mainImage) {
-      formData.append('mainImage', mainImage)
+      formData.append("mainImage", mainImage);
     }
     if (mobileImage) {
-      formData.append('mobileImage', mobileImage)
+      formData.append("mobileImage", mobileImage);
     }
 
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.put(`${API_BASE_URL}/Slider/${sliderId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      })
-      toast.success('Slider başarıyla güncellendi!')
+      });
+      toast.success("Slider başarıyla güncellendi!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible2(false)
+        window.location.reload();
+      }, 500);
+      setVisible2(false);
     } catch (error) {
-      console.error('Error response:', error.response)
+      console.error("Error response:", error.response);
       if (error.response && error.response.status === 409) {
-        toast.error('Çakışma: Slider ID mevcut veya veri çakışması oluştu.')
+        toast.error("Çakışma: Slider ID mevcut veya veri çakışması oluştu.");
       } else {
-        toast.error('Slider güncellenirken bir hata oluştu')
+        toast.error("Slider güncellenirken bir hata oluştu");
       }
     }
-  }
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredSlider.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredSlider.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredSlider.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredSlider.length / itemsPerPage);
 
   return (
     <>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
+      <CButton
+        color="primary"
+        className="mb-3"
+        onClick={() => setVisible(true)}
+      >
         Yeni Slider Ekle
       </CButton>
       <CModal
@@ -257,19 +266,25 @@ const Slider = () => {
               type="datetime-local"
               id="activeFrom"
               label="Aktif Başlangıç"
-              value={activeFrom ? new Date(activeFrom).toISOString().slice(0, 16) : ''}
+              value={
+                activeFrom
+                  ? new Date(activeFrom).toISOString().slice(0, 16)
+                  : ""
+              }
               onChange={(e) => setActiveFrom(e.target.value)}
             />
             <CFormInput
               type="datetime-local"
               id="activeTo"
               label="Aktif Bitiş"
-              value={activeTo ? new Date(activeTo).toISOString().slice(0, 16) : ''}
+              value={
+                activeTo ? new Date(activeTo).toISOString().slice(0, 16) : ""
+              }
               onChange={(e) => setActiveTo(e.target.value)}
             />
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -310,10 +325,10 @@ const Slider = () => {
                   src={`http://10.10.3.181:5244/${mainImageUrl}`}
                   alt="Ana Resim"
                   style={{
-                    width: '100%',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
+                    width: "100%",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
                   }}
                 />
               </div>
@@ -332,10 +347,10 @@ const Slider = () => {
                   src={`http://10.10.3.181:5244/${mobileImageUrl}`}
                   alt="Mobil Resim"
                   style={{
-                    maxWidth: '100px',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
                   }}
                 />
               </div>
@@ -372,19 +387,25 @@ const Slider = () => {
               type="datetime-local"
               id="activeFrom"
               label="Aktif Başlangıç"
-              value={activeFrom ? new Date(activeFrom).toISOString().slice(0, 16) : ''}
+              value={
+                activeFrom
+                  ? new Date(activeFrom).toISOString().slice(0, 16)
+                  : ""
+              }
               onChange={(e) => setActiveFrom(e.target.value)}
             />
             <CFormInput
               type="datetime-local"
               id="activeTo"
               label="Aktif Bitiş"
-              value={activeTo ? new Date(activeTo).toISOString().slice(0, 16) : ''}
+              value={
+                activeTo ? new Date(activeTo).toISOString().slice(0, 16) : ""
+              }
               onChange={(e) => setActiveTo(e.target.value)}
             />
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -411,116 +432,167 @@ const Slider = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Başlık
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Hedef URL
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Başlangıç Tarihi
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Bitiş Tarihi
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Ekranda Durma Süresi(sn)
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Web Resim
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Mobil Resim
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Durum
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {currentItems.map((slider) => {
-            const activeFrom = new Date(slider.activeFrom).toLocaleDateString('tr-TR', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            })
-            const activeTo = new Date(slider.activeTo).toLocaleDateString('tr-TR', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            })
+            const activeFrom = new Date(slider.activeFrom).toLocaleDateString(
+              "tr-TR",
+              {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              }
+            );
+            const activeTo = new Date(slider.activeTo).toLocaleDateString(
+              "tr-TR",
+              {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              }
+            );
 
             return (
               <CTableRow key={slider.sliderId}>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   {slider.title}
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   {slider.targetUrl}
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   {activeFrom}
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   {activeTo}
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   {slider.duration}
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   <img
                     src={`http://10.10.3.181:5244/${slider.mainImageUrl}`}
                     alt="Mobil Resim"
                     style={{
-                      width: '100px',
-                      Height: 'auto',
+                      width: "100px",
+                      Height: "auto",
                     }}
                   />
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     <img
                       src={`http://10.10.3.181:5244/${slider.mobileImageUrl}`}
                       alt="Küçük Resim"
                       style={{
-                        width: '50px',
-                        height: 'auto',
+                        width: "50px",
+                        height: "auto",
                       }}
                     />
                   </div>
                 </CTableDataCell>
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   <div
                     style={{
-                      display: 'inline-block',
-                      padding: '5px 10px',
-                      borderRadius: '8px',
-                      backgroundColor: slider.isActive ? '#d4edda' : '#f8d7da',
-                      color: slider.isActive ? '#155724' : '#721c24',
-                      border: `1px solid ${slider.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                      display: "inline-block",
+                      padding: "5px 10px",
+                      borderRadius: "8px",
+                      backgroundColor: slider.isActive ? "#d4edda" : "#f8d7da",
+                      color: slider.isActive ? "#155724" : "#721c24",
+                      border: `1px solid ${slider.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                     }}
                   >
-                    {slider.isActive ? 'Aktif' : 'Pasif'}
+                    {slider.isActive ? "Aktif" : "Pasif"}
                   </div>
                 </CTableDataCell>
 
-                <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   <CButton
                     color="primary"
                     className="me-2"
                     onClick={() => handleEditModalOpen(slider.sliderId)}
                   >
-                    Düzenle
+                    <CIcon icon={cilPencil} />
                   </CButton>
-                  <CButton color="danger text-white" onClick={() => handleDelete(slider.sliderId)}>
-                    Sil
+                  <CButton
+                    color="danger text-white"
+                    onClick={() => handleDelete(slider.sliderId)}
+                  >
+                    <CIcon icon={cilTrash} />
                   </CButton>
                 </CTableDataCell>
               </CTableRow>
-            )
+            );
           })}
         </CTableBody>
       </CTable>
@@ -544,7 +616,7 @@ const Slider = () => {
         ))}
       </CPagination>
     </>
-  )
-}
+  );
+};
 
-export default Slider
+export default Slider;

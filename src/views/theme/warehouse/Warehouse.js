@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -17,123 +19,132 @@ import {
   CFormSwitch,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 
 const Warehouse = () => {
-  const [warehouses, setWarehouses] = useState([])
-  const [name, setName] = useState('')
-  const [logoWarehouseId, setLogoWarehouseId] = useState(0)
-  const [editWarehouseId, setEditWarehouseId] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const [visible2, setVisible2] = useState(false)
-  const [isActive, setIsActive] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredWarehouse, setFilteredWarehouse] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [warehouses, setWarehouses] = useState([]);
+  const [name, setName] = useState("");
+  const [logoWarehouseId, setLogoWarehouseId] = useState(0);
+  const [editWarehouseId, setEditWarehouseId] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [visible2, setVisible2] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredWarehouse, setFilteredWarehouse] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const sortedWarehouses = warehouses.sort((a, b) => {
     if (a.isActive === b.isActive) {
-      return 0
+      return 0;
     } else if (a.isActive && !b.isActive) {
-      return -1
+      return -1;
     } else {
-      return 1
+      return 1;
     }
-  })
+  });
 
   const newWarehouse = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       const response = await axios.post(`${API_BASE_URL}/warehouse`, {
         name,
         logoWarehouseId: parseInt(logoWarehouseId, 10),
         isActive,
-      })
-      setWarehouses([...warehouses, response.data])
-      setFilteredWarehouse([...warehouses, response.data])
-      toast.success('Başarıyla Kayıt İşlemi Gerçekleşti!')
+      });
+      setWarehouses([...warehouses, response.data]);
+      setFilteredWarehouse([...warehouses, response.data]);
+      toast.success("Başarıyla Kayıt İşlemi Gerçekleşti!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setName('')
-      setLogoWarehouseId(0)
-      setIsActive(false)
-      setVisible(false)
+        window.location.reload();
+      }, 500);
+      setName("");
+      setLogoWarehouseId(0);
+      setIsActive(false);
+      setVisible(false);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
+    const lowercasedQuery = searchQuery.toLowerCase();
     const filteredData = warehouses
-      .filter((warehouses) => warehouses.name?.toLowerCase().includes(lowercasedQuery))
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-    setFilteredWarehouse(filteredData)
-  }, [searchQuery, warehouses])
+      .filter((warehouses) =>
+        warehouses.name?.toLowerCase().includes(lowercasedQuery)
+      )
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
+    setFilteredWarehouse(filteredData);
+  }, [searchQuery, warehouses]);
 
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/warehouse`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        console.log('data', response.data)
-        setWarehouses(response.data)
-        setFilteredWarehouse(response.data)
+        });
+        console.log("data", response.data);
+        setWarehouses(response.data);
+        setFilteredWarehouse(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
-    fetchWarehouses()
-  }, [])
+    fetchWarehouses();
+  }, []);
 
   const handleDelete = async (warehouseId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.delete(`${API_BASE_URL}/warehouse/${warehouseId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      setWarehouses(warehouses.filter((warehouse) => warehouse.warehouseId !== warehouseId))
-      setFilteredWarehouse(warehouses.filter((warehouse) => warehouse.warehouseId !== warehouseId))
-      toast.success('Başarıyla Kayıt Silindi!')
+      });
+      setWarehouses(
+        warehouses.filter((warehouse) => warehouse.warehouseId !== warehouseId)
+      );
+      setFilteredWarehouse(
+        warehouses.filter((warehouse) => warehouse.warehouseId !== warehouseId)
+      );
+      toast.success("Başarıyla Kayıt Silindi!");
     } catch (error) {
-      console.error(error.response.data)
+      console.error(error.response.data);
     }
-  }
+  };
 
   const warehouseEdit = async (warehouseId) => {
-    const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_BASE_URL}/warehouse/${warehouseId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `${API_BASE_URL}/warehouse/${warehouseId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    const warehouseData = response.data
-    console.log('id', warehouseData)
+    const warehouseData = response.data;
+    console.log("id", warehouseData);
 
-    setEditWarehouseId(warehouseId)
-    setName(warehouseData.name || '')
-    setLogoWarehouseId(warehouseData.logoWarehouseId || 0)
-    setIsActive(warehouseData.isActive || false)
-    setVisible2(true)
-  }
+    setEditWarehouseId(warehouseId);
+    setName(warehouseData.name || "");
+    setLogoWarehouseId(warehouseData.logoWarehouseId || 0);
+    setIsActive(warehouseData.isActive || false);
+    setVisible2(true);
+  };
 
   const handleEdit = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       const response = await axios.put(
         `${API_BASE_URL}/warehouse/${editWarehouseId}`,
         {
@@ -146,33 +157,36 @@ const Warehouse = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
-      )
+        }
+      );
       setWarehouses(
         warehouses.map((warehouse) =>
-          warehouse.warehouseId === editWarehouseId ? response.data : warehouse,
-        ),
-      )
+          warehouse.warehouseId === editWarehouseId ? response.data : warehouse
+        )
+      );
       setFilteredWarehouse(
         warehouses.map((warehouse) =>
-          warehouse.warehouseId === editWarehouseId ? response.data : warehouse,
-        ),
-      )
-      toast.success('Kanal başarıyla güncellendi!')
+          warehouse.warehouseId === editWarehouseId ? response.data : warehouse
+        )
+      );
+      toast.success("Kanal başarıyla güncellendi!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible2(false)
+        window.location.reload();
+      }, 500);
+      setVisible2(false);
     } catch (error) {
-      console.error(error)
-      toast.error(error.message)
+      console.error(error);
+      toast.error(error.message);
     }
-  }
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredWarehouse.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredWarehouse.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredWarehouse.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredWarehouse.length / itemsPerPage);
   return (
     <>
       <ToastContainer />
@@ -202,7 +216,7 @@ const Warehouse = () => {
             />
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -219,7 +233,11 @@ const Warehouse = () => {
         </CModalFooter>
       </CModal>
 
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(!visible)}>
+      <CButton
+        color="primary"
+        className="mb-3"
+        onClick={() => setVisible(!visible)}
+      >
         Yeni Depo Ekle
       </CButton>
       <CModal
@@ -248,7 +266,7 @@ const Warehouse = () => {
             />
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -272,13 +290,19 @@ const Warehouse = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Depo Adı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Durum
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -286,37 +310,43 @@ const Warehouse = () => {
         <CTableBody>
           {currentItems.map((warehouse, index) => (
             <CTableRow key={index}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {warehouse.name}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <div
                   style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: warehouse.isActive ? '#d4edda' : '#f8d7da',
-                    color: warehouse.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${warehouse.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: warehouse.isActive ? "#d4edda" : "#f8d7da",
+                    color: warehouse.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${warehouse.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                   }}
                 >
-                  {warehouse.isActive ? 'Aktif' : 'Pasif'}
+                  {warehouse.isActive ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CButton
                   color="primary"
                   className="me-2"
                   onClick={() => warehouseEdit(warehouse.warehouseId)}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   className="me-2"
                   onClick={() => handleDelete(warehouse.warehouseId)}
                 >
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -342,7 +372,7 @@ const Warehouse = () => {
         ))}
       </CPagination>
     </>
-  )
-}
+  );
+};
 
-export default Warehouse
+export default Warehouse;
