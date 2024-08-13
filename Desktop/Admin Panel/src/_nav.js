@@ -106,12 +106,6 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Kontratlar',
-    to: '/theme/contract',
-    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
     name: 'Kullanıcı Listesi',
     to: '/theme/userlist',
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
@@ -151,6 +145,12 @@ const _nav = [
     name: 'Slider',
     to: '/theme/slider',
     icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Sözleşmeler',
+    to: '/theme/contract',
+    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import CIcon from '@coreui/icons-react'
+import { cilNotes } from '@coreui/icons'
 import {
   CTable,
   CTableHead,
@@ -17,6 +19,7 @@ import {
   CFormSwitch,
   CPagination,
   CPaginationItem,
+  CFormTextarea,
 } from '@coreui/react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
@@ -75,7 +78,9 @@ const Contract = () => {
   const handleEditButtonClick = async (contractId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/contract/${contractId}`)
-      setCurrentContract(response.data)
+      const fetchedContract = response.data
+      setCurrentContract(fetchedContract)
+      setIsActive(fetchedContract.isActive) // switch durumunu güncelle
       setIsReadOnly(true)
       setVisible(true)
     } catch (error) {
@@ -179,7 +184,7 @@ const Contract = () => {
                   className="me-2"
                   onClick={() => handleEditButtonClick(contract.contractId)}
                 >
-                  Düzenle
+                  <CIcon icon={cilNotes} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -226,45 +231,42 @@ const Contract = () => {
               }
               readOnly={isReadOnly}
             />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              label="Versiyon"
-              value={currentContract ? currentContract.version : newContract.version}
-              onChange={(e) =>
-                currentContract
-                  ? setCurrentContract({
+            {currentContract && (
+              <>
+                <CFormInput
+                  type="text"
+                  className="mb-3"
+                  label="Versiyon"
+                  value={currentContract ? currentContract.version : ''}
+                  onChange={(e) =>
+                    setCurrentContract({
                       ...currentContract,
                       version: parseInt(e.target.value, 10),
                     })
-                  : setNewContract({ ...newContract, version: parseInt(e.target.value, 10) })
-              }
-              readOnly={isReadOnly}
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              label="Önceki Versiyon"
-              value={
-                currentContract ? currentContract.previousVersion : newContract.previousVersion
-              }
-              onChange={(e) =>
-                currentContract
-                  ? setCurrentContract({
+                  }
+                  readOnly={isReadOnly}
+                />
+                <CFormInput
+                  type="text"
+                  className="mb-3"
+                  label="Önceki Versiyon"
+                  value={currentContract ? currentContract.previousVersion : ''}
+                  onChange={(e) =>
+                    setCurrentContract({
                       ...currentContract,
                       previousVersion: parseInt(e.target.value, 10),
                     })
-                  : setNewContract({
-                      ...newContract,
-                      previousVersion: parseInt(e.target.value, 10),
-                    })
-              }
-              readOnly={isReadOnly}
-            />
-            <CFormInput
+                  }
+                  readOnly={isReadOnly}
+                />
+              </>
+            )}
+
+            <CFormTextarea
               type="text"
               className="mb-3"
               label="İçerik"
+              rows={5}
               value={currentContract ? currentContract.body : newContract.body}
               onChange={(e) =>
                 currentContract
@@ -286,8 +288,8 @@ const Contract = () => {
               readOnly={isReadOnly}
             />
             <CFormSwitch
-              label={isActive ? 'Kaydet' : 'Oluştur'}
-              checked={currentContract ? currentContract.isActive : newContract.isActive}
+              label={isActive ? 'Aktif' : 'Pasif'}
+              checked={isActive}
               onChange={(e) =>
                 currentContract
                   ? setCurrentContract({ ...currentContract, isActive: e.target.checked })
