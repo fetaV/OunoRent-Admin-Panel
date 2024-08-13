@@ -71,11 +71,7 @@ const Address = () => {
           addr.user.name,
         ]
           .map((item) => item.toLowerCase())
-<<<<<<< HEAD
-          .some((item) => item.includes(lowercasedQuery)),
-=======
           .some((item) => item.includes(lowercasedQuery))
->>>>>>> a2d303f (blog düzenleme devam ediyor)
       );
       setState((prevState) => ({
         ...prevState,
@@ -92,17 +88,10 @@ const Address = () => {
     setState((prevState) => ({
       ...prevState,
       addresses: prevState.addresses.filter(
-<<<<<<< HEAD
-        (addr) => addr.addressId !== addressId,
-      ),
-      filteredAddresses: prevState.filteredAddresses.filter(
-        (addr) => addr.addressId !== addressId,
-=======
         (addr) => addr.addressId !== addressId
       ),
       filteredAddresses: prevState.filteredAddresses.filter(
         (addr) => addr.addressId !== addressId
->>>>>>> a2d303f (blog düzenleme devam ediyor)
       ),
     }));
   };
@@ -126,11 +115,7 @@ const Address = () => {
     setState((prevState) => ({
       ...prevState,
       addresses: prevState.addresses.map((addr) =>
-<<<<<<< HEAD
-        addr.addressId === updatedData.addressId ? updatedData : addr,
-=======
         addr.addressId === updatedData.addressId ? updatedData : addr
->>>>>>> a2d303f (blog düzenleme devam ediyor)
       ),
       modalVisible: false,
     }));
@@ -139,11 +124,7 @@ const Address = () => {
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredAddresses.slice(
     indexOfLastItem - itemsPerPage,
-<<<<<<< HEAD
-    indexOfLastItem,
-=======
     indexOfLastItem
->>>>>>> a2d303f (blog düzenleme devam ediyor)
   );
 
   return (
@@ -244,10 +225,7 @@ const Address = () => {
               "Semt",
               "Vergi No",
               "Vergi Dairesi",
-<<<<<<< HEAD
-=======
               "Adres Tipi",
->>>>>>> a2d303f (blog düzenleme devam ediyor)
               "Şirket Adı",
               "Aksiyonlar",
             ].map((header) => (
@@ -265,10 +243,7 @@ const Address = () => {
                 "neighborhood",
                 "taxNo",
                 "taxOffice",
-<<<<<<< HEAD
-=======
                 "type",
->>>>>>> a2d303f (blog düzenleme devam ediyor)
                 "companyName",
               ].map((key) => (
                 <CTableDataCell key={key}>{addr[key]}</CTableDataCell>
@@ -306,11 +281,7 @@ const Address = () => {
             >
               {i + 1}
             </CPaginationItem>
-<<<<<<< HEAD
-          ),
-=======
           )
->>>>>>> a2d303f (blog düzenleme devam ediyor)
         )}
       </CPagination>
     </>

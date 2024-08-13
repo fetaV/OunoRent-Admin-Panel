@@ -27,20 +27,6 @@ const apiRequest = async (method, url, data = null) => {
 export const fetchAddress = async () => {
   return apiRequest("get", "/address");
 };
-<<<<<<< HEAD
-
-export const deleteAddress = async (addressId) => {
-  await apiRequest("delete", `/address/${addressId}`);
-};
-
-export const fetchAddressForID = async (addressId) => {
-  return apiRequest("get", `/address/${addressId}`);
-};
-
-export const updateAddressForID = async (addressId, addressData) => {
-  await apiRequest("put", `/address/${addressId}`, addressData);
-};
-=======
 export const deleteAddress = async (addressId) => {
   await apiRequest("delete", `/address/${addressId}`);
 };
@@ -88,4 +74,3 @@ export const fetchSubCategoryForID = async (categoryId, subCategoryId) => {
     `/category/${categoryId}/subcategory/${subCategoryId}`
   );
 };
->>>>>>> a2d303f (blog düzenleme devam ediyor)
