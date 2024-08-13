@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import CIcon from '@coreui/icons-react'
+import { cilPencil, cilTrash } from '@coreui/icons'
 import {
   CTable,
   CTableHead,
@@ -204,6 +206,7 @@ function Address() {
         <CModalBody>
           <CForm>
             <CFormInput
+              className="mb-3"
               type="text"
               id="title"
               label="Başlık"
@@ -212,6 +215,7 @@ function Address() {
             />
             <CFormSelect
               id="type"
+              className="mb-3"
               label="Adres Tipi"
               value={addressType}
               onChange={(e) => setAddressType(e.target.value)}
@@ -221,6 +225,7 @@ function Address() {
             </CFormSelect>
 
             <CFormInput
+              className="mb-3"
               type="text"
               id="city"
               label="Şehir"
@@ -228,6 +233,7 @@ function Address() {
               onChange={(e) => setEditAddressData({ ...editAddressData, city: e.target.value })}
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="district"
               label="İlçe"
@@ -235,6 +241,7 @@ function Address() {
               onChange={(e) => setSelectedCategoryId(e.target.value)}
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="neighborhood"
               label="Semt"
@@ -242,6 +249,7 @@ function Address() {
               onChange={(e) => setSelectedSubCategoryId(e.target.value)}
             />
             <CFormInput
+              className="mb-3"
               type="text"
               id="addressDetail"
               label="Adres Detayı"
@@ -253,6 +261,7 @@ function Address() {
             {addressType !== 0 && (
               <>
                 <CFormInput
+                  className="mb-3"
                   type="number"
                   id="taxNo"
                   label="Vergi No"
@@ -262,6 +271,7 @@ function Address() {
                   }
                 />
                 <CFormInput
+                  className="mb-3"
                   type="text"
                   id="taxOffice"
                   label="Vergi Dairesi"
@@ -274,6 +284,7 @@ function Address() {
             )}
 
             <CFormInput
+              className="mb-3"
               type="text"
               id="companyName"
               label="Şirket Adı"
@@ -371,10 +382,10 @@ function Address() {
                   className="me-2"
                   onClick={() => handleEditModalOpen(address.addressId)}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton color="danger text-white" onClick={() => handleDelete(address.addressId)}>
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>

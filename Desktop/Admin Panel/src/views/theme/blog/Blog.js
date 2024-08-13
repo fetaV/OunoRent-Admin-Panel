@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import CIcon from '@coreui/icons-react'
+import { cilPencil, cilTrash } from '@coreui/icons'
 import {
   CTable,
   CTableHead,
@@ -629,10 +631,10 @@ function Blog() {
                   className="me-2"
                   onClick={() => handleEditModalOpen(blog.blogId)}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton color="danger text-white" onClick={() => handleDelete(blog.blogId)}>
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>

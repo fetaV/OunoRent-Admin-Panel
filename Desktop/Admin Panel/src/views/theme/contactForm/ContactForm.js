@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import CIcon from '@coreui/icons-react'
+import { cilNotes, cilTrash } from '@coreui/icons'
 import {
   CTable,
   CTableHead,
@@ -94,6 +96,13 @@ const ContactForm = () => {
     }
   }
 
+  const truncateText = (text, maxLength) => {
+    if (text.length > maxLength) {
+      return `${text.substring(0, maxLength)}...`
+    }
+    return text
+  }
+
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = filteredContactForm.slice(indexOfFirstItem, indexOfLastItem)
@@ -135,16 +144,16 @@ const ContactForm = () => {
           {currentItems.map((item) => (
             <CTableRow key={item.contactFormId}>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.name}
+                {truncateText(item.name, 15)}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.email}
+                {truncateText(item.email, 20)}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.subject}
+                {truncateText(item.subject, 30)}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.subjectCategory}
+                {truncateText(item.subjectCategory, 20)}
               </CTableDataCell>
               <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {formatDate(item.formDate)}
@@ -155,13 +164,13 @@ const ContactForm = () => {
                   className="me-2"
                   onClick={() => handleInspectButtonClick(item.contactFormId)}
                 >
-                  İncele
+                  <CIcon icon={cilNotes} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   onClick={() => handleDeleteMenuItem(item.contactFormId)}
                 >
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>

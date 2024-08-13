@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import CIcon from '@coreui/icons-react'
+import { cilPencil, cilTrash } from '@coreui/icons'
 import {
   CTable,
   CTableHead,
@@ -203,13 +205,13 @@ const Channel = () => {
                   className="me-2"
                   onClick={() => handleEditButtonClick(item.channelId)}
                 >
-                  Düzenle
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   onClick={() => handleDeleteChannel(item.channelId)}
                 >
-                  Sil
+                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>

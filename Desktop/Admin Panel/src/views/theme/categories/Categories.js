@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import CIcon from '@coreui/icons-react'
+import { cilPencil, cilTrash } from '@coreui/icons'
 import {
   CTable,
   CTableHead,
@@ -901,13 +903,13 @@ const Categories = () => {
                         )
                       }
                     >
-                      Düzenle
+                      <CIcon icon={cilPencil} />
                     </CButton>
                     <CButton
                       color="danger text-white"
                       onClick={() => handleSubCategoryDelete(subCategory.subCategoryId)}
                     >
-                      Sil
+                      <CIcon icon={cilTrash} />
                     </CButton>
                   </CTableDataCell>
                 </CTableRow>
