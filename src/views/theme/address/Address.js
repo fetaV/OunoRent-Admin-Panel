@@ -268,7 +268,7 @@ const Address = () => {
         </CTableBody>
       </CTable>
 
-      <CPagination>
+      <CPagination className="btn btn-sm">
         {Array.from(
           { length: Math.ceil(state.filteredAddresses.length / itemsPerPage) },
           (_, i) => (

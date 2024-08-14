@@ -211,7 +211,7 @@ const Footer = () => {
           }))
         }
       />
-      <CTable>
+      <CTable hover>
         <CTableHead>
           <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
             {[
@@ -278,7 +278,7 @@ const Footer = () => {
         </CTableBody>
       </CTable>
 
-      <CPagination>
+      <CPagination className="btn btn-sm">
         {Array.from(
           { length: Math.ceil(state.filteredFooter.length / itemsPerPage) },
           (_, i) => (

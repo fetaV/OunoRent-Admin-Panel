@@ -196,7 +196,7 @@ const Channel = () => {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <img
-                  src={`http://188.132.178.191:5244/${item.logo}`}
+                  src={`http://10.10.3.181:5244/${item.logo}`}
                   alt="Mobil Resim"
                   style={{
                     width: "50px",
@@ -287,7 +287,7 @@ const Channel = () => {
               <div>
                 <label>Mevcut Logo</label>
                 <img
-                  src={`http://188.132.178.191:5244/${currentChannel.logo}`}
+                  src={`http://10.10.3.181:5244/${currentChannel.logo}`}
                   alt="Mobil Resim"
                   style={{
                     maxWidth: "100px",

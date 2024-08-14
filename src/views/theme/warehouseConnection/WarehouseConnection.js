@@ -368,7 +368,7 @@ function WarehouseConnection() {
         </CTableBody>
       </CTable>
 
-      <CPagination>
+      <CPagination className="btn btn-sm">
         {Array.from(
           {
             length: Math.ceil(

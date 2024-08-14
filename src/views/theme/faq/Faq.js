@@ -255,7 +255,7 @@ const Faq = () => {
         </CTableBody>
       </CTable>
 
-      <CPagination>
+      <CPagination className="btn btn-sm">
         {Array.from(
           {
             length: Math.ceil(state.filteredFaq.length / itemsPerPage),

@@ -176,7 +176,7 @@ function Blog() {
       ...prevState,
       blog: prevState.blog.filter((item) => item.blogId !== formId),
       filteredBlog: prevState.filteredBlog.filter(
-        (item) => item.blogId !== formId,
+        (item) => item.blogId !== formId
       ),
     }));
   };
@@ -184,7 +184,7 @@ function Blog() {
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredBlog.slice(
     indexOfLastItem - itemsPerPage,
-    indexOfLastItem,
+    indexOfLastItem
   );
 
   return (
@@ -476,7 +476,7 @@ function Blog() {
         </CTableBody>
       </CTable>
 
-      <CPagination>
+      <CPagination className="btn btn-sm">
         {Array.from(
           { length: Math.ceil(state.filteredBlog.length / itemsPerPage) },
           (_, i) => (
@@ -489,7 +489,7 @@ function Blog() {
             >
               {i + 1}
             </CPaginationItem>
-          ),
+          )
         )}
       </CPagination>
     </>

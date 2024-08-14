@@ -14,9 +14,17 @@ const handleApiError = (error) => {
   }
 };
 
-const apiRequest = async (method, url, data = null) => {
+const apiRequest = async (method, url, data = null, headers = {}) => {
   try {
-    const response = await api[method](url, data);
+    const response = await api({
+      method,
+      url,
+      data,
+      headers: {
+        ...headers,
+        "Content-Type": headers["Content-Type"] || "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -100,8 +108,20 @@ export const updateWarehouseConnection = async (warehouseConnectionId) => {
   );
 };
 
+export const createChannel = async () => {
+  return apiRequest("post", "/Channel");
+};
 export const fetchChannel = async () => {
-  return apiRequest("get", `/channel`);
+  return apiRequest("get", "/Channel");
+};
+export const fetchChannelForID = async (ChannelId) => {
+  return apiRequest("get", `/Channel/${ChannelId}`);
+};
+export const deleteChannel = async (ChannelId) => {
+  await apiRequest("delete", `/Channel/${ChannelId}`);
+};
+export const updateChannel = async (ChannelId) => {
+  await apiRequest("put", `/Channel/${ChannelId}`);
 };
 
 export const createWarehouse = async () => {
