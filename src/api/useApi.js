@@ -135,3 +135,19 @@ export const deleteFaq = async (FaqId) => {
 export const updateFaq = async (FaqId) => {
   await apiRequest("put", `/Faq/${FaqId}`);
 };
+
+export const createFooter = async () => {
+  return apiRequest("post", "/FooterItem");
+};
+export const fetchFooter = async () => {
+  return apiRequest("get", "/FooterItem");
+};
+export const fetchFooterForID = async (FooterItemId) => {
+  return apiRequest("get", `/FooterItem/${FooterItemId}`);
+};
+export const deleteFooter = async (FooterItemId) => {
+  await apiRequest("delete", `/FooterItem/${FooterItemId}`);
+};
+export const updateFooter = async (FooterItemId) => {
+  await apiRequest("put", `/FooterItem/${FooterItemId}`);
+};

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
 import { cilPencil, cilTrash } from "@coreui/icons";
 import {
@@ -16,120 +16,178 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
   CPagination,
   CPaginationItem,
+  CFormSwitch,
 } from "@coreui/react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from "../../../../config";
+import {
+  createFooter,
+  deleteFooter,
+  fetchFooter,
+  fetchFooterForID,
+  updateFooter,
+} from "src/api/useApi";
 
 const Footer = () => {
-  const [footer, setFooter] = useState([]);
-  const [currentFooter, setCurrentFooter] = useState(null);
-  const [newFooter, setNewFooter] = useState({
-    label: "",
-    targetUrl: "",
-    orderNumber: 0,
-    onlyToMembers: false,
-    isActive: false,
+  const [state, setState] = useState({
+    footer: [],
+    currentFooter: null,
+    editFooterId: null,
+    visible: false,
+    searchQuery: "",
+    filteredFooter: [],
+    editFooterData: {},
+    currentPage: 1,
+    isActive: true,
   });
-  const [visible, setVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredFooter, setFilteredFooter] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchFooter();
+    const loadFooter = async () => {
+      const [footer] = await Promise.all([fetchFooter()]);
+      setState((prevState) => ({
+        ...prevState,
+        footer: footer,
+        filteredFooter: footer,
+      }));
+    };
+    loadFooter();
   }, []);
 
+  const handleModalOpen = async (formId = null) => {
+    if (formId) {
+      const data = await fetchFooterForID(formId);
+      setState((prevState) => ({
+        ...prevState,
+        editFooterData: {
+          label: data.label || "",
+          orderNumber: data.orderNumber || "",
+          column: data.column || "",
+          targetUrl: data.targetUrl || "",
+          isActive: data.isActive || false,
+        },
+        editFooterId: formId,
+        modalVisible: true,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        editFooterData: {
+          label: "",
+          orderNumber: "",
+          column: "",
+          targetUrl: "",
+          isActive: false,
+        },
+        editFooterId: null,
+        modalVisible: true,
+      }));
+    }
+  };
+
+  const handleSave = async () => {
+    const { editFooterId, isActive, label } = state;
+
+    const footerData = {
+      label,
+      targetUrl: "",
+      orderNumber: 0,
+      column: "",
+      isActive,
+    };
+
+    if (editFooterId) {
+      await updateFooter(editFooterId, footerData);
+      toast.success("Footer başarıyla güncellendi.");
+    } else {
+      await createFooter(footerData);
+      toast.success("Footer başarıyla oluşturuldu.");
+    }
+
+    const updatedFooter = await fetchFooter();
+    setState((prevState) => ({
+      ...prevState,
+      modalVisible: false,
+      footer: updatedFooter,
+      filteredFooter: updatedFooter,
+    }));
+  };
+
+  const handleDelete = async (formId) => {
+    await deleteFooter(formId);
+    toast.success("Footer başarıyla silindi!");
+    const updatedFooter = await fetchFooter();
+    setState((prevState) => ({
+      ...prevState,
+      footer: updatedFooter,
+      filteredFooter: updatedFooter,
+    }));
+  };
+
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filteredData = footer
-      .filter(
-        (footer) =>
-          (footer.label &&
-            footer.label.toLowerCase().includes(lowercasedQuery)) ||
-          (footer.targetUrl &&
-            footer.targetUrl.toLowerCase().includes(lowercasedQuery)) ||
-          (footer.column &&
-            footer.column.toString().toLowerCase().includes(lowercasedQuery)) ||
-          (footer.orderNumber &&
-            footer.orderNumber
-              .toString()
-              .toLowerCase()
-              .includes(lowercasedQuery))
-      )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
-    setFilteredFooter(filteredData);
-  }, [searchQuery, footer]);
+    const filterFooter = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.footer.filter((item) => {
+        const label = item.label ? item.label.toLowerCase() : "";
+        const targetUrl = item.targetUrl ? item.targetUrl.toLowerCase() : "";
+        const column = item.column ? item.column.toString().toLowerCase() : "";
+        const orderNumber = item.orderNumber
+          ? item.orderNumber.toString().toLowerCase()
+          : "";
 
-  const fetchFooter = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/footerItem`);
-      console.log("getfooter response:", response.data);
-      setFooter(response.data);
-    } catch (error) {
-      console.error("getfooter error:", error);
-      toast.error("Failed to fetch menu items");
-    }
+        return [label, targetUrl, column, orderNumber].some((value) =>
+          value.includes(lowercasedQuery)
+        );
+      });
+
+      setState((prevState) => ({
+        ...prevState,
+        filteredFooter: filteredData,
+      }));
+    };
+
+    filterFooter();
+  }, [state.searchQuery, state.footer]);
+
+  const handleEdit = async () => {
+    const updatedData = state.editFooterData;
+    await updateFooter(state.editFooterData.footerId, updatedData);
+    toast.success("Adres başarıyla güncellendi.");
+    setState((prevState) => ({
+      ...prevState,
+      footeres: prevState.footer.map((item) =>
+        item.footerId === updatedData.footerId ? updatedData : item
+      ),
+      modalVisible: false,
+    }));
   };
 
-  const handleCreateFooter = async () => {
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/footerItem`,
-        newFooter
-      );
-      console.log("createFooter response:", response.data);
-      toast.success("Menu item created successfully");
-      setInterval(() => {
-        window.location.reload();
-      }, 500);
-      fetchFooter();
-      setVisible(false);
-    } catch (error) {
-      console.error("createFooter error:", error);
-      toast.error("Failed to create menu item");
-    }
-  };
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredFooter.slice(
+    indexOfLastItem - itemsPerPage,
+    indexOfLastItem
+  );
 
-  const handleUpdateFooter = async (FooterId) => {
-    try {
-      const response = await axios.put(
-        `${API_BASE_URL}/footerItem/${FooterId}`,
-        currentFooter
-      );
-      console.log("updateFooter response:", response.data);
-      toast.success("Menu item updated successfully");
-      fetchFooter();
-      setVisible(false);
-    } catch (error) {
-      console.error("updateFooter error:", error);
-      toast.error("Failed to update menu item");
-    }
-  };
+  const handleToggleActive = async (footerId, currentStatus) => {
+    const updatedFooter = {
+      ...state.footer.find((item) => item.footerId === footerId),
+      isActive: !currentStatus,
+    };
 
-  const handleDeleteFooter = async (FooterId) => {
-    try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/footerItem/${FooterId}`
-      );
-      console.log("deleteFooter response:", response.data);
-      toast.success("Menu item deleted successfully");
-      fetchFooter();
-    } catch (error) {
-      console.error("deleteFooter error:", error);
-      toast.error("Failed to delete menu item");
-    }
-  };
+    await updateFooter(footerId, updatedFooter);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredFooter.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredFooter.length / itemsPerPage);
+    toast.success("Footer durumu başarıyla güncellendi.");
+
+    const updatedFooterList = await fetchFooter();
+
+    setState((prevState) => ({
+      ...prevState,
+      footer: updatedFooterList,
+      filteredFooter: updatedFooterList,
+    }));
+  };
 
   return (
     <div>
@@ -137,7 +195,7 @@ const Footer = () => {
       <CButton
         color="primary"
         className="mb-3"
-        onClick={() => setVisible(true)}
+        onClick={() => handleModalOpen()}
       >
         Yeni Footer Ekle
       </CButton>
@@ -145,68 +203,39 @@ const Footer = () => {
         type="text"
         id="search"
         placeholder="Arama"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={state.searchQuery}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            searchQuery: e.target.value,
+          }))
+        }
       />
-
       <CTable>
         <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Menü Başlığı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Sıra Numarası
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Sütun
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Hedef URL
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Durum
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Eylemler
-            </CTableHeaderCell>
+          <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
+            {[
+              "Menü Başlığı",
+              "Sıra Numarası",
+              "Sütun",
+              "Hedef URL",
+              "Durum",
+              "Eylemler",
+            ].map((header) => (
+              <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {currentItems.map((item) => (
-            <CTableRow key={item.footerItemId}>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.label}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.orderNumber}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.column}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.targetUrl}
-              </CTableDataCell>
+            <CTableRow
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+              key={item.footerItemId}
+            >
+              {["label", "orderNumber", "column", "targetUrl"].map((key) => (
+                <CTableDataCell key={key}>{item[key]}</CTableDataCell>
+              ))}
+
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
@@ -218,7 +247,9 @@ const Footer = () => {
                     backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
                     color: item.isActive ? "#155724" : "#721c24",
                     border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
                   }}
+                  onClick={() => handleToggleActive(item.footerItemId)}
                 >
                   {item.isActive ? "Aktif" : "Pasif"}
                 </div>
@@ -230,15 +261,14 @@ const Footer = () => {
                   color="primary text-white"
                   className="me-2"
                   onClick={() => {
-                    setCurrentFooter(item);
-                    setVisible(true);
+                    handleModalOpen(item.footerItemId);
                   }}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  onClick={() => handleDeleteFooter(item.footerItemId)}
+                  onClick={() => handleDelete(item.footerItemId)}
                 >
                   <CIcon icon={cilTrash} />
                 </CButton>
@@ -248,142 +278,86 @@ const Footer = () => {
         </CTableBody>
       </CTable>
 
-      <CPagination
-        aria-label="Page navigation"
-        className="mt-3 btn border-0"
-        align="center"
-        items={totalPages}
-        active={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-      >
-        {[...Array(totalPages).keys()].map((page) => (
-          <CPaginationItem
-            key={page + 1}
-            active={page + 1 === currentPage}
-            onClick={() => setCurrentPage(page + 1)}
-          >
-            {page + 1}
-          </CPaginationItem>
-        ))}
+      <CPagination>
+        {Array.from(
+          { length: Math.ceil(state.filteredFooter.length / itemsPerPage) },
+          (_, i) => (
+            <CPaginationItem
+              key={i + 1}
+              active={i + 1 === state.currentPage}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, currentPage: i + 1 }))
+              }
+            >
+              {i + 1}
+            </CPaginationItem>
+          )
+        )}
       </CPagination>
 
-      <CModal visible={visible} onClose={() => setVisible(false)}>
+      <CModal
+        visible={state.modalVisible}
+        onClose={() =>
+          setState((prevState) => ({ ...prevState, modalVisible: false }))
+        }
+        aria-labelledby="ModalLabel"
+      >
         <CModalHeader>
-          <CModalTitle>
-            {currentFooter ? "Edit Menu Item" : "Create Menu Item"}
+          <CModalTitle id="ModalLabel">
+            {state.editFooterId ? "Footer Düzenle" : "Yeni Footer Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
-            <CFormInput
-              type="text"
-              className="mb-3"
-              placeholder="Label"
-              label="Menü Başlığı"
-              value={currentFooter ? currentFooter.label : newFooter.label}
-              onChange={(e) =>
-                currentFooter
-                  ? setCurrentFooter({
-                      ...currentFooter,
-                      label: e.target.value,
-                    })
-                  : setNewFooter({ ...newFooter, label: e.target.value })
-              }
-            />
-            <CFormInput
-              type="number"
-              className="mb-3"
-              placeholder="Order Number"
-              label="Sıra Numarası"
-              value={
-                currentFooter
-                  ? currentFooter.orderNumber
-                  : newFooter.orderNumber
-              }
-              onChange={(e) =>
-                currentFooter
-                  ? setCurrentFooter({
-                      ...currentFooter,
-                      orderNumber: +e.target.value,
-                    })
-                  : setNewFooter({ ...newFooter, orderNumber: +e.target.value })
-              }
-            />
-            <CFormInput
-              type="number"
-              className="mb-3"
-              placeholder="Sütun"
-              label="Sütun"
-              value={currentFooter ? currentFooter.column : newFooter.column}
-              onChange={(e) =>
-                currentFooter
-                  ? setCurrentFooter({
-                      ...currentFooter,
-                      column: +e.target.value,
-                    })
-                  : setNewFooter({ ...newFooter, column: +e.target.value })
-              }
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              placeholder="Target URL"
-              label="Hedef URL"
-              value={
-                currentFooter ? currentFooter.targetUrl : newFooter.targetUrl
-              }
-              onChange={(e) =>
-                currentFooter
-                  ? setCurrentFooter({
-                      ...currentFooter,
-                      targetUrl: e.target.value,
-                    })
-                  : setNewFooter({ ...newFooter, targetUrl: e.target.value })
-              }
-            />
-
-            <CFormSwitch
-              id="isActive"
-              label={
-                currentFooter
-                  ? currentFooter.isActive
-                    ? "Aktif"
-                    : "Pasif"
-                  : newFooter.isActive
-                    ? "Aktif"
-                    : "Pasif"
-              }
-              className="mb-3"
-              checked={
-                currentFooter ? currentFooter.isActive : newFooter.isActive
-              }
-              onChange={() =>
-                currentFooter
-                  ? setCurrentFooter({
-                      ...currentFooter,
-                      isActive: !currentFooter.isActive,
-                    })
-                  : setNewFooter({
-                      ...newFooter,
-                      isActive: !newFooter.isActive,
-                    })
-              }
-            />
+            {[
+              { label: "Footer Adı", value: "label" },
+              { label: "Sıra Numarası", value: "orderNumber" },
+              { label: "Sütun Numarası", value: "column" },
+              { label: "Hedef URL", value: "targetUrl" },
+            ].map(({ label, value, type = "text" }) => (
+              <CFormInput
+                key={value}
+                className="mb-3"
+                type={type}
+                label={label}
+                value={state.editFooterData[value] || ""}
+                onChange={(e) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    editFooterData: {
+                      ...prevState.editFooterData,
+                      [value]: e.target.value,
+                    },
+                  }))
+                }
+              />
+            ))}
+            {state.editFooterId === null && (
+              <CFormSwitch
+                id="isActive"
+                label={state.isActive ? "Aktif" : "Pasif"}
+                checked={state.isActive}
+                onChange={(e) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    isActive: e.target.checked,
+                  }))
+                }
+              />
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
-            Close
-          </CButton>
           <CButton
-            color="primary"
+            color="secondary"
             onClick={() =>
-              currentFooter
-                ? handleUpdateFooter(currentFooter.footerItemId)
-                : handleCreateFooter()
+              setState((prevState) => ({ ...prevState, modalVisible: false }))
             }
           >
-            {currentFooter ? "Save Changes" : "Create"}
+            Kapat
+          </CButton>
+          <CButton color="primary" onClick={handleSave}>
+            {state.editFooterId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
