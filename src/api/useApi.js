@@ -74,3 +74,35 @@ export const fetchSubCategoryForID = async (categoryId, subCategoryId) => {
     `/category/${categoryId}/subcategory/${subCategoryId}`
   );
 };
+
+export const createWarehouseConnection = async () => {
+  return apiRequest("post", "/warehouse/WarehouseConnection");
+};
+export const fetchWarehouseConnection = async () => {
+  return apiRequest("get", "/warehouse/WarehouseConnection");
+};
+export const fetchWarehouseConnectionForID = async (warehouseConnectionId) => {
+  return apiRequest(
+    "get",
+    `/warehouse/WarehouseConnection/${warehouseConnectionId}`
+  );
+};
+export const deleteWarehouseConnection = async (warehouseConnectionId) => {
+  await apiRequest(
+    "delete",
+    `/warehouse/WarehouseConnection/${warehouseConnectionId}`
+  );
+};
+export const updateWarehouseConnection = async (warehouseConnectionId) => {
+  await apiRequest(
+    "put",
+    `/Warehouse/warehouseConnection/${warehouseConnectionId}`
+  );
+};
+
+export const fetchChannel = async () => {
+  return apiRequest("get", `/channel`);
+};
+export const fetchWarehouse = async () => {
+  return apiRequest("get", `/warehouse`);
+};

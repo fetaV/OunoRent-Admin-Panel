@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import CIcon from '@coreui/icons-react'
-import { cilPencil, cilTrash } from '@coreui/icons'
+import React, { useEffect, useState } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -23,113 +23,128 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+} from "@coreui/react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import API_BASE_URL from "../../../../config";
 
 const Categories = () => {
-  const [categories, setCategories] = useState([])
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [icon, setIcon] = useState('')
-  const [orderNumber, setOrderNumber] = useState('')
-  const [imageHorizontal, setImageHorizontal] = useState('')
-  const [imageSquare, setImageSquare] = useState('')
-  const [editCategoryId, setEditCategoryId] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const [visible2, setVisible2] = useState(false)
-  const [visible3, setVisible3] = useState(false)
-  const [visible4, setVisible4] = useState(false)
-  const [parentCategoryId, setParentCategoryId] = useState(null)
-  const [subCategories, setSubCategories] = useState([])
-  const [editSubCategoryId, setEditSubCategoryId] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchQuerySubCategories, setSearchQuerySubCategories] = useState('')
-  const [selectedCategoryName, setSelectedCategoryName] = useState('')
-  const [filteredCategories, setFilteredCategories] = useState([])
-  const [isActive, setIsActive] = useState(false)
-  const [currentPageCategories, setCurrentPageCategories] = useState(1)
-  const [currentPageSubCategories, setCurrentPageSubCategories] = useState(1)
-  const itemsPerPage = 10
+  const [categories, setCategories] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState("");
+  const [orderNumber, setOrderNumber] = useState("");
+  const [imageHorizontal, setImageHorizontal] = useState("");
+  const [imageSquare, setImageSquare] = useState("");
+  const [editCategoryId, setEditCategoryId] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [visible2, setVisible2] = useState(false);
+  const [visible3, setVisible3] = useState(false);
+  const [visible4, setVisible4] = useState(false);
+  const [parentCategoryId, setParentCategoryId] = useState(null);
+  const [subCategories, setSubCategories] = useState([]);
+  const [editSubCategoryId, setEditSubCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuerySubCategories, setSearchQuerySubCategories] = useState("");
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [isActive, setIsActive] = useState(false);
+  const [currentPageCategories, setCurrentPageCategories] = useState(1);
+  const [currentPageSubCategories, setCurrentPageSubCategories] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
+    const lowercasedQuery = searchQuery.toLowerCase();
     const filteredData = categories
       .filter(
         (categories) =>
-          (categories.name && categories.name.toLowerCase().includes(lowercasedQuery)) ||
+          (categories.name &&
+            categories.name.toLowerCase().includes(lowercasedQuery)) ||
           (categories.orderNumber &&
-            categories.orderNumber.toString().toLowerCase().includes(lowercasedQuery)),
+            categories.orderNumber
+              .toString()
+              .toLowerCase()
+              .includes(lowercasedQuery))
       )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-    setFilteredCategories(filteredData)
-  }, [searchQuery, categories])
+      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
+    setFilteredCategories(filteredData);
+  }, [searchQuery, categories]);
 
   const newCategory = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('description', description)
-    formData.append('icon', icon)
-    formData.append('orderNumber', orderNumber)
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("icon", icon);
+    formData.append("orderNumber", orderNumber);
     if (imageHorizontal) {
-      formData.append('imageHorizontal', imageHorizontal)
+      formData.append("imageHorizontal", imageHorizontal);
     }
     if (imageSquare) {
-      formData.append('imageSquare', imageSquare)
+      formData.append("imageSquare", imageSquare);
     }
-    console.log({ name, description, icon, orderNumber, imageHorizontal, imageSquare })
+    console.log({
+      name,
+      description,
+      icon,
+      orderNumber,
+      imageHorizontal,
+      imageSquare,
+    });
 
     try {
       const response = await axios.post(`${API_BASE_URL}/category`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      })
-      setCategories([...categories, response.data])
-      toast.success('Başarıyla Kayıt İşlemi Gerçekleşti!')
+      });
+      setCategories([...categories, response.data]);
+      toast.success("Başarıyla Kayıt İşlemi Gerçekleşti!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setName('')
-      setDescription('')
-      setIcon('')
-      setOrderNumber('')
-      setImageHorizontal('')
-      setImageSquare('')
-      setVisible(false)
+        window.location.reload();
+      }, 500);
+      setName("");
+      setDescription("");
+      setIcon("");
+      setOrderNumber("");
+      setImageHorizontal("");
+      setImageSquare("");
+      setVisible(false);
     } catch (error) {
       if (error.response && error.response.data.errors) {
-        const errorMessage = Object.values(error.response.data.errors).flat().join(' ')
-        toast.error(errorMessage)
-        console.error(errorMessage)
+        const errorMessage = Object.values(error.response.data.errors)
+          .flat()
+          .join(" ");
+        toast.error(errorMessage);
+        console.error(errorMessage);
       } else if (error.response.data) {
-        const errorMessages = Object.values(error.response.data).flat().join('')
-        toast.error(errorMessages)
+        const errorMessages = Object.values(error.response.data)
+          .flat()
+          .join("");
+        toast.error(errorMessages);
       } else {
-        toast.error('Bir hata oluştu.')
-        console.error(error)
+        toast.error("Bir hata oluştu.");
+        console.error(error);
       }
     }
-  }
+  };
 
   const handleSubCategoryEdit = (categoryId) => {
-    setParentCategoryId(categoryId)
-    setVisible4(true)
-  }
+    setParentCategoryId(categoryId);
+    setVisible4(true);
+  };
 
   const newSubCategory = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('description', description)
-    formData.append('icon', icon)
-    formData.append('orderNumber', orderNumber)
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("icon", icon);
+    formData.append("orderNumber", orderNumber);
 
     try {
       const response = await axios.post(
@@ -137,118 +152,131 @@ const Categories = () => {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
-        },
-      )
+        }
+      );
       setCategories((prevCategories) =>
         prevCategories.map((category) =>
           category.categoryId === parentCategoryId
             ? {
                 ...category,
-                subCategories: [...(category.subCategories || []), response.data],
+                subCategories: [
+                  ...(category.subCategories || []),
+                  response.data,
+                ],
               }
-            : category,
-        ),
-      )
-      toast.success('Alt kategori başarıyla eklendi!')
-      setName('')
-      setDescription('')
-      setIcon('')
-      setOrderNumber('')
-      setVisible4(false)
+            : category
+        )
+      );
+      toast.success("Alt kategori başarıyla eklendi!");
+      setName("");
+      setDescription("");
+      setIcon("");
+      setOrderNumber("");
+      setVisible4(false);
       setInterval(() => {
-        window.location.reload()
-      }, 1000)
+        window.location.reload();
+      }, 1000);
     } catch (error) {
-      console.error(error)
-      toast.error('Alt kategori eklenirken bir hata oluştu!')
+      console.error(error);
+      toast.error("Alt kategori eklenirken bir hata oluştu!");
     }
-  }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_BASE_URL}/category`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        console.log(response.data)
-        setCategories(response.data)
-        setFilteredCategories(response.data)
+        });
+        console.log(response.data);
+        setCategories(response.data);
+        setFilteredCategories(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
     const fetchSubCategories = async (categoryId) => {
-      console.log('123', categoryId)
+      console.log("123", categoryId);
       try {
-        const token = localStorage.getItem('token')
-        const response = await axios.get(`${API_BASE_URL}/category/${categoryId}/subcategory`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        setSubCategories(response.data)
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${API_BASE_URL}/category/${categoryId}/subcategory`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setSubCategories(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
-    fetchCategories()
+    fetchCategories();
     if (selectedCategoryId) {
-      fetchSubCategories(selectedCategoryId)
+      fetchSubCategories(selectedCategoryId);
     }
-  }, [selectedCategoryId])
+  }, [selectedCategoryId]);
 
   const handleDelete = async (categoryId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       await axios.delete(`${API_BASE_URL}/category/${categoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      setCategories(categories.filter((category) => category.categoryId !== categoryId))
-      toast.success('Başarıyla Kayıt Silindi!')
+      });
+      setCategories(
+        categories.filter((category) => category.categoryId !== categoryId)
+      );
+      toast.success("Başarıyla Kayıt Silindi!");
     } catch (error) {
-      console.error(error.response.data)
+      console.error(error.response.data);
     }
-  }
+  };
 
   const handleSubCategoryDelete = async (subCategoryId) => {
-    console.log(subCategoryId)
+    console.log(subCategoryId);
     try {
-      const token = localStorage.getItem('token')
-      await axios.delete(`${API_BASE_URL}/category/subcategory/${subCategoryId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `${API_BASE_URL}/category/subcategory/${subCategoryId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setSubCategories(
-        subCategories.filter((subCategory) => subCategory.subCategoryId !== subCategoryId),
-      )
-      toast.success('Alt kategori başarıyla silindi!')
+        subCategories.filter(
+          (subCategory) => subCategory.subCategoryId !== subCategoryId
+        )
+      );
+      toast.success("Alt kategori başarıyla silindi!");
     } catch (error) {
-      console.error(error.response.data)
-      toast.error('Alt kategori silinirken bir hata oluştu.')
+      console.error(error.response.data);
+      toast.error("Alt kategori silinirken bir hata oluştu.");
     }
-  }
+  };
   const editSubCategory = async (categoryId, subCategoryId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
 
-      const formData = new FormData()
-      formData.append('categoryId', categoryId)
-      formData.append('subCategoryId', subCategoryId)
-      formData.append('name', name)
-      formData.append('description', description)
-      formData.append('icon', icon)
-      formData.append('orderNumber', orderNumber)
-      formData.append('isActive', isActive)
+      const formData = new FormData();
+      formData.append("categoryId", categoryId);
+      formData.append("subCategoryId", subCategoryId);
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("icon", icon);
+      formData.append("orderNumber", orderNumber);
+      formData.append("isActive", isActive);
 
       await axios.put(
         `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`,
@@ -256,158 +284,175 @@ const Categories = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
-        },
-      )
+        }
+      );
 
       setSubCategories(
         subCategories.map((subCategory) =>
           subCategory.subCategoryId === subCategoryId
             ? { ...subCategory, name, description, icon, orderNumber }
-            : subCategory,
-        ),
-      )
-      toast.success('Alt kategori başarıyla güncellendi!')
-      setVisible3(false)
+            : subCategory
+        )
+      );
+      toast.success("Alt kategori başarıyla güncellendi!");
+      setVisible3(false);
     } catch (error) {
-      console.error(error.response.data)
-      toast.error('Alt kategori güncellenirken bir hata oluştu.')
+      console.error(error.response.data);
+      toast.error("Alt kategori güncellenirken bir hata oluştu.");
     }
-  }
+  };
 
   const categoryEdit = async (categoryId) => {
-    setEditCategoryId(categoryId)
+    setEditCategoryId(categoryId);
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`${API_BASE_URL}/category/${categoryId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log(response)
-      const categoryToEdit = response.data
-      setName(categoryToEdit.name)
-      setDescription(categoryToEdit.description)
-      setIcon(categoryToEdit.icon)
-      setOrderNumber(categoryToEdit.orderNumber)
-      setImageHorizontal(categoryToEdit.imageHorizontal)
-      setImageSquare(categoryToEdit.imageSquare)
-      setIsActive(categoryToEdit.isActive)
-      setVisible2(true)
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${API_BASE_URL}/category/${categoryId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response);
+      const categoryToEdit = response.data;
+      setName(categoryToEdit.name);
+      setDescription(categoryToEdit.description);
+      setIcon(categoryToEdit.icon);
+      setOrderNumber(categoryToEdit.orderNumber);
+      setImageHorizontal(categoryToEdit.imageHorizontal);
+      setImageSquare(categoryToEdit.imageSquare);
+      setIsActive(categoryToEdit.isActive);
+      setVisible2(true);
     } catch (error) {
-      console.error(error)
-      toast.error('Kategori bilgileri getirilirken bir hata oluştu.')
+      console.error(error);
+      toast.error("Kategori bilgileri getirilirken bir hata oluştu.");
     }
-  }
+  };
 
   const handleEdit = async (categoryId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
 
-      const formData = new FormData()
-      formData.append('categoryId', categoryId)
-      formData.append('name', name)
-      formData.append('description', description)
-      formData.append('icon', icon)
-      formData.append('orderNumber', orderNumber)
-      formData.append('imageHorizontal', imageHorizontal)
-      formData.append('imageSquare', imageSquare)
+      const formData = new FormData();
+      formData.append("categoryId", categoryId);
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("icon", icon);
+      formData.append("orderNumber", orderNumber);
+      formData.append("imageHorizontal", imageHorizontal);
+      formData.append("imageSquare", imageSquare);
 
-      const response = await axios.put(`${API_BASE_URL}/category/${categoryId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      const response = await axios.put(
+        `${API_BASE_URL}/category/${categoryId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       setCategories(
         categories.map((category) =>
-          category.categoryId === categoryId ? response.data : category,
-        ),
-      )
-      toast.success('Kategori başarıyla güncellendi!')
+          category.categoryId === categoryId ? response.data : category
+        )
+      );
+      toast.success("Kategori başarıyla güncellendi!");
       setInterval(() => {
-        window.location.reload()
-      }, 500)
-      setVisible2(false) // Edit modalı kapat
+        window.location.reload();
+      }, 500);
+      setVisible2(false); // Edit modalı kapat
     } catch (error) {
-      console.error(error)
-      toast.error(error.message)
+      console.error(error);
+      toast.error(error.message);
     }
-  }
+  };
 
   const handleEditSubCategoryModalOpen = async (categoryId, subCategoryId) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${API_BASE_URL}/category/${categoryId}/subcategory/${subCategoryId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
-      )
-      console.log(response)
-      const subCategoryToEdit = response.data
-      setEditSubCategoryId(subCategoryId)
-      setName(subCategoryToEdit.name || '')
-      setDescription(subCategoryToEdit.description || '')
-      setIcon(subCategoryToEdit.icon || '')
-      setOrderNumber(subCategoryToEdit.orderNumber || '')
-      setIsActive(subCategoryToEdit.isActive || '')
-      setVisible3(true)
+        }
+      );
+      console.log(response);
+      const subCategoryToEdit = response.data;
+      setEditSubCategoryId(subCategoryId);
+      setName(subCategoryToEdit.name || "");
+      setDescription(subCategoryToEdit.description || "");
+      setIcon(subCategoryToEdit.icon || "");
+      setOrderNumber(subCategoryToEdit.orderNumber || "");
+      setIsActive(subCategoryToEdit.isActive || "");
+      setVisible3(true);
     } catch (error) {
-      console.error(error)
-      toast.error('Alt kategori bilgileri getirilirken bir hata oluştu.')
+      console.error(error);
+      toast.error("Alt kategori bilgileri getirilirken bir hata oluştu.");
     }
-  }
+  };
 
   const downloadExcel = async () => {
     try {
-      const response = await fetch('http://10.10.3.181:5244/api/Category/exportCategories', {
-        method: 'GET',
-        headers: {
-          Accept: '*/*',
-        },
-      })
+      const response = await fetch(
+        "http://10.10.3.181:5244/api/Category/exportCategories",
+        {
+          method: "GET",
+          headers: {
+            Accept: "*/*",
+          },
+        }
+      );
 
       if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'Categories.xlsx'
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Categories.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
       } else {
-        console.error('Failed to download file:', response.statusText)
+        console.error("Failed to download file:", response.statusText);
       }
     } catch (error) {
-      console.error('Error occurred while downloading file:', error)
+      console.error("Error occurred while downloading file:", error);
     }
-  }
+  };
 
-  const indexOfLastItemCategories = currentPageCategories * itemsPerPage
-  const indexOfFirstItemCategories = indexOfLastItemCategories - itemsPerPage
+  const indexOfLastItemCategories = currentPageCategories * itemsPerPage;
+  const indexOfFirstItemCategories = indexOfLastItemCategories - itemsPerPage;
   const currentItems = filteredCategories.slice(
     indexOfFirstItemCategories,
-    indexOfLastItemCategories,
-  )
-  const totalPagesCategories = Math.ceil(filteredCategories.length / itemsPerPage)
+    indexOfLastItemCategories
+  );
+  const totalPagesCategories = Math.ceil(
+    filteredCategories.length / itemsPerPage
+  );
 
   // Pagination and filtering logic for subcategories
-  const indexOfLastItemSubCategories = currentPageSubCategories * itemsPerPage
-  const indexOfFirstItemSubCategories = indexOfLastItemSubCategories - itemsPerPage
+  const indexOfLastItemSubCategories = currentPageSubCategories * itemsPerPage;
+  const indexOfFirstItemSubCategories =
+    indexOfLastItemSubCategories - itemsPerPage;
   const filteredSubCategory = subCategories.filter((subCategory) =>
-    subCategory.name.toLowerCase().includes(searchQuerySubCategories.toLowerCase()),
-  )
+    subCategory.name
+      .toLowerCase()
+      .includes(searchQuerySubCategories.toLowerCase())
+  );
   const currentItemsSubCategories = filteredSubCategory.slice(
     indexOfFirstItemSubCategories,
-    indexOfLastItemSubCategories,
-  )
-  const totalPagesSubCategories = Math.ceil(filteredSubCategory.length / itemsPerPage)
+    indexOfLastItemSubCategories
+  );
+  const totalPagesSubCategories = Math.ceil(
+    filteredSubCategory.length / itemsPerPage
+  );
 
   return (
     <>
@@ -418,7 +463,9 @@ const Categories = () => {
         aria-labelledby="EditCategoryModalLabel"
       >
         <CModalHeader>
-          <CModalTitle id="EditCategoryModalLabel">Kategori Düzenle</CModalTitle>
+          <CModalTitle id="EditCategoryModalLabel">
+            Kategori Düzenle
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm className="mt-3">
@@ -443,10 +490,10 @@ const Categories = () => {
                   src={`http://10.10.3.181:5244/${icon}`}
                   alt="Ana Resim"
                   style={{
-                    maxWidth: '100px',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
                   }}
                 />
               </div>
@@ -471,10 +518,10 @@ const Categories = () => {
                   src={`http://10.10.3.181:5244/${imageHorizontal}`}
                   alt="Ana Resim"
                   style={{
-                    maxWidth: '100px',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
                   }}
                 />
               </div>
@@ -492,10 +539,10 @@ const Categories = () => {
                   src={`http://10.10.3.181:5244/${imageSquare}`}
                   alt="Ana Resim"
                   style={{
-                    maxWidth: '100px',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
                   }}
                 />
               </div>
@@ -509,7 +556,7 @@ const Categories = () => {
 
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
             />
@@ -537,7 +584,9 @@ const Categories = () => {
         aria-labelledby="LiveDemoExampleLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni Kategori Ekle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel">
+            Yeni Kategori Ekle
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm className="mt-3">
@@ -582,7 +631,7 @@ const Categories = () => {
             />
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -602,7 +651,9 @@ const Categories = () => {
         aria-labelledby="LiveDemoExampleLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Yeni Alt Kategori Ekle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel">
+            Yeni Alt Kategori Ekle
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm className="mt-3">
@@ -641,7 +692,7 @@ const Categories = () => {
             />
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -660,7 +711,9 @@ const Categories = () => {
         aria-labelledby="LiveDemoExampleLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Alt Kategori Düzenle</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel">
+            Alt Kategori Düzenle
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm className="mt-3">
@@ -685,10 +738,10 @@ const Categories = () => {
                   src={`http://10.10.3.181:5244/${icon}`}
                   alt="Ana Resim"
                   style={{
-                    maxWidth: '100px',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
                   }}
                 />
               </div>
@@ -709,7 +762,7 @@ const Categories = () => {
 
             <CFormSwitch
               id="isActive"
-              label={isActive ? 'Aktif' : 'Pasif'}
+              label={isActive ? "Aktif" : "Pasif"}
               className="mt-3"
               checked={isActive}
               onChange={() => setIsActive(!isActive)}
@@ -740,16 +793,24 @@ const Categories = () => {
       <CTable>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Kategori Adı
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Sıra
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Durum
             </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            <CTableHeaderCell
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+            >
               Eylemler
             </CTableHeaderCell>
           </CTableRow>
@@ -757,27 +818,35 @@ const Categories = () => {
         <CTableBody>
           {currentItems.map((category, index) => (
             <CTableRow key={index}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {category.name}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 {category.orderNumber}
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <div
                   style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: category.isActive ? '#d4edda' : '#f8d7da',
-                    color: category.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${category.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: category.isActive ? "#d4edda" : "#f8d7da",
+                    color: category.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${category.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                   }}
                 >
-                  {category.isActive ? 'Aktif' : 'Pasif'}
+                  {category.isActive ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CDropdown>
                   <CDropdownToggle color="primary">Seçenekler</CDropdownToggle>
                   <CDropdownMenu>
@@ -802,12 +871,15 @@ const Categories = () => {
                     <CDropdownItem
                       className="btn"
                       onClick={() => {
-                        setParentCategoryId(category.categoryId)
-                        setSelectedCategoryName(category.name)
-                        if (category.subCategories && category.subCategories.length > 0) {
-                          setSelectedCategoryId(category.categoryId)
+                        setParentCategoryId(category.categoryId);
+                        setSelectedCategoryName(category.name);
+                        if (
+                          category.subCategories &&
+                          category.subCategories.length > 0
+                        ) {
+                          setSelectedCategoryId(category.categoryId);
                         } else {
-                          toast.info('Alt kategori verisi bulunmamaktadır')
+                          toast.info("Alt kategori verisi bulunmamaktadır");
                         }
                       }}
                     >
@@ -843,7 +915,8 @@ const Categories = () => {
       {selectedCategoryId && subCategories.length > 0 && (
         <>
           <h3>
-            Alt Kategoriler <b className="text-primary"> ({selectedCategoryName})</b>
+            Alt Kategoriler{" "}
+            <b className="text-primary"> ({selectedCategoryName})</b>
           </h3>
           <CFormInput
             type="text"
@@ -855,51 +928,69 @@ const Categories = () => {
           <CTable>
             <CTableHead>
               <CTableRow>
-                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableHeaderCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   Alt Kategori Adı
                 </CTableHeaderCell>
-                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableHeaderCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   Sıra
                 </CTableHeaderCell>
-                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableHeaderCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   Durum
                 </CTableHeaderCell>
-                <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <CTableHeaderCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
                   Eylemler
                 </CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {currentItemsSubCategories.map((subCategory, index) => (
+              {currentItems.SubCategories.map((subCategory, index) => (
                 <CTableRow key={index}>
-                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CTableDataCell
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
+                  >
                     {subCategory.name}
                   </CTableDataCell>
-                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CTableDataCell
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
+                  >
                     {subCategory.orderNumber}
                   </CTableDataCell>
-                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CTableDataCell
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
+                  >
                     <div
                       style={{
-                        display: 'inline-block',
-                        padding: '5px 10px',
-                        borderRadius: '8px',
-                        backgroundColor: subCategory.isActive ? '#d4edda' : '#f8d7da',
-                        color: subCategory.isActive ? '#155724' : '#721c24',
-                        border: `1px solid ${subCategory.isActive ? '#c3e6cb' : '#f5c6cb'}`,
+                        display: "inline-block",
+                        padding: "5px 10px",
+                        borderRadius: "8px",
+                        backgroundColor: subCategory.isActive
+                          ? "#d4edda"
+                          : "#f8d7da",
+                        color: subCategory.isActive ? "#155724" : "#721c24",
+                        border: `1px solid ${subCategory.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                       }}
                     >
-                      {subCategory.isActive ? 'Aktif' : 'Pasif'}
+                      {subCategory.isActive ? "Aktif" : "Pasif"}
                     </div>
                   </CTableDataCell>
-                  <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <CTableDataCell
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
+                  >
                     <CButton
                       color="primary"
                       className="me-2"
                       onClick={() =>
                         handleEditSubCategoryModalOpen(
                           selectedCategoryId,
-                          subCategory.subCategoryId,
+                          subCategory.subCategoryId
                         )
                       }
                     >
@@ -907,7 +998,9 @@ const Categories = () => {
                     </CButton>
                     <CButton
                       color="danger text-white"
-                      onClick={() => handleSubCategoryDelete(subCategory.subCategoryId)}
+                      onClick={() =>
+                        handleSubCategoryDelete(subCategory.subCategoryId)
+                      }
                     >
                       <CIcon icon={cilTrash} />
                     </CButton>
@@ -937,7 +1030,7 @@ const Categories = () => {
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default Categories
+export default Categories;

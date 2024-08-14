@@ -16,258 +16,168 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
   CFormSelect,
   CPagination,
   CPaginationItem,
+  CFormSwitch,
 } from "@coreui/react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from "../../../../config";
+import {
+  createWarehouseConnection,
+  deleteWarehouseConnection,
+  fetchWarehouseConnection,
+  fetchChannel,
+  fetchWarehouse,
+  fetchWarehouseConnectionForID,
+  updateWarehouseConnection,
+} from "src/api/useApi";
 
 function WarehouseConnection() {
-  const [warehouseConnection, setwarehouseConnection] = useState([]);
-  const [isActive, setIsActive] = useState(false);
-  const [editWareHouseConnectionId, setEditWareHouseConnectionId] =
-    useState(null);
-  const [warehouse, setWarehouse] = useState([]);
-  const [channel, setChannel] = useState([]);
-  const [visible, setVisible] = useState(false);
-  const [visible2, setVisible2] = useState(false);
-  const [selectedChannelId, setSelectedChannelId] = useState("");
-  const [selectedWarehouse, setSelectedWarehouse] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredWarehouseConnection, setFilteredWarehouseConnection] =
-    useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [state, setState] = useState({
+    warehouseConnection: [],
+    isActive: false,
+    editWarehouseConnectionId: null,
+    warehouse: [],
+    channel: [],
+    modalVisible: false,
+    editWarehouseConnectionData: {},
+    selectedChannelId: "",
+    selectedWarehouseId: "",
+    searchQuery: "",
+    filteredWarehouseConnection: [],
+    currentPage: 1,
+  });
   const itemsPerPage = 10;
-  const [editwarehouseConnectionData, setEditwarehouseConnectionData] =
-    useState({
-      warehouseConnectionId: "",
-      warehouse: "",
-      title: "",
-      largeImageg: "",
-      smallImage: "",
-      tags: "",
-      slug: "",
-      orderNumber: 0,
-      date: "",
-      isActive: false,
-    });
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filteredData = warehouseConnection
-      .filter(
-        (warehouseConnection) =>
-          warehouseConnection.channelName
-            .toLowerCase()
-            .includes(lowercasedQuery) ||
-          warehouseConnection.warehouseName
-            .toLowerCase()
-            .includes(lowercasedQuery)
-      )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
-    setFilteredWarehouseConnection(filteredData);
-  }, [searchQuery, warehouseConnection]);
+    const loadWarehouseConnection = async () => {
+      const [warehouseConnections, channel, warehouse] = await Promise.all([
+        fetchWarehouseConnection(),
+        fetchChannel(),
+        fetchWarehouse(),
+      ]);
+      setState((prevState) => ({
+        ...prevState,
+        channel,
+        warehouse,
+        warehouseConnection: warehouseConnections,
+        filteredWarehouseConnection: warehouseConnections,
+      }));
+    };
+    loadWarehouseConnection();
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = {
-      warehouseId: selectedWarehouse,
-      channelId: selectedChannelId,
+  const handleModalOpen = async (formId = null) => {
+    if (formId) {
+      const data = await fetchWarehouseConnectionForID(formId);
+      setState((prevState) => ({
+        ...prevState,
+        editWarehouseConnectionId: formId,
+        selectedChannelId: data.channelId,
+        selectedWarehouseId: data.warehouseId,
+        modalVisible: true,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        selectedChannelId: "",
+        selectedWarehouseId: "",
+        modalVisible: true,
+      }));
+    }
+  };
+
+  const handleSave = async () => {
+    const {
+      editWarehouseConnectionId,
       isActive,
+      selectedChannelId,
+      selectedWarehouseId,
+    } = state;
+
+    const WarehouseConnectionData = {
+      isActive,
+      channelId: selectedChannelId,
+      warehouseId: selectedWarehouseId,
+      warehouseConnectionId: editWarehouseConnectionId,
     };
 
-    try {
-      await axios.post(
-        `${API_BASE_URL}/warehouse/warehouseConnection`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+    if (editWarehouseConnectionId) {
+      console.log("here3", WarehouseConnectionData);
+
+      await updateWarehouseConnection(
+        editWarehouseConnectionId,
+        WarehouseConnectionData
       );
-      toast.success("warehouseConnection başarıyla eklendi!");
-      setInterval(() => {
-        window.location.reload();
-      }, 500);
-      setVisible(false);
-      setSelectedChannelId("");
-      setSelectedWarehouse("");
-      setIsActive(false);
-    } catch (error) {
-      console.error(error);
-      toast.error("warehouseConnection eklenirken bir hata oluştu!");
+
+      toast.success("WarehouseConnection başarıyla güncellendi.");
+    } else {
+      await createWarehouseConnection(WarehouseConnectionData);
+      toast.success("WarehouseConnection başarıyla oluşturuldu.");
     }
+
+    setState((prevState) => ({
+      ...prevState,
+      modalVisible: false,
+      WarehouseConnection: fetchWarehouseConnection(),
+      filteredWarehouseConnection: fetchWarehouseConnection(),
+    }));
   };
 
   useEffect(() => {
-    const fetchwarehouseConnection = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `${API_BASE_URL}/warehouse/warehouseConnection`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log(response.data);
-        setwarehouseConnection(response.data);
-      } catch (error) {
-        console.error(error);
-      }
+    const filterWarehouseConnection = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.warehouseConnection.filter((item) =>
+        [item.channelName, item.warehouseName]
+          .map((item) => item.toLowerCase())
+          .some((item) => item.includes(lowercasedQuery))
+      );
+      setState((prevState) => ({
+        ...prevState,
+        filteredWarehouseConnection: filteredData,
+      }));
     };
 
-    fetchwarehouseConnection();
-  }, []);
+    filterWarehouseConnection();
+  }, [state.searchQuery, state.warehouseConnection]);
 
-  const fetchWarehouse = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/warehouse`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("warehouse:", response.data) / setWarehouse(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching warehouse:",
-        error.response ? error.response.data : error.message
-      );
-    }
+  const handleDelete = async (formId) => {
+    await deleteWarehouseConnection(formId);
+    toast.success("WarehouseConnection başarıyla silindi!");
+    setState((prevState) => ({
+      ...prevState,
+      WarehouseConnection: prevState.warehouseConnection.filter(
+        (item) => item.warehouseConnectionId !== formId
+      ),
+      filteredWarehouseConnection: prevState.filteredWarehouseConnection.filter(
+        (item) => item.warehouseConnectionId !== formId
+      ),
+    }));
   };
 
-  const fetchChannel = async (channelId) => {
-    try {
-      console.log("Fetching channel for channelId:", channelId);
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/channel`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("channel response:", response.data);
-      setChannel(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching channel:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
-
-  useEffect(() => {
-    fetchWarehouse();
-    fetchChannel(selectedChannelId);
-  }, []);
-
-  const handlechannelChange = (event) => {
-    const selectedId = event.target.value;
-    setSelectedChannelId(selectedId);
-    fetchChannel(selectedId);
-  };
-  const handlewarehouseChange = (event) => {
-    const selectedId = event.target.value;
-    setSelectedWarehouse(selectedId);
-    console.log(selectedId);
-  };
-
-  const handleDelete = async (warehouseConnectionId) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(
-        `${API_BASE_URL}/warehouse/warehouseConnection/${warehouseConnectionId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setwarehouseConnection(
-        warehouseConnection.filter(
-          (warehouseConnection) =>
-            warehouseConnection.warehouseConnectionId !== warehouseConnectionId
-        )
-      );
-      toast.success("warehouseConnection başarıyla silindi!");
-    } catch (error) {
-      console.error(error.response.data);
-      toast.error("warehouseConnection silinirken bir hata oluştu!");
-    }
-  };
-
-  const handleEditModalOpen = async (warehouseConnectionId) => {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(
-      `${API_BASE_URL}/warehouse/warehouseConnection/${warehouseConnectionId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+  const handleEdit = async () => {
+    const updatedData = state.editWarehouseConnectionData;
+    await updateWarehouseConnection(
+      state.editWarehouseConnectionData.warehouseConnectionId,
+      updatedData
     );
-    console.log("idwarehouseConnection", response);
-
-    const warehouseConnectionData = response.data;
-    setEditWareHouseConnectionId(warehouseConnectionId);
-    setEditwarehouseConnectionData(warehouseConnectionData);
-    setSelectedWarehouse(warehouseConnectionData.warehouseName || "");
-    setSelectedChannelId(warehouseConnectionData.channelId || "");
-    setIsActive(warehouseConnectionData.isActive || false);
-    setVisible2(true);
+    toast.success("Warehouseconnection başarıyla güncellendi.");
+    setState((prevState) => ({
+      ...prevState,
+      warehouseConnection: prevState.warehouseConnection.map((item) =>
+        item.warehouseConnectionId === updatedData.warehouseConnectionId
+          ? updatedData
+          : item
+      ),
+      modalVisible: false,
+    }));
   };
 
-  const handleEdit = async (warehouseConnectionId) => {
-    const formData = {
-      warehouseConnectionId,
-      warehouseId: selectedWarehouse,
-      channelId: selectedChannelId,
-      isActive,
-    };
-
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `${API_BASE_URL}/warehouse/warehouseConnection/${warehouseConnectionId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      toast.success("warehouseConnection başarıyla güncellendi!");
-      setInterval(() => {
-        window.location.reload();
-      }, 500);
-      setVisible2(false);
-    } catch (error) {
-      console.error("Error response:", error.response);
-      if (error.response && error.response.status === 409) {
-        toast.error(
-          "Çakışma: warehouseConnection ID zaten mevcut veya veri çakışması yaşandı."
-        );
-      } else {
-        toast.error("warehouseConnection güncellenirken hata oluştu.");
-      }
-    }
-  };
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredWarehouseConnection.slice(
-    indexOfFirstItem,
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredWarehouseConnection.slice(
+    indexOfLastItem - itemsPerPage,
     indexOfLastItem
-  );
-  const totalPages = Math.ceil(
-    filteredWarehouseConnection.length / itemsPerPage
   );
 
   return (
@@ -276,7 +186,7 @@ function WarehouseConnection() {
       <CButton
         color="primary"
         className="mb-3"
-        onClick={() => setVisible(true)}
+        onClick={() => handleModalOpen()}
       >
         Yeni Depo-Kanal Yönetimi Ekle
       </CButton>
@@ -284,31 +194,64 @@ function WarehouseConnection() {
         type="text"
         id="search"
         placeholder="Arama"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={state.searchQuery}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            searchQuery: e.target.value,
+          }))
+        }
       />
 
       <CModal
-        visible={visible}
-        onClose={() => setVisible(false)}
-        aria-labelledby="LiveDemoExampleLabel"
+        visible={state.modalVisible}
+        onClose={() =>
+          setState((prevState) => ({ ...prevState, modalVisible: false }))
+        }
+        aria-labelledby="ModalLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">
-            Yeni warehouseConnection Ekle
+          <CModalTitle id="ModalLabel">
+            {state.editWarehouseConnectionId
+              ? "WarehouseConnection Düzenle"
+              : "Yeni WarehouseConnection Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <CFormSelect
+              label="Kanal"
+              className="mb-3"
+              aria-label="Select Channel"
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  selectedChannelId: e.target.value,
+                }))
+              }
+              value={state.selectedChannelId}
+            >
+              <option value="">Kanal Seçiniz</option>
+              {state.channel.map((channel) => (
+                <option key={channel.channelId} value={channel.channelId}>
+                  {channel.name}
+                </option>
+              ))}
+            </CFormSelect>
+            <CFormSelect
               label="Depo"
               className="mb-3"
-              aria-label="Select warehouse"
-              onChange={handlewarehouseChange}
-              value={selectedWarehouse}
+              aria-label="Select Warehouse"
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  selectedWarehouseId: e.target.value,
+                }))
+              }
+              value={state.selectedWarehouseId}
             >
               <option value="">Depo Seçiniz</option>
-              {warehouse.map((warehouse) => (
+              {state.warehouse.map((warehouse) => (
                 <option
                   key={warehouse.warehouseId}
                   value={warehouse.warehouseId}
@@ -317,164 +260,88 @@ function WarehouseConnection() {
                 </option>
               ))}
             </CFormSelect>
-
-            <CFormSelect
-              label="Kanal"
-              className="mb-3"
-              aria-label="Select channel"
-              onChange={handlechannelChange}
-              value={selectedChannelId}
-            >
-              <option value="">Kanal Seçiniz</option>
-              {channel.map((channel) => (
-                <option key={channel.channelId} value={channel.channelId}>
-                  {channel.name}
-                </option>
-              ))}
-            </CFormSelect>
-
             <CFormSwitch
+              label="Aktif"
               id="isActive"
-              label={isActive ? "Aktif" : "Pasif"}
               className="mb-3"
-              checked={isActive}
-              onChange={() => setIsActive(!isActive)}
+              checked={state.isActive}
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  isActive: e.target.checked,
+                }))
+              }
             />
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
-            Kapat
-          </CButton>
-          <CButton color="primary" onClick={handleSubmit}>
-            Kaydet
-          </CButton>
-        </CModalFooter>
-      </CModal>
-
-      <CModal
-        visible={visible2}
-        onClose={() => setVisible2(false)}
-        aria-labelledby="LiveDemoExampleLabel2"
-      >
-        <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">
-            warehouseConnection Düzenle
-          </CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CForm>
-            <CFormSelect
-              label="Depo"
-              className="mb-3"
-              aria-label="Select warehouse"
-              onChange={handlewarehouseChange}
-              value={selectedWarehouse}
-            >
-              <option value="">Depo Seçiniz</option>
-              {warehouse.map((warehouse) => (
-                <option
-                  key={warehouse.warehouseId}
-                  value={warehouse.warehouseId}
-                >
-                  {warehouse.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSelect
-              label="Kanal"
-              className="mb-3"
-              aria-label="Select channel"
-              onChange={handlechannelChange}
-              value={selectedChannelId}
-            >
-              <option value="">Kanal Seçiniz</option>
-              {channel.map((channel) => (
-                <option key={channel.channelId} value={channel.channelId}>
-                  {channel.name}
-                </option>
-              ))}
-            </CFormSelect>
-
-            <CFormSwitch
-              id="isActive"
-              label={isActive ? "Aktif" : "Pasif"}
-              className="mb-3"
-              checked={isActive}
-              onChange={() => setIsActive(!isActive)}
-            />
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible2(false)}>
-            Kapat
-          </CButton>
           <CButton
-            color="primary"
-            onClick={() => handleEdit(editWareHouseConnectionId)}
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({ ...prevState, modalVisible: false }))
+            }
           >
-            Değişiklikleri Kaydet
+            Kapat
+          </CButton>
+          <CButton color="primary" onClick={handleSave}>
+            {state.editWarehouseConnectionId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
-
-      <CTable>
+      <CTable hover>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Depo Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Kanal Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Durum
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Eylemler
-            </CTableHeaderCell>
+            {[
+              { label: "Depo Adı", value: "warehouseName" },
+              { label: "Kanal Adı", value: "channelName" },
+              { label: "Durum", value: "isActive", isStatus: true },
+              { label: "Eylemler", value: "actions" },
+            ].map(({ label, value, isStatus }) => (
+              <CTableHeaderCell
+                key={value}
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                {label}
+              </CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {currentItems.map((warehouseConnection) => (
             <CTableRow key={warehouseConnection.warehouseConnectionId}>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {warehouseConnection.warehouseName}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {warehouseConnection.channelName}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                <div
-                  style={{
-                    display: "inline-block",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    backgroundColor: warehouseConnection.isActive
-                      ? "#d4edda"
-                      : "#f8d7da",
-                    color: warehouseConnection.isActive ? "#155724" : "#721c24",
-                    border: `1px solid ${warehouseConnection.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                  }}
+              {[
+                { value: "warehouseName", isImage: false, isStatus: false },
+                { value: "channelName", isImage: false, isStatus: false },
+                { value: "isActive", isImage: false, isStatus: true },
+              ].map(({ value, isStatus }) => (
+                <CTableDataCell
+                  key={value}
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
-                  {warehouseConnection.isActive ? "Aktif" : "Pasif"}
-                </div>
-              </CTableDataCell>
+                  {isStatus ? (
+                    <div
+                      style={{
+                        display: "inline-block",
+                        padding: "5px 10px",
+                        borderRadius: "8px",
+                        backgroundColor: warehouseConnection[value]
+                          ? "#d4edda"
+                          : "#f8d7da",
+                        color: warehouseConnection[value]
+                          ? "#155724"
+                          : "#721c24",
+                        border: `1px solid ${
+                          warehouseConnection[value] ? "#c3e6cb" : "#f5c6cb"
+                        }`,
+                      }}
+                    >
+                      {warehouseConnection[value] ? "Aktif" : "Pasif"}
+                    </div>
+                  ) : (
+                    warehouseConnection[value]
+                  )}
+                </CTableDataCell>
+              ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
@@ -482,9 +349,7 @@ function WarehouseConnection() {
                   color="primary"
                   className="me-2"
                   onClick={() =>
-                    handleEditModalOpen(
-                      warehouseConnection.warehouseConnectionId
-                    )
+                    handleModalOpen(warehouseConnection.warehouseConnectionId)
                   }
                 >
                   <CIcon icon={cilPencil} />
@@ -502,23 +367,26 @@ function WarehouseConnection() {
           ))}
         </CTableBody>
       </CTable>
-      <CPagination
-        aria-label="Page navigation"
-        className="mt-3 btn border-0"
-        align="center"
-        items={totalPages}
-        active={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-      >
-        {[...Array(totalPages).keys()].map((page) => (
-          <CPaginationItem
-            key={page + 1}
-            active={page + 1 === currentPage}
-            onClick={() => setCurrentPage(page + 1)}
-          >
-            {page + 1}
-          </CPaginationItem>
-        ))}
+
+      <CPagination>
+        {Array.from(
+          {
+            length: Math.ceil(
+              state.filteredWarehouseConnection.length / itemsPerPage
+            ),
+          },
+          (_, i) => (
+            <CPaginationItem
+              key={i + 1}
+              active={i + 1 === state.currentPage}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, currentPage: i + 1 }))
+              }
+            >
+              {i + 1}
+            </CPaginationItem>
+          )
+        )}
       </CPagination>
     </>
   );

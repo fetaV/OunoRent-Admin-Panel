@@ -322,7 +322,7 @@ const Slider = () => {
               <div>
                 <label>Mevcut Ana Resim:</label>
                 <img
-                  src={`http://10.10.3.181:5244/${mainImageUrl}`}
+                  src={`http://188.132.178.191:5244/${mainImageUrl}`}
                   alt="Ana Resim"
                   style={{
                     width: "100%",
@@ -344,7 +344,7 @@ const Slider = () => {
               <div>
                 <label>Mevcut Mobil Resim:</label>
                 <img
-                  src={`http://10.10.3.181:5244/${mobileImageUrl}`}
+                  src={`http://188.132.178.191:5244/${mobileImageUrl}`}
                   alt="Mobil Resim"
                   style={{
                     maxWidth: "100px",
@@ -529,7 +529,7 @@ const Slider = () => {
                   style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
                   <img
-                    src={`http://10.10.3.181:5244/${slider.mainImageUrl}`}
+                    src={`http://188.132.178.191:5244/${slider.mainImageUrl}`}
                     alt="Mobil Resim"
                     style={{
                       width: "100px",
@@ -548,7 +548,7 @@ const Slider = () => {
                     }}
                   >
                     <img
-                      src={`http://10.10.3.181:5244/${slider.mobileImageUrl}`}
+                      src={`http://188.132.178.191:5244/${slider.mobileImageUrl}`}
                       alt="Küçük Resim"
                       style={{
                         width: "50px",
