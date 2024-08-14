@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
 import { cilPencil, cilTrash } from "@coreui/icons";
 import {
@@ -16,121 +16,159 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
-  CFormTextarea,
   CPagination,
   CPaginationItem,
+  CFormSwitch,
+  CFormTextarea,
 } from "@coreui/react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from "../../../../config";
+import {
+  createFaq,
+  deleteFaq,
+  fetchFaq,
+  fetchFaqForID,
+  updateFaq,
+} from "src/api/useApi";
 
 const Faq = () => {
-  const [faq, setFaq] = useState([]);
-  const [currentFaq, setCurrentFaq] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredFaq, setFilteredFaq] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const [newFaq, setNewFaq] = useState({
-    label: "",
+  const [state, setState] = useState({
+    faq: [],
+    currentFaq: null,
+    searchQuery: "",
+    filteredFaq: [],
+    currentPage: 1,
+    modalVisible: false,
+    editFaqId: null,
     text: "",
-    orderNumber: 0,
-    isActive: false,
+    isActive: true,
   });
-  const [visible, setVisible] = useState(false);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredFaq.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredFaq.length / itemsPerPage);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filteredData = faq
-      .filter(
-        (item) =>
-          item.label.toLowerCase().includes(lowercasedQuery) ||
-          item.orderNumber.toString().includes(lowercasedQuery)
-      )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
-
-    setFilteredFaq(filteredData);
-  }, [searchQuery, faq]);
-
-  useEffect(() => {
-    fetchFaq();
+    const loadFaq = async () => {
+      const faq = await fetchFaq();
+      setState((prevState) => ({
+        ...prevState,
+        faq,
+        filteredFaq: faq,
+      }));
+    };
+    loadFaq();
   }, []);
 
-  const fetchFaq = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/faq`);
-      console.log(response);
-      setFaq(response.data);
-      setFilteredFaq(response.data);
-    } catch (error) {
-      console.error("getFaq error:", error);
-      toast.error("Failed to fetch FAQ items");
+  const handleModalOpen = async (formId = null) => {
+    if (formId) {
+      const data = await fetchFaqForID(formId);
+      setState((prevState) => ({
+        ...prevState,
+        label: data.label,
+        text: data.text,
+        orderNumber: data.orderNumber,
+        editFaqId: formId,
+        modalVisible: true,
+        isActive: data.isActive,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        label: "",
+        text: "",
+        orderNumber: "",
+        editFaqId: null,
+        modalVisible: true,
+        isActive: true,
+      }));
     }
   };
 
-  const handleCreateFaq = async () => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/faq`, newFaq);
-      toast.success("FAQ item created successfully");
-      fetchFaq();
-      setVisible(false);
-    } catch (error) {
-      console.error("createFaq error:", error);
-      toast.error("Failed to create FAQ item");
+  const handleSave = async () => {
+    const { editFaqId, isActive, label } = state;
+
+    const faqData = {
+      label,
+      text: "",
+      orderNumber: 0,
+      isActive,
+    };
+
+    if (editFaqId) {
+      await updateFaq(editFaqId, faqData);
+      toast.success("FAQ başarıyla güncellendi.");
+    } else {
+      await createFaq(faqData);
+      toast.success("FAQ başarıyla oluşturuldu.");
     }
+
+    const updatedFaq = await fetchFaq();
+    setState((prevState) => ({
+      ...prevState,
+      modalVisible: false,
+      faq: updatedFaq,
+      filteredFaq: updatedFaq,
+    }));
   };
 
-  const handleUpdateFaq = async (faqId) => {
-    try {
-      const response = await axios.put(
-        `${API_BASE_URL}/faq/${faqId}`,
-        currentFaq
+  const handleDelete = async (formId) => {
+    await deleteFaq(formId);
+    toast.success("FAQ başarıyla silindi!");
+    const updatedFaq = await fetchFaq();
+    setState((prevState) => ({
+      ...prevState,
+      faq: updatedFaq,
+      filteredFaq: updatedFaq,
+    }));
+  };
+
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredFaq.slice(
+    indexOfLastItem - itemsPerPage,
+    indexOfLastItem
+  );
+
+  useEffect(() => {
+    const filterFaq = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.faq.filter((item) =>
+        [item.label, item.orderNumber.toString()]
+          .map((item) => item.toLowerCase() || item.toString())
+          .some((item) => item.includes(lowercasedQuery))
       );
-      toast.success("FAQ item updated successfully");
-      fetchFaq();
-      setVisible(false);
-    } catch (error) {
-      console.error("updateFaq error:", error);
-      toast.error("Failed to update FAQ item");
-    }
-  };
+      setState((prevState) => ({
+        ...prevState,
+        filteredFaq: filteredData,
+      }));
+    };
 
-  const handleDeleteFaq = async (faqId) => {
-    try {
-      const response = await axios.delete(`${API_BASE_URL}/faq/${faqId}`);
-      toast.success("FAQ item deleted successfully");
-      fetchFaq();
-    } catch (error) {
-      console.error("deleteFaq error:", error);
-      toast.error("Failed to delete FAQ item");
-    }
-  };
+    filterFaq();
+  }, [state.searchQuery, state.faq]);
 
-  const handleEditButtonClick = async (faqId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/faq/${faqId}`);
-      setCurrentFaq(response.data);
-      setVisible(true);
-    } catch (error) {
-      console.error("Error fetching the FAQ item:", error);
-      toast.error("Failed to fetch FAQ item");
-    }
+  const handleToggleActive = async (faqId, currentStatus) => {
+    const updatedFaq = {
+      ...state.faq.find((item) => item.faqId === faqId),
+      isActive: !currentStatus,
+    };
+
+    await updateFaq(faqId, updatedFaq);
+
+    toast.success("FAQ durumu başarıyla güncellendi.");
+
+    const updatedFaqList = await fetchFaq();
+
+    setState((prevState) => ({
+      ...prevState,
+      faq: updatedFaqList,
+      filteredFaq: updatedFaqList,
+    }));
   };
 
   return (
     <div>
       <ToastContainer />
-
       <CButton
         color="primary"
         className="mb-3"
-        onClick={() => setVisible(true)}
+        onClick={() => handleModalOpen()}
       >
         Yeni FAQ Ekle
       </CButton>
@@ -138,177 +176,184 @@ const Faq = () => {
         type="text"
         id="search"
         placeholder="Arama"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={state.searchQuery}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            searchQuery: e.target.value,
+          }))
+        }
       />
-
-      <CTable>
+      <CTable hover>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Soru Başlığı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Sıra Numarası
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Durum
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Eylemler
-            </CTableHeaderCell>
+            {[
+              { label: "Label", value: "label" },
+              { label: "Order Number", value: "orderNumber" },
+              { label: "Active", value: "isActive", isStatus: true },
+              { label: "Actions", value: "actions" },
+            ].map(({ label, value }) => (
+              <CTableHeaderCell
+                key={value}
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                {label}
+              </CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems
-            .sort((a, b) =>
-              a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1
-            )
-            .map((item) => (
-              <CTableRow key={item.faqId}>
-                <CTableDataCell
-                  style={{ textAlign: "center", verticalAlign: "middle" }}
+          {currentItems.map((item) => (
+            <CTableRow key={item.faqId}>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                {item.label}
+              </CTableDataCell>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                {item.orderNumber}
+              </CTableDataCell>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                <div
+                  style={{
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
+                    color: item.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleToggleActive(item.faqId)}
                 >
-                  {item.label}
-                </CTableDataCell>
-                <CTableDataCell
-                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                  {item.isActive ? "Aktif" : "Pasif"}
+                </div>
+              </CTableDataCell>
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                <CButton
+                  color="primary"
+                  className="me-2"
+                  onClick={() => handleModalOpen(item.faqId)}
                 >
-                  {item.orderNumber}
-                </CTableDataCell>
-                <CTableDataCell
-                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                  <CIcon icon={cilPencil} />
+                </CButton>
+                <CButton
+                  color="danger"
+                  onClick={() => handleDelete(item.faqId)}
                 >
-                  <div
-                    style={{
-                      display: "inline-block",
-                      padding: "5px 10px",
-                      borderRadius: "8px",
-                      backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
-                      color: item.isActive ? "#155724" : "#721c24",
-                      border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                    }}
-                  >
-                    {item.isActive ? "Aktif" : "Pasif"}
-                  </div>
-                </CTableDataCell>
-                <CTableDataCell
-                  style={{ textAlign: "center", verticalAlign: "middle" }}
-                >
-                  <CButton
-                    color="primary text-white"
-                    className="me-2"
-                    onClick={() => handleEditButtonClick(item.faqId)}
-                  >
-                    <CIcon icon={cilPencil} />
-                  </CButton>
-                  <CButton
-                    color="danger text-white"
-                    onClick={() => handleDeleteFaq(item.faqId)}
-                  >
-                    <CIcon icon={cilTrash} />
-                  </CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
+                  <CIcon icon={cilTrash} />
+                </CButton>
+              </CTableDataCell>
+            </CTableRow>
+          ))}
         </CTableBody>
       </CTable>
 
-      <CPagination
-        aria-label="Page navigation"
-        className="mt-3"
-        align="center"
-        items={totalPages}
-        active={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-      >
-        {[...Array(totalPages).keys()].map((page) => (
-          <CPaginationItem
-            key={page + 1}
-            active={page + 1 === currentPage}
-            onClick={() => setCurrentPage(page + 1)}
-          >
-            {page + 1}
-          </CPaginationItem>
-        ))}
+      <CPagination>
+        {Array.from(
+          {
+            length: Math.ceil(state.filteredFaq.length / itemsPerPage),
+          },
+          (_, i) => (
+            <CPaginationItem
+              key={i + 1}
+              active={i + 1 === state.currentPage}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, currentPage: i + 1 }))
+              }
+            >
+              {i + 1}
+            </CPaginationItem>
+          )
+        )}
       </CPagination>
 
-      <CModal visible={visible} onClose={() => setVisible(false)}>
+      <CModal
+        visible={state.modalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            modalVisible: false,
+          }))
+        }
+      >
         <CModalHeader>
-          <CModalTitle>
-            {currentFaq ? "Edit FAQ Item" : "Create FAQ Item"}
-          </CModalTitle>
+          <CModalTitle>FAQ {state.editFaqId ? "Güncelle" : "Ekle"}</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <CFormInput
               type="text"
-              className="mb-3"
-              label="Soru Başlığı"
-              value={currentFaq ? currentFaq.label : newFaq.label}
+              id="label"
+              label="Label"
+              value={state.label}
               onChange={(e) =>
-                currentFaq
-                  ? setCurrentFaq({ ...currentFaq, label: e.target.value })
-                  : setNewFaq({ ...newFaq, label: e.target.value })
+                setState((prevState) => ({
+                  ...prevState,
+                  label: e.target.value,
+                }))
               }
             />
             <CFormTextarea
               type="text"
-              className="mb-3"
+              id="text"
               label="Metin"
               rows={5}
-              value={currentFaq ? currentFaq.text : newFaq.text}
+              value={state.text}
               onChange={(e) =>
-                currentFaq
-                  ? setCurrentFaq({ ...currentFaq, text: e.target.value })
-                  : setNewFaq({ ...newFaq, text: e.target.value })
+                setState((prevState) => ({
+                  ...prevState,
+                  text: e.target.value,
+                }))
               }
             />
             <CFormInput
               type="number"
-              className="mb-3"
-              placeholder="Order Number"
+              id="orderNumber"
               label="Sıra Numarası"
-              value={currentFaq ? currentFaq.orderNumber : newFaq.orderNumber}
+              value={state.orderNumber}
               onChange={(e) =>
-                currentFaq
-                  ? setCurrentFaq({
-                      ...currentFaq,
-                      orderNumber: +e.target.value,
-                    })
-                  : setNewFaq({ ...newFaq, orderNumber: +e.target.value })
+                setState((prevState) => ({
+                  ...prevState,
+                  orderNumber: e.target.value,
+                }))
               }
             />
-            <CFormSwitch
-              label="Durum"
-              checked={currentFaq ? currentFaq.isActive : newFaq.isActive}
-              onChange={(e) =>
-                currentFaq
-                  ? setCurrentFaq({ ...currentFaq, isActive: e.target.checked })
-                  : setNewFaq({ ...newFaq, isActive: e.target.checked })
-              }
-            />
+            {state.editFaqId === null && (
+              <CFormSwitch
+                id="isActive"
+                label={state.isActive ? "Aktif" : "Pasif"}
+                checked={state.isActive}
+                onChange={(e) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    isActive: e.target.checked,
+                  }))
+                }
+              />
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
-            Close
-          </CButton>
           <CButton
-            color="primary"
+            color="secondary"
             onClick={() =>
-              currentFaq ? handleUpdateFaq(currentFaq.faqId) : handleCreateFaq()
+              setState((prevState) => ({
+                ...prevState,
+                modalVisible: false,
+              }))
             }
           >
-            {currentFaq ? "Save Changes" : "Create"}
+            Kapat
+          </CButton>
+          <CButton color="primary" onClick={handleSave}>
+            Kaydet
           </CButton>
         </CModalFooter>
       </CModal>

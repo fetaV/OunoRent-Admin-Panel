@@ -103,6 +103,35 @@ export const updateWarehouseConnection = async (warehouseConnectionId) => {
 export const fetchChannel = async () => {
   return apiRequest("get", `/channel`);
 };
+
+export const createWarehouse = async () => {
+  return apiRequest("post", "/warehouse");
+};
 export const fetchWarehouse = async () => {
-  return apiRequest("get", `/warehouse`);
+  return apiRequest("get", "/warehouse");
+};
+export const fetchWarehouseForID = async (warehouseId) => {
+  return apiRequest("get", `/warehouse/${warehouseId}`);
+};
+export const deleteWarehouse = async (warehouseId) => {
+  await apiRequest("delete", `/warehouse/${warehouseId}`);
+};
+export const updateWarehouse = async (warehouseId) => {
+  await apiRequest("put", `/Warehouse/${warehouseId}`);
+};
+
+export const createFaq = async () => {
+  return apiRequest("post", "/Faq");
+};
+export const fetchFaq = async () => {
+  return apiRequest("get", "/Faq");
+};
+export const fetchFaqForID = async (FaqId) => {
+  return apiRequest("get", `/Faq/${FaqId}`);
+};
+export const deleteFaq = async (FaqId) => {
+  await apiRequest("delete", `/Faq/${FaqId}`);
+};
+export const updateFaq = async (FaqId) => {
+  await apiRequest("put", `/Faq/${FaqId}`);
 };
