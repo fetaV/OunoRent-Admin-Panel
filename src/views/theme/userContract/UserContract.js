@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilNotes, cilTrash } from "@coreui/icons";
+import { cilNotes, cilCheckCircle, cilXCircle, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -16,281 +16,305 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
+  CFormSelect,
   CPagination,
   CPaginationItem,
+  CRow,
+  CCol,
+  CFormTextarea,
 } from "@coreui/react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from "../../../../config";
+import { fetchUserContract, fetchUserContractForID } from "src/api/useApi";
 
-function UserContract() {
-  const [userContracts, setUserContracts] = useState([]);
-  const [userContractName, setUserContractName] = useState("");
-  const [userContractType, setUserContractType] = useState("");
-  const [edituserContractId, setEditUserContractId] = useState(null);
-  const [visible, setVisible] = useState(false);
-  const [editUserContractData, setEditUserContractData] = useState({
-    userContractId: "",
-    subCategoryId: "",
-    userContractName: "",
-    largeImagegUrl: "",
-    smallImageUrl: "",
-    tags: "",
-    slug: "",
-    orderNumber: 0,
-    date: "",
+const UserContract = () => {
+  const [state, setState] = useState({
+    UserContract: [],
+    filteredUserContract: [],
+    editUserContractData: {},
+    modalVisible: false,
+    searchQuery: "",
+    currentPage: 1,
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredUserContract, setFilteredUserContract] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filteredData = userContracts.filter(
-      (userContract) =>
-        (userContract.fileName &&
-          userContract.fileName.toLowerCase().includes(lowercasedQuery)) ||
-        (userContract.user.name &&
-          userContract.user.name.toLowerCase().includes(lowercasedQuery)) ||
-        (userContract.contract.name &&
-          userContract.contract.name.toLowerCase().includes(lowercasedQuery)) ||
-        (userContract.contract.version &&
-          userContract.contract.version
-            .toString()
-            .toLowerCase()
-            .includes(lowercasedQuery))
-    );
-    setFilteredUserContract(filteredData);
-  }, [searchQuery, userContracts]);
-
-  useEffect(() => {
-    const fetchuserContracts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_BASE_URL}/userContract`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(response.data);
-        setUserContracts(response.data);
-        setFilteredUserContract(response.data);
-      } catch (error) {
-        console.error(error);
-      }
+    const loadUserContract = async () => {
+      const data = await fetchUserContract();
+      setState((prevState) => ({
+        ...prevState,
+        UserContract: data,
+        filteredUserContract: data,
+      }));
     };
 
-    fetchuserContracts();
+    loadUserContract();
   }, []);
 
-  const handleDelete = async (userContractId) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${API_BASE_URL}/userContract/${userContractId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  const handleModalOpen = async (formId = null) => {
+    if (formId) {
+      const data = await fetchUserContractForID(formId);
+      setState((prevState) => ({
+        ...prevState,
+        editUserContractData: {
+          contractName: data.contract?.name || "",
+          contractBody: data.contract?.body || "",
+          contractType: data.contract?.type || "",
+          contractVersion: data.contract?.version || "",
+          requiresAt: data.contract?.requiresAt || "",
+          fileName: data.fileName || "",
+          contractId: data.contractId || "",
+          createDate: data.createDate || "",
+          isActive: data.isActive || false,
+          date: data.date || "",
+          userName: data.user?.name || "",
+          userSurname: data.user?.surname || "",
+          userEmail: data.user?.email || "",
+          address: data.address || "",
+          birthDate: data.birthDate || "",
+          phoneNumber: data.phoneNumber || "",
+          tc: data.tc || "",
         },
-      });
-      setUserContracts(
-        userContracts.filter(
-          (userContract) => userContract.userContractId !== userContractId
-        )
-      );
-      setFilteredUserContract(
-        userContracts.filter(
-          (userContract) => userContract.userContractId !== userContractId
-        )
-      );
-      toast.success("userContract başarıyla silindi!");
-    } catch (error) {
-      console.error(error.response.data);
-      toast.error("userContract silinirken bir hata oluştu!");
+        editUserContractId: formId,
+        modalVisible: true,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        editUserContractData: {
+          contractName: "",
+          contractVersion: "",
+          requiresAt: "",
+          fileName: "",
+          contractId: "",
+          createDate: "",
+          isActive: false,
+          date: "",
+          userName: "",
+          userSurname: "",
+          userEmail: "",
+          address: "",
+          birthDate: "",
+          phoneNumber: "",
+          tc: "",
+        },
+        editUserContractId: null,
+        modalVisible: true,
+      }));
     }
   };
 
-  const handleEditModalOpen = async (userContractId) => {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(
-      `${API_BASE_URL}/userContract/${userContractId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log(response);
-    const userContractData = response.data;
-    setEditUserContractId(userContractId);
-    setEditUserContractData(userContractData);
-    setUserContractName(userContractData.userContractName || "");
-    setUserContractType(userContractData.userContractType || "");
-    setVisible(true);
-  };
+  useEffect(() => {
+    const filterUserContract = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.UserContract.filter((item) =>
+        [item.fileName, item.contract.name, item.user.name]
+          .map((item) => item.toLowerCase())
+          .some((item) => item.includes(lowercasedQuery))
+      );
+      setState((prevState) => ({
+        ...prevState,
+        filteredUserContract: filteredData,
+      }));
+    };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUserContract.slice(
-    indexOfFirstItem,
+    filterUserContract();
+  }, [state.searchQuery, state.UserContract]);
+
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredUserContract.slice(
+    indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
-  const totalPages = Math.ceil(filteredUserContract.length / itemsPerPage);
 
   return (
     <>
       <ToastContainer />
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={state.searchQuery}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            searchQuery: e.target.value,
+          }))
+        }
+      />
 
       <CModal
-        visible={visible}
-        onClose={() => setVisible(false)}
-        aria-labelledby="LiveDemoExampleLabel2"
+        visible={state.modalVisible}
+        onClose={() =>
+          setState((prevState) => ({ ...prevState, modalVisible: false }))
+        }
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel2">
-            User Contract Detayları
-          </CModalTitle>
+          <CModalTitle>Kullanıcı Sözleşmesi Düzenle</CModalTitle>
         </CModalHeader>
-
         <CModalBody>
           <CForm>
-            <CFormInput
-              type="text"
-              id="fileName"
-              label="Dosya Adı"
-              value={editUserContractData.fileName || ""}
-              readOnly
-            />
-            <CFormInput
-              type="text"
-              id="contractName"
-              label="Kontrat Adı"
-              value={editUserContractData.contract?.name || ""}
-              readOnly
-            />
-            <CFormInput
-              type="text"
-              id="contractDetails"
-              label="Kontrat İçeriği"
-              value={editUserContractData.contract?.body || ""}
-              readOnly
-            />
-            <CFormInput
-              type="text"
-              id="contractVersion"
-              label="Kontrat Versiyonu"
-              value={editUserContractData.contract?.version || ""}
-              readOnly
-            />
-            <CFormInput
-              type="text"
-              id="userName"
-              label="Kullanıcı Adı"
-              value={editUserContractData.user?.name || ""}
-              readOnly
-            />
-            <CFormInput
-              type="text"
-              id="userEmail"
-              label="Kullanıcı E-Posta"
-              value={editUserContractData.user?.email || ""}
-              readOnly
-            />
-            <CFormInput
-              type="text"
-              id="userPhoneNumber"
-              label="Kullanıcı Telefon Numarası"
-              value={editUserContractData.user?.phoneNumber || ""}
-              readOnly
+            <CRow className="mb-3">
+              {[
+                { label: "Sözleşme Adı", value: "contractName", md: 6 },
+                {
+                  label: "Sözleşme Versiyonu",
+                  value: "contractVersion",
+                  md: 6,
+                },
+              ].map(({ label, value, md }) => (
+                <CCol key={value} md={md}>
+                  <CFormInput
+                    className="mb-3"
+                    type="text"
+                    label={label}
+                    value={state.editUserContractData[value] || ""}
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        editUserContractData: {
+                          ...prevState.editUserContractData,
+                          [value]: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </CCol>
+              ))}
+            </CRow>
+            <CRow className="mb-3">
+              {[
+                { label: "Sözleşme Tipi", value: "contractType", md: 6 },
+                { label: "Dosya Adı", value: "fileName", md: 6 },
+              ].map(({ label, value, md }) => (
+                <CCol key={value} md={md}>
+                  <CFormInput
+                    className="mb-3"
+                    type="text"
+                    label={label}
+                    value={state.editUserContractData[value] || ""}
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        editUserContractData: {
+                          ...prevState.editUserContractData,
+                          [value]: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </CCol>
+              ))}
+            </CRow>
+            <CRow className="mb-3">
+              {[
+                { label: "İsim", value: "userName", md: 6 },
+                { label: "Soyisim", value: "userSurname", md: 6 },
+              ].map(({ label, value, md }) => (
+                <CCol key={value} md={md}>
+                  <CFormInput
+                    className="mb-3"
+                    type="text"
+                    label={label}
+                    value={state.editUserContractData[value] || ""}
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        editUserContractData: {
+                          ...prevState.editUserContractData,
+                          [value]: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </CCol>
+              ))}
+            </CRow>
+            <CFormTextarea
+              className="mb-3"
+              rows={5}
+              label="Kullanıcı Sözleşmesi Detayı"
+              value={state.editUserContractData.contractBody || ""}
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  editUserContractData: {
+                    ...prevState.editUserContractData,
+                    contractBody: e.target.value,
+                  },
+                }))
+              }
             />
           </CForm>
         </CModalBody>
+
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({ ...prevState, modalVisible: false }))
+            }
+          >
             Kapat
           </CButton>
         </CModalFooter>
       </CModal>
 
-      <CFormInput
-        type="text"
-        id="search"
-        placeholder="Arama"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-
-      <CTable>
+      <CTable hover>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Kontrat Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Kontrat Versiyonu
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Kullanıcı Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Dosya Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Eylemler
-            </CTableHeaderCell>
+            {[
+              "Sözleşme Adı",
+              "Sözleşme Versiyonu",
+              "Dosya Adı",
+              "İsim",
+              "Soyisim",
+              "Aksiyonlar",
+            ].map((header) => (
+              <CTableHeaderCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+                key={header}
+              >
+                {header}
+              </CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems.map((userContract) => (
-            <CTableRow key={userContract.userContractId}>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {userContract.contract.name}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {userContract.contract.version}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {userContract.user.name}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {userContract.fileName}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
+          {currentItems.map((item) => (
+            <CTableRow
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+              key={item.userContractId}
+            >
+              {[
+                "contract.name",
+                "contract.version",
+                "fileName",
+                "user.name",
+                "user.surname",
+              ].map((key) => {
+                const keys = key.split(".");
+                let value = item;
+                keys.forEach((k) => {
+                  value = value?.[k];
+                });
+                return (
+                  <CTableDataCell
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
+                    key={key}
+                  >
+                    {value?.toString()}
+                  </CTableDataCell>
+                );
+              })}
+              <CTableDataCell>
                 <CButton
-                  color="primary"
+                  color="info"
                   className="me-2"
-                  onClick={() =>
-                    handleEditModalOpen(userContract.userContractId)
-                  }
+                  onClick={() => handleModalOpen(item.userContractId)}
                 >
                   <CIcon icon={cilNotes} />
-                </CButton>
-                <CButton
-                  color="danger text-white"
-                  onClick={() => handleDelete(userContract.userContractId)}
-                >
-                  <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -298,26 +322,25 @@ function UserContract() {
         </CTableBody>
       </CTable>
 
-      <CPagination
-        aria-label="Page navigation"
-        className="mt-3 btn border-0"
-        align="center"
-        items={totalPages}
-        active={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-      >
-        {[...Array(totalPages).keys()].map((page) => (
-          <CPaginationItem
-            key={page + 1}
-            active={page + 1 === currentPage}
-            onClick={() => setCurrentPage(page + 1)}
-          >
-            {page + 1}
-          </CPaginationItem>
-        ))}
+      <CPagination className="btn btn-sm">
+        {Array.from(
+          {
+            length: Math.ceil(state.filteredUserContract.length / itemsPerPage),
+          },
+          (_, i) => (
+            <CPaginationItem
+              key={i + 1}
+              active={i + 1 === state.currentPage}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, currentPage: i + 1 }))
+              }
+            >
+              {i + 1}
+            </CPaginationItem>
+          )
+        )}
       </CPagination>
     </>
   );
-}
-
+};
 export default UserContract;

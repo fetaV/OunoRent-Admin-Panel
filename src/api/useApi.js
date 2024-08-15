@@ -187,3 +187,10 @@ export const deleteFooter = async (FooterItemId) => {
 export const updateFooter = async (FooterItemId) => {
   await apiRequest("put", `/FooterItem/${FooterItemId}`);
 };
+
+export const fetchUserContract = async () => {
+  return apiRequest("get", "/UserContract");
+};
+export const fetchUserContractForID = async (UserContractId) => {
+  return apiRequest("get", `/UserContract/${UserContractId}`);
+};
