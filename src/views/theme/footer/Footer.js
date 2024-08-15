@@ -157,7 +157,7 @@ const Footer = () => {
     toast.success("Adres başarıyla güncellendi.");
     setState((prevState) => ({
       ...prevState,
-      footeres: prevState.footer.map((item) =>
+      footer: prevState.footer.map((item) =>
         item.footerId === updatedData.footerId ? updatedData : item
       ),
       modalVisible: false,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
 import { cilPencil, cilTrash } from "@coreui/icons";
 import {
@@ -16,129 +16,179 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
   CPagination,
   CPaginationItem,
+  CFormSwitch,
 } from "@coreui/react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import API_BASE_URL from "../../../../config";
+import {
+  createChannel,
+  deleteChannel,
+  fetchChannel,
+  fetchChannelForID,
+  updateChannel,
+} from "src/api/useApi";
 
 const Channel = () => {
-  const [channel, setChannel] = useState([]);
-  const [currentChannel, setCurrentChannel] = useState(null);
-  const [newChannel, setNewChannel] = useState({
-    name: "",
-    text: "",
-    orderNumber: 0,
-    isActive: false,
+  const [state, setState] = useState({
+    channel: [],
+    currentChannel: null,
+    visible: false,
+    logo: null,
+    searchQuery: "",
+    editChannelId: null,
+    filteredChannel: [],
+    editChannelData: {},
+    currentPage: 1,
+    isActive: true,
   });
-  const [visible, setVisible] = useState(false);
-  const [logoFile, setLogoFile] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredChannel, setFilteredChannel] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filteredData = channel
-      .filter(
-        (channel) =>
-          channel.name && channel.name.toLowerCase().includes(lowercasedQuery)
-      )
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1));
-    setFilteredChannel(filteredData);
-  }, [searchQuery, channel]);
-
-  useEffect(() => {
-    fetchChannel();
+    const loadChannel = async () => {
+      const [channel] = await Promise.all([fetchChannel()]);
+      setState((prevState) => ({
+        ...prevState,
+        channel: channel,
+        filteredChannel: channel,
+      }));
+    };
+    loadChannel();
   }, []);
 
-  const fetchChannel = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/Channel`);
-      console.log(response);
-      setChannel(response.data);
-    } catch (error) {
-      console.error("getChannel error:", error);
-      toast.error("Failed to fetch channel items");
-    }
-  };
-
-  const handleCreateChannel = async () => {
-    const formData = new FormData();
-    formData.append("Name", newChannel.name);
-    formData.append("Logo", logoFile);
-    formData.append("IsActive", newChannel.isActive);
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/Channel`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
+  const handleModalOpen = async (formId = null) => {
+    if (formId) {
+      const data = await fetchChannelForID(formId);
+      setState((prevState) => ({
+        ...prevState,
+        editChannelData: {
+          channelId: data.channelId || "",
+          name: data.name || "",
+          logo: data.logo || "",
+          isActive: data.isActive || false,
         },
-      });
-      toast.success("Channel item created successfully");
-      fetchChannel();
-      setVisible(false);
-    } catch (error) {
-      console.error("createChannel error:", error);
-      toast.error("Failed to create channel item");
-    }
-  };
-
-  const handleUpdateChannel = async (channelId) => {
-    const formData = new FormData();
-    formData.append("ChannelId", channelId);
-    formData.append("Name", currentChannel.name);
-    if (logoFile) {
-      formData.append("Logo", logoFile);
-    }
-    formData.append("IsActive", currentChannel.isActive);
-    console.log(currentChannel.name, logoFile, currentChannel.isActive);
-
-    try {
-      await axios.put(`${API_BASE_URL}/Channel/${channelId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
+        editChannelId: formId,
+        modalVisible: true,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        editChannelData: {
+          channelId: "",
+          name: "",
+          logo: "",
+          isActive: false,
         },
+        editChannelId: null,
+        modalVisible: true,
+      }));
+    }
+  };
+
+  const handleSave = async () => {
+    const { editChannelId, editChannelData } = state;
+
+    const channelData = new FormData();
+    channelData.append("ChannelId", editChannelId || "");
+    channelData.append("Name", editChannelData.name);
+    if (editChannelData.logo) {
+      channelData.append("Logo", editChannelData.logo);
+    }
+    channelData.append("IsActive", editChannelData.isActive);
+
+    if (editChannelId) {
+      await updateChannel(editChannelId, channelData);
+      toast.success("Channel başarıyla güncellendi.");
+    } else {
+      await createChannel(channelData);
+      toast.success("Channel başarıyla oluşturuldu.");
+    }
+
+    const updatedChannel = await fetchChannel();
+    setState((prevState) => ({
+      ...prevState,
+      modalVisible: false,
+      channel: updatedChannel,
+      filteredChannel: updatedChannel,
+    }));
+  };
+
+  const handleDelete = async (formId) => {
+    await deleteChannel(formId);
+    toast.success("Channel başarıyla silindi!");
+    const updatedChannel = await fetchChannel();
+    setState((prevState) => ({
+      ...prevState,
+      channel: updatedChannel,
+      filteredChannel: updatedChannel,
+    }));
+  };
+
+  useEffect(() => {
+    const filterChannel = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.channel.filter((item) => {
+        const name = item.name ? item.name.toLowerCase() : "";
+
+        return [name].some((value) => value.includes(lowercasedQuery));
       });
-      toast.success("Channel item updated successfully");
-      fetchChannel();
-      setVisible(false);
-    } catch (error) {
-      console.error("updateChannel error:", error);
-      toast.error("Failed to update channel item");
-    }
+
+      setState((prevState) => ({
+        ...prevState,
+        filteredChannel: filteredData,
+      }));
+    };
+
+    filterChannel();
+  }, [state.searchQuery, state.channel]);
+
+  const handleEdit = async () => {
+    const { editChannelId, editChannelData } = state;
+
+    const updatedData = new FormData();
+    if (editChannelData.name) updatedData.append("Name", editChannelData.name);
+    if (editChannelData.logo) updatedData.append("Logo", editChannelData.logo);
+    if (editChannelData.isActive !== undefined)
+      updatedData.append("IsActive", editChannelData.isActive);
+
+    await updateChannel(editChannelId, updatedData);
+    toast.success("Channel başarıyla güncellendi.");
+
+    const updatedChannel = await fetchChannel();
+    setState((prevState) => ({
+      ...prevState,
+      channel: updatedChannel,
+      filteredChannel: updatedChannel,
+      modalVisible: false,
+    }));
   };
 
-  const handleDeleteChannel = async (channelId) => {
-    try {
-      await axios.delete(`${API_BASE_URL}/Channel/${channelId}`);
-      toast.success("Channel item deleted successfully");
-      fetchChannel();
-    } catch (error) {
-      console.error("deleteChannel error:", error);
-      toast.error("Failed to delete channel item");
-    }
-  };
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredChannel.slice(
+    indexOfLastItem - itemsPerPage,
+    indexOfLastItem
+  );
 
-  const handleEditButtonClick = async (channelId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/Channel/${channelId}`);
-      setCurrentChannel(response.data);
-      setVisible(true);
-    } catch (error) {
-      console.error("Error fetching the channel item:", error);
-      toast.error("Failed to fetch channel item");
-    }
-  };
+  const handleToggleActive = async (channelId, currentStatus) => {
+    const updatedChannel = {
+      ...state.channel.find((item) => item.channelId === channelId),
+      isActive: !currentStatus,
+    };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredChannel.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredChannel.length / itemsPerPage);
+    await updateChannel(channelId, updatedChannel);
+
+    toast.success("Channel durumu başarıyla güncellendi.");
+
+    const updatedChannelList = await fetchChannel();
+
+    setState((prevState) => ({
+      ...prevState,
+      channel: updatedChannelList,
+      filteredChannel: updatedChannelList,
+    }));
+  };
 
   return (
     <div>
@@ -146,52 +196,42 @@ const Channel = () => {
       <CButton
         color="primary"
         className="mb-3"
-        onClick={() => setVisible(true)}
+        onClick={() => handleModalOpen()}
       >
-        Yeni Kanal Ekle
+        Yeni Channel Ekle
       </CButton>
-
       <CFormInput
         type="text"
         id="search"
         placeholder="Arama"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={state.searchQuery}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            searchQuery: e.target.value,
+          }))
+        }
       />
 
       <CTable>
         <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              İsim
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Logo
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Durum
-            </CTableHeaderCell>
-            <CTableHeaderCell
-              style={{ textAlign: "center", verticalAlign: "middle" }}
-            >
-              Eylemler
-            </CTableHeaderCell>
+          <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
+            {["İsim", "Logo", "Durum", "Eylemler"].map((header) => (
+              <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {currentItems.map((item) => (
             <CTableRow key={item.channelId}>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.name}
-              </CTableDataCell>
+              {["name"].map((key) => (
+                <CTableDataCell
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                  key={key}
+                >
+                  {item[key]}
+                </CTableDataCell>
+              ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
@@ -215,7 +255,9 @@ const Channel = () => {
                     backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
                     color: item.isActive ? "#155724" : "#721c24",
                     border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
                   }}
+                  onClick={() => handleToggleActive(item.channelId)}
                 >
                   {item.isActive ? "Aktif" : "Pasif"}
                 </div>
@@ -226,13 +268,15 @@ const Channel = () => {
                 <CButton
                   color="primary text-white"
                   className="me-2"
-                  onClick={() => handleEditButtonClick(item.channelId)}
+                  onClick={() => {
+                    handleModalOpen(item.channelId);
+                  }}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  onClick={() => handleDeleteChannel(item.channelId)}
+                  onClick={() => handleDelete(item.channelId)}
                 >
                   <CIcon icon={cilTrash} />
                 </CButton>
@@ -242,29 +286,33 @@ const Channel = () => {
         </CTableBody>
       </CTable>
 
-      <CPagination
-        aria-label="Page navigation"
-        className="mt-3 btn border-0"
-        align="center"
-        items={totalPages}
-        active={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-      >
-        {[...Array(totalPages).keys()].map((page) => (
-          <CPaginationItem
-            key={page + 1}
-            active={page + 1 === currentPage}
-            onClick={() => setCurrentPage(page + 1)}
-          >
-            {page + 1}
-          </CPaginationItem>
-        ))}
+      <CPagination className="btn btn-sm">
+        {Array.from(
+          { length: Math.ceil(state.filteredChannel.length / itemsPerPage) },
+          (_, i) => (
+            <CPaginationItem
+              key={i + 1}
+              active={i + 1 === state.currentPage}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, currentPage: i + 1 }))
+              }
+            >
+              {i + 1}
+            </CPaginationItem>
+          )
+        )}
       </CPagination>
 
-      <CModal visible={visible} onClose={() => setVisible(false)}>
+      <CModal
+        visible={state.modalVisible}
+        onClose={() =>
+          setState((prevState) => ({ ...prevState, modalVisible: false }))
+        }
+        aria-labelledby="ModalLabel"
+      >
         <CModalHeader>
-          <CModalTitle>
-            {currentChannel ? "Edit Channel Item" : "Create Channel Item"}
+          <CModalTitle id="ModalLabel">
+            {state.editChannelId ? "Channel Düzenle" : "Yeni Channel Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -272,23 +320,24 @@ const Channel = () => {
             <CFormInput
               type="text"
               className="mb-3"
-              label="Soru Başlığı"
-              value={currentChannel ? currentChannel.name : newChannel.name}
+              label="Channel İsmi"
+              value={state.editChannelData.name}
               onChange={(e) =>
-                currentChannel
-                  ? setCurrentChannel({
-                      ...currentChannel,
-                      name: e.target.value,
-                    })
-                  : setNewChannel({ ...newChannel, name: e.target.value })
+                setState((prevState) => ({
+                  ...prevState,
+                  editChannelData: {
+                    ...prevState.editChannelData,
+                    name: e.target.value,
+                  },
+                }))
               }
             />
-            {currentChannel && currentChannel.logo && (
-              <div>
+            {state.editChannelData.logo && (
+              <div className="mb-3">
                 <label>Mevcut Logo</label>
                 <img
-                  src={`http://10.10.3.181:5244/${currentChannel.logo}`}
-                  alt="Mobil Resim"
+                  src={`http://10.10.3.181:5244/${state.editChannelData.logo}`}
+                  alt="Logo"
                   style={{
                     maxWidth: "100px",
                     maxHeight: "100px",
@@ -301,47 +350,33 @@ const Channel = () => {
             <CFormInput
               type="file"
               className="mb-3"
-              label="Logo"
-              onChange={(e) => setLogoFile(e.target.files[0])}
-            />
-            <CFormSwitch
-              id="isActive"
-              label={
-                currentChannel
-                  ? currentChannel.isActive
-                    ? "Aktif"
-                    : "Pasif"
-                  : newChannel.isActive
-                    ? "Aktif"
-                    : "Pasif"
-              }
-              checked={
-                currentChannel ? currentChannel.isActive : newChannel.isActive
-              }
+              label="Logo Yükle"
               onChange={(e) =>
-                currentChannel
-                  ? setCurrentChannel({
-                      ...currentChannel,
-                      isActive: e.target.checked,
-                    })
-                  : setNewChannel({ ...newBrand, isActive: e.target.checked })
+                setState((prevState) => ({
+                  ...prevState,
+                  editChannelData: {
+                    ...prevState.editChannelData,
+                    logo: e.target.files[0],
+                  },
+                }))
               }
             />
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({ ...prevState, modalVisible: false }))
+            }
+          >
             Kapat
           </CButton>
           <CButton
             color="primary"
-            onClick={() =>
-              currentChannel
-                ? handleUpdateChannel(currentChannel.channelId)
-                : handleCreateChannel()
-            }
+            onClick={state.editChannelId ? handleEdit : handleSave}
           >
-            {currentChannel ? "Save Changes" : "Create"}
+            {state.editChannelId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
