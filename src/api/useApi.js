@@ -22,7 +22,8 @@ const apiRequest = async (method, url, data = null, headers = {}) => {
       data,
       headers: {
         ...headers,
-        "Content-Type": headers["Content-Type"] || "application/json",
+        "Content-Type":
+          method === "put" ? "multipart/form-data" : "application/json",
       },
     });
     return response.data;
@@ -120,8 +121,8 @@ export const fetchChannelForID = async (ChannelId) => {
 export const deleteChannel = async (ChannelId) => {
   await apiRequest("delete", `/Channel/${ChannelId}`);
 };
-export const updateChannel = async (ChannelId) => {
-  await apiRequest("put", `/Channel/${ChannelId}`);
+export const updateChannel = async (id, data) => {
+  await apiRequest("put", `/Channel/${id}`, data);
 };
 
 export const createWarehouse = async () => {
@@ -193,4 +194,20 @@ export const fetchUserContract = async () => {
 };
 export const fetchUserContractForID = async (UserContractId) => {
   return apiRequest("get", `/UserContract/${UserContractId}`);
+};
+
+export const createBrand = async () => {
+  return apiRequest("post", "/Brand");
+};
+export const fetchBrand = async () => {
+  return apiRequest("get", "/Brand");
+};
+export const fetchBrandForID = async (BrandId) => {
+  return apiRequest("get", `/Brand/${BrandId}`);
+};
+export const deleteBrand = async (BrandId) => {
+  await apiRequest("delete", `/Brand/${BrandId}`);
+};
+export const updateBrand = async (BrandId) => {
+  await apiRequest("put", `/Brand/${BrandId}`);
 };

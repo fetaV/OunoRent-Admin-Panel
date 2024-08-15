@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import CIcon from '@coreui/icons-react'
-import { cilPencil, cilTrash } from '@coreui/icons'
+import React, { useEffect, useState } from "react";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilCheckCircle, cilXCircle, cilTrash } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -16,220 +16,407 @@ import {
   CModalFooter,
   CForm,
   CFormInput,
-  CFormSwitch,
+  CRow,
+  CCol,
   CPagination,
   CPaginationItem,
-} from '@coreui/react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import API_BASE_URL from '../../../../config'
+  CFormSelect,
+  CFormSwitch,
+} from "@coreui/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  createBrand,
+  fetchBrand,
+  fetchBrandForID,
+  deleteBrand,
+  updateBrand,
+} from "src/api/useApi";
 
-const Brand = () => {
-  const [brand, setBrand] = useState([])
-  const [currentBrand, setCurrentBrand] = useState(null)
-  const [newBrand, setNewBrand] = useState({
-    name: '',
+function Brand() {
+  const [state, setState] = useState({
+    Brand: [],
+    title: "",
+    body: "",
     logo: null,
-    showOnBrands: false,
     isActive: false,
-  })
-  const [visible, setVisible] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredBrand, setFilteredBrand] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+    editBrandId: null,
+    modalVisible: false,
+    searchQuery: "",
+    filteredBrand: [],
+    currentPage: 1,
+  });
+
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase()
-    const filteredData = brand
-      .filter((brand) => brand.name?.toLowerCase().includes(lowercasedQuery))
-      .sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
-    setFilteredBrand(filteredData)
-  }, [searchQuery, brand])
+    const loadBrand = async () => {
+      const [Brands, categories] = await Promise.all([fetchBrand()]);
+      setState((prevState) => ({
+        ...prevState,
+        categories,
+        Brand: Brands,
+        filteredBrand: Brands,
+      }));
+    };
+    loadBrand();
+  }, []);
 
-  useEffect(() => {
-    fetchBrand()
-  }, [])
-
-  const fetchBrand = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/brand`)
-      setBrand(response.data)
-      setFilteredBrand(response.data)
-    } catch (error) {
-      console.error('Fetch brand error:', error)
-      toast.error('Failed to fetch brand items')
-    }
-  }
-
-  const handleCreateBrand = async () => {
-    const formData = new FormData()
-    formData.append('name', newBrand.name)
-    if (newBrand.logo) formData.append('logo', newBrand.logo)
-    formData.append('showOnBrands', newBrand.showOnBrands)
-    formData.append('isActive', newBrand.isActive)
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/brand`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      toast.success('Brand item created successfully')
-      fetchBrand()
-      setVisible(false)
-      setNewBrand({
-        name: '',
-        logo: null,
-        showOnBrands: false,
+  const handleModalOpen = async (formId = null) => {
+    if (formId) {
+      const data = await fetchBrandForID(formId);
+      setState((prevState) => ({
+        ...prevState,
+        editBrandId: formId,
+        title: data.title,
+        body: data.body,
+        largeImage: data.largeImage,
+        smallImage: data.smallImage,
+        tags: data.tags,
+        slug: data.slug,
+        orderNumber: data.orderNumber,
+        isActive: data.isActive,
+        selectedCategoryId: data.categoryId,
+        selectedSubCategoryId: data.subCategoryId,
+        modalVisible: true,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        title: "",
+        body: "",
+        largeImage: null,
+        smallImage: null,
+        tags: "",
+        slug: "",
+        orderNumber: "",
         isActive: false,
-      })
-    } catch (error) {
-      console.error('Create brand error:', error)
-      toast.error('Failed to create brand item')
+        selectedCategoryId: "",
+        selectedSubCategoryId: "",
+        modalVisible: true,
+      }));
     }
-  }
+  };
 
-  const handleUpdateBrand = async (brandId) => {
-    const formData = new FormData()
-    formData.append('brandId', brandId)
-    formData.append('name', currentBrand.name)
-    if (currentBrand.logo) formData.append('logo', currentBrand.logo)
-    formData.append('showOnBrands', currentBrand.showOnBrands)
-    formData.append('isActive', currentBrand.isActive)
+  const handleSave = async () => {
+    const {
+      editBrandId,
+      title,
+      body,
+      largeImage,
+      smallImage,
+      tags,
+      slug,
+      orderNumber,
+      isActive,
+      selectedCategoryId,
+      selectedSubCategoryId,
+    } = state;
 
-    try {
-      const token = localStorage.getItem('token')
-      await axios.put(`${API_BASE_URL}/brand/${brandId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      toast.success('Brand item updated successfully')
-      fetchBrand()
-      setVisible(false)
-    } catch (error) {
-      console.error('Update brand error:', error)
-      toast.error('Failed to update brand item')
+    const BrandData = {
+      title,
+      body,
+      largeImage,
+      smallImage,
+      tags,
+      slug,
+      orderNumber,
+      isActive,
+      categoryId: selectedCategoryId,
+      subCategoryId: selectedSubCategoryId,
+    };
+
+    if (editBrandId) {
+      await updateBrand(editBrandId, BrandData);
+      toast.success("Brand başarıyla güncellendi.");
+    } else {
+      await createBrand(BrandData);
+      toast.success("Brand başarıyla oluşturuldu.");
     }
-  }
 
-  const handleDeleteBrand = async (brandId) => {
-    try {
-      await axios.delete(`${API_BASE_URL}/brand/${brandId}`)
-      toast.success('Brand item deleted successfully')
-      fetchBrand()
-    } catch (error) {
-      console.error('Delete brand error:', error)
-      toast.error('Failed to delete brand item')
-    }
-  }
+    setState((prevState) => ({
+      ...prevState,
+      modalVisible: false,
+      Brand: fetchBrand(),
+      filteredBrand: fetchBrand(),
+    }));
+  };
 
-  const handleEditButtonClick = async (brandId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/brand/${brandId}`)
-      setCurrentBrand(response.data)
-      setVisible(true)
-    } catch (error) {
-      console.error('Error fetching the brand item:', error)
-      toast.error('Failed to fetch brand item')
-    }
-  }
+  const handleDelete = async (formId) => {
+    await deleteBrand(formId);
+    toast.success("Brand başarıyla silindi!");
+    setState((prevState) => ({
+      ...prevState,
+      Brand: prevState.Brand.filter((item) => item.BrandId !== formId),
+      filteredBrand: prevState.filteredBrand.filter(
+        (item) => item.BrandId !== formId
+      ),
+    }));
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredBrand.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredBrand.length / itemsPerPage)
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredBrand.slice(
+    indexOfLastItem - itemsPerPage,
+    indexOfLastItem
+  );
+
+  const handleToggleActive = async (brandId, currentStatus) => {
+    const updatedBrand = {
+      ...state.Brand.find((item) => item.brandId === brandId),
+      isActive: !currentStatus,
+    };
+
+    await updateBrand(brandId, updatedBrand);
+
+    toast.success("Brand durumu başarıyla güncellendi.");
+
+    const updatedBrandList = await fetchBrand();
+
+    setState((prevState) => ({
+      ...prevState,
+      Brand: updatedBrandList,
+      filteredBrand: updatedBrandList,
+    }));
+  };
 
   return (
-    <div>
+    <>
       <ToastContainer />
-      <CButton color="primary" className="mb-3" onClick={() => setVisible(true)}>
+      <CButton
+        color="primary"
+        className="mb-3"
+        onClick={() => handleModalOpen()}
+      >
         Yeni Brand Ekle
       </CButton>
 
-      <CFormInput
-        type="text"
-        id="search"
-        placeholder="Arama"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <CTable>
+      <CModal
+        visible={state.modalVisible}
+        onClose={() =>
+          setState((prevState) => ({ ...prevState, modalVisible: false }))
+        }
+        aria-labelledby="ModalLabel"
+      >
+        <CModalHeader>
+          <CModalTitle id="ModalLabel">
+            {state.editBrandId ? "Marka Düzenle" : "Yeni Marka Ekle"}
+          </CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CForm>
+            <CRow>
+              <CCol>
+                <CFormInput
+                  type="text"
+                  className="mb-3"
+                  id="title"
+                  label="Başlık"
+                  value={state.title}
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      title: e.target.value,
+                    }))
+                  }
+                />
+              </CCol>
+              <CCol>
+                <CFormInput
+                  type="number"
+                  className="mb-3"
+                  id="orderNumber"
+                  label="Sıra Numarası"
+                  value={state.orderNumber}
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      orderNumber: e.target.value,
+                    }))
+                  }
+                />
+              </CCol>
+            </CRow>
+            <CFormInput
+              type="file"
+              className="mb-3"
+              id="largeImage"
+              label="Büyük Resim"
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  largeImage: e.target.files[0],
+                }))
+              }
+            />
+            <CFormInput
+              type="file"
+              className="mb-3"
+              id="smallImage"
+              label="Küçük Resim"
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  smallImage: e.target.files[0],
+                }))
+              }
+            />
+            <CFormInput
+              type="text"
+              className="mb-3"
+              id="tags"
+              label="Etiketler"
+              value={state.tags}
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  tags: e.target.value,
+                }))
+              }
+            />
+            <CFormInput
+              type="text"
+              className="mb-3"
+              id="slug"
+              label="URL Adresi"
+              value={state.slug}
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  slug: e.target.value,
+                }))
+              }
+            />
+
+            <CFormSwitch
+              label="Aktif"
+              id="showOnBrands"
+              className="mb-3"
+              checked={state.showOnBrands}
+              onChange={(e) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  showOnBrands: e.target.checked,
+                }))
+              }
+            />
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({ ...prevState, modalVisible: false }))
+            }
+          >
+            Kapat
+          </CButton>
+          <CButton color="primary" onClick={handleSave}>
+            {state.editBrandId ? "Güncelle" : "Kaydet"}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      <CTable hover>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Marka Adı
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Logo
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Markalarda Göster
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Durum
-            </CTableHeaderCell>
-            <CTableHeaderCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-              Eylemler
-            </CTableHeaderCell>
+            {[
+              { label: "Marka Adı", value: "name" },
+              { label: "Logo", value: "logo", isImage: true },
+              {
+                label: "Anasayfada Göster",
+                value: "showOnBrands",
+                isStatus: true,
+              },
+              { label: "Eylemler", value: "actions" },
+            ].map(({ label, value, isImage, isStatus }) => (
+              <CTableHeaderCell
+                key={value}
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                {label}
+              </CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems.map((item) => (
-            <CTableRow key={item.brandId}>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                {item.name}
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <img
-                  src={`http://10.10.3.181:5244/${item.logo}`}
-                  alt="Mobil Resim"
-                  style={{
-                    width: '50px',
-                    Height: 'auto',
-                  }}
-                />
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: item.showOnBrands ? '#d4edda' : '#f8d7da',
-                    color: item.showOnBrands ? '#155724' : '#721c24',
-                    border: `1px solid ${item.showOnBrands ? '#c3e6cb' : '#f5c6cb'}`,
-                  }}
+          {currentItems.map((Brand) => (
+            <CTableRow key={Brand.BrandId}>
+              {[
+                { value: "name", isImage: false, isStatus: false },
+                { value: "logo", isImage: true, isStatus: false },
+                { value: "showOnBrands", isImage: false, isStatus: true },
+              ].map(({ value, isImage, isStatus }) => (
+                <CTableDataCell
+                  key={value}
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
-                  {item.showOnBrands ? 'Aktif' : 'Pasif'}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: item.isActive ? '#d4edda' : '#f8d7da',
-                    color: item.isActive ? '#155724' : '#721c24',
-                    border: `1px solid ${item.isActive ? '#c3e6cb' : '#f5c6cb'}`,
-                  }}
-                >
-                  {item.isActive ? 'Aktif' : 'Pasif'}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {isImage ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        src={`http://10.10.3.181:5244/${Brand[value]}`}
+                        alt={state.label}
+                        style={{
+                          width: isImage ? "100px" : "50px",
+                          height: "auto",
+                        }}
+                      />
+                    </div>
+                  ) : isStatus ? (
+                    <div
+                      style={{
+                        display: "inline-block",
+                        padding: "5px 10px",
+                        borderRadius: "8px",
+                        backgroundColor: Brand[value] ? "#d4edda" : "#f8d7da",
+                        color: Brand[value] ? "#155724" : "#721c24",
+                        border: `1px solid ${Brand[value] ? "#c3e6cb" : "#f5c6cb"}`,
+                      }}
+                    >
+                      {Brand[value] ? "Aktif" : "Pasif"}
+                    </div>
+                  ) : (
+                    Brand[value]
+                  )}
+                </CTableDataCell>
+              ))}
+              <CTableDataCell
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
                 <CButton
-                  color="primary text-white"
                   className="me-2"
-                  onClick={() => handleEditButtonClick(item.brandId)}
+                  style={{
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: Brand.isActive ? "#d4edda" : "#f8d7da",
+                    color: Brand.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${Brand.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleToggleActive(Brand.brandId)}
+                >
+                  {Brand.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
+                <CButton
+                  color="primary"
+                  className="me-2"
+                  onClick={() => handleModalOpen(Brand.BrandId)}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
-                <CButton color="danger text-white" onClick={() => handleDeleteBrand(item.brandId)}>
+                <CButton
+                  color="danger text-white"
+                  onClick={() => handleDelete(Brand.BrandId)}
+                >
                   <CIcon icon={cilTrash} />
                 </CButton>
               </CTableDataCell>
@@ -238,125 +425,24 @@ const Brand = () => {
         </CTableBody>
       </CTable>
 
-      <CPagination
-        aria-label="Page navigation"
-        className="mt-3 btn border-0"
-        align="center"
-        items={totalPages}
-        active={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-      >
-        {[...Array(totalPages).keys()].map((page) => (
-          <CPaginationItem
-            key={page + 1}
-            active={page + 1 === currentPage}
-            onClick={() => setCurrentPage(page + 1)}
-          >
-            {page + 1}
-          </CPaginationItem>
-        ))}
+      <CPagination className="btn btn-sm">
+        {Array.from(
+          { length: Math.ceil(state.filteredBrand.length / itemsPerPage) },
+          (_, i) => (
+            <CPaginationItem
+              key={i + 1}
+              active={i + 1 === state.currentPage}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, currentPage: i + 1 }))
+              }
+            >
+              {i + 1}
+            </CPaginationItem>
+          )
+        )}
       </CPagination>
-
-      <CModal
-        visible={visible}
-        onClose={() => {
-          setVisible(false)
-          setCurrentBrand(null) // Modal kapandığında mevcut markayı sıfırla
-        }}
-      >
-        <CModalHeader>
-          <CModalTitle>{currentBrand ? 'Edit Brand Item' : 'Create Brand Item'}</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CForm>
-            <CFormInput
-              type="text"
-              className="mb-3"
-              label="Marka Adı"
-              value={currentBrand ? currentBrand.name : newBrand.name}
-              onChange={(e) =>
-                currentBrand
-                  ? setCurrentBrand({ ...currentBrand, name: e.target.value })
-                  : setNewBrand({ ...newBrand, name: e.target.value })
-              }
-            />
-            {currentBrand && currentBrand.logo && (
-              <div>
-                <label>Mevcut Logo</label>
-                <img
-                  src={`http://10.10.3.181:5244/${currentBrand.logo}`}
-                  alt="Mobil Resim"
-                  style={{
-                    maxWidth: '100px',
-                    maxHeight: '100px',
-                    display: 'block',
-                    margin: '0 auto',
-                  }}
-                />
-              </div>
-            )}
-            <CFormInput
-              type="file"
-              className="mb-3"
-              label="Logo"
-              onChange={(e) =>
-                currentBrand
-                  ? setCurrentBrand({ ...currentBrand, logo: e.target.files[0] })
-                  : setNewBrand({ ...newBrand, logo: e.target.files[0] })
-              }
-            />
-            <CFormSwitch
-              label="Markalarda Göster"
-              checked={currentBrand ? currentBrand.showOnBrands : newBrand.showOnBrands}
-              onChange={(e) =>
-                currentBrand
-                  ? setCurrentBrand({ ...currentBrand, showOnBrands: e.target.checked })
-                  : setNewBrand({ ...newBrand, showOnBrands: e.target.checked })
-              }
-            />
-
-            <CFormSwitch
-              id="isActive"
-              label={
-                currentBrand
-                  ? currentBrand.isActive
-                    ? 'Aktif'
-                    : 'Pasif'
-                  : newBrand.isActive
-                    ? 'Aktif'
-                    : 'Pasif'
-              }
-              checked={currentBrand ? currentBrand.isActive : newBrand.isActive}
-              onChange={(e) =>
-                currentBrand
-                  ? setCurrentBrand({ ...currentBrand, isActive: e.target.checked })
-                  : setNewBrand({ ...newBrand, isActive: e.target.checked })
-              }
-            />
-          </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="secondary"
-            onClick={() => {
-              setVisible(false)
-              setCurrentBrand(null) // Modal kapandığında mevcut markayı sıfırla
-            }}
-          >
-            Kapat
-          </CButton>
-          <CButton
-            color="primary"
-            onClick={() =>
-              currentBrand ? handleUpdateBrand(currentBrand.brandId) : handleCreateBrand()
-            }
-          >
-            {currentBrand ? 'Değişiklikleri Kaydet' : 'Oluştur'}
-          </CButton>
-        </CModalFooter>
-      </CModal>
-    </div>
-  )
+    </>
+  );
 }
 
-export default Brand
+export default Brand;

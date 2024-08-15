@@ -96,10 +96,10 @@ const Channel = () => {
     if (editChannelData.logo) {
       channelData.append("Logo", editChannelData.logo);
     }
-    channelData.append("IsActive", editChannelData.isActive);
+    channelData.append("IsActive", Boolean(editChannelData.isActive));
 
     if (editChannelId) {
-      await updateChannel(editChannelId, channelData);
+      await updateChannel(editChannelId, editChannelData);
       toast.success("Channel başarıyla güncellendi.");
     } else {
       await createChannel(channelData);
@@ -145,6 +145,7 @@ const Channel = () => {
   }, [state.searchQuery, state.channel]);
 
   const handleEdit = async () => {
+    console.log("11", state.editChannelData);
     const { editChannelId, editChannelData } = state;
 
     const updatedData = new FormData();
@@ -156,7 +157,7 @@ const Channel = () => {
     await updateChannel(editChannelId, updatedData);
     toast.success("Channel başarıyla güncellendi.");
 
-    const updatedChannel = await fetchChannel();
+    const updatedChannel = await updateChannel();
     setState((prevState) => ({
       ...prevState,
       channel: updatedChannel,
@@ -257,11 +258,14 @@ const Channel = () => {
                     border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                     cursor: "pointer",
                   }}
-                  onClick={() => handleToggleActive(item.channelId)}
+                  onClick={() =>
+                    handleToggleActive(item.channelId, item.isActive)
+                  }
                 >
                   {item.isActive ? "Aktif" : "Pasif"}
                 </div>
               </CTableDataCell>
+
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
@@ -372,10 +376,7 @@ const Channel = () => {
           >
             Kapat
           </CButton>
-          <CButton
-            color="primary"
-            onClick={state.editChannelId ? handleEdit : handleSave}
-          >
+          <CButton color="primary" onClick={handleSave}>
             {state.editChannelId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
