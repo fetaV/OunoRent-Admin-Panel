@@ -156,6 +156,22 @@ export const updateFaq = async (FaqId) => {
   await apiRequest("put", `/Faq/${FaqId}`);
 };
 
+export const createUser = async () => {
+  return apiRequest("post", "/Auth/Register");
+};
+export const fetchUser = async () => {
+  return apiRequest("get", "/User");
+};
+export const fetchUserForID = async (UserId) => {
+  return apiRequest("get", `/User/${UserId}`);
+};
+export const deleteUser = async (UserId) => {
+  await apiRequest("delete", `/User/${UserId}`);
+};
+export const updateUser = async (UserId) => {
+  await apiRequest("put", `/User/${UserId}`);
+};
+
 export const createFooter = async () => {
   return apiRequest("post", "/FooterItem");
 };

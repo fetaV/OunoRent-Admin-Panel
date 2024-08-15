@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilPencil, cilTrash } from "@coreui/icons";
+import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -35,7 +35,7 @@ const Footer = () => {
     footer: [],
     currentFooter: null,
     editFooterId: null,
-    visible: false,
+    modalVisible: false,
     searchQuery: "",
     filteredFooter: [],
     editFooterData: {},
@@ -219,7 +219,6 @@ const Footer = () => {
               "Sıra Numarası",
               "Sütun",
               "Hedef URL",
-              "Durum",
               "Eylemler",
             ].map((header) => (
               <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
@@ -239,7 +238,8 @@ const Footer = () => {
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
-                <div
+                <CButton
+                  className="me-2"
                   style={{
                     display: "inline-block",
                     padding: "5px 10px",
@@ -251,12 +251,12 @@ const Footer = () => {
                   }}
                   onClick={() => handleToggleActive(item.footerItemId)}
                 >
-                  {item.isActive ? "Aktif" : "Pasif"}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
+                  {item.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
                 <CButton
                   color="primary text-white"
                   className="me-2"
