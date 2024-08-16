@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilPencil, cilTrash } from "@coreui/icons";
+import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -36,50 +36,47 @@ const Channel = () => {
     currentChannel: null,
     visible: false,
     logo: null,
+    deleteChannelId: null,
     searchQuery: "",
     editChannelId: null,
     filteredChannel: [],
-    editChannelData: {},
+    channelData: {},
     currentPage: 1,
-    isActive: true,
   });
 
   const itemsPerPage = 10;
 
+  const loadChannel = async () => {
+    const [channel] = await Promise.all([fetchChannel()]);
+    setState((prevState) => ({
+      ...prevState,
+      channel,
+      filteredChannel: channel,
+      modalVisible: false,
+    }));
+  };
+
   useEffect(() => {
-    const loadChannel = async () => {
-      const [channel] = await Promise.all([fetchChannel()]);
-      setState((prevState) => ({
-        ...prevState,
-        channel: channel,
-        filteredChannel: channel,
-      }));
-    };
     loadChannel();
   }, []);
 
   const handleModalOpen = async (formId = null) => {
+    console.log("asddasdasad");
     if (formId) {
       const data = await fetchChannelForID(formId);
       setState((prevState) => ({
         ...prevState,
-        editChannelData: {
-          channelId: data.channelId || "",
-          name: data.name || "",
-          logo: data.logo || "",
-          isActive: data.isActive || false,
-        },
+        channelData: data,
         editChannelId: formId,
         modalVisible: true,
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        editChannelData: {
-          channelId: "",
+        channelData: {
+          isActive: true,
           name: "",
           logo: "",
-          isActive: false,
         },
         editChannelId: null,
         modalVisible: true,
@@ -88,42 +85,35 @@ const Channel = () => {
   };
 
   const handleSave = async () => {
-    const { editChannelId, editChannelData } = state;
-
-    const channelData = new FormData();
-    channelData.append("ChannelId", editChannelId || "");
-    channelData.append("Name", editChannelData.name);
-    if (editChannelData.logo) {
-      channelData.append("Logo", editChannelData.logo);
-    }
-    channelData.append("IsActive", Boolean(editChannelData.isActive));
+    const { editChannelId, channelData } = state;
 
     if (editChannelId) {
-      await updateChannel(editChannelId, editChannelData);
+      console.log("here1", editChannelId, channelData);
+      await updateChannel(editChannelId, channelData);
       toast.success("Channel başarıyla güncellendi.");
     } else {
+      console.log("here2", editChannelId, channelData);
       await createChannel(channelData);
       toast.success("Channel başarıyla oluşturuldu.");
     }
 
-    const updatedChannel = await fetchChannel();
-    setState((prevState) => ({
-      ...prevState,
-      modalVisible: false,
-      channel: updatedChannel,
-      filteredChannel: updatedChannel,
-    }));
+    loadChannel();
   };
 
-  const handleDelete = async (formId) => {
-    await deleteChannel(formId);
-    toast.success("Channel başarıyla silindi!");
-    const updatedChannel = await fetchChannel();
-    setState((prevState) => ({
-      ...prevState,
-      channel: updatedChannel,
-      filteredChannel: updatedChannel,
-    }));
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setState((prevState) => ({
+          ...prevState,
+          channelData: { ...prevState.channelData, logo: reader.result },
+        }));
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
 
   useEffect(() => {
@@ -142,29 +132,7 @@ const Channel = () => {
     };
 
     filterChannel();
-  }, [state.searchQuery, state.channel]);
-
-  const handleEdit = async () => {
-    console.log("11", state.editChannelData);
-    const { editChannelId, editChannelData } = state;
-
-    const updatedData = new FormData();
-    if (editChannelData.name) updatedData.append("Name", editChannelData.name);
-    if (editChannelData.logo) updatedData.append("Logo", editChannelData.logo);
-    if (editChannelData.isActive !== undefined)
-      updatedData.append("IsActive", editChannelData.isActive);
-
-    await updateChannel(editChannelId, updatedData);
-    toast.success("Channel başarıyla güncellendi.");
-
-    const updatedChannel = await updateChannel();
-    setState((prevState) => ({
-      ...prevState,
-      channel: updatedChannel,
-      filteredChannel: updatedChannel,
-      modalVisible: false,
-    }));
-  };
+  }, [state.searchQuery]);
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredChannel.slice(
@@ -173,6 +141,7 @@ const Channel = () => {
   );
 
   const handleToggleActive = async (channelId, currentStatus) => {
+    console.log("here10");
     const updatedChannel = {
       ...state.channel.find((item) => item.channelId === channelId),
       isActive: !currentStatus,
@@ -191,6 +160,27 @@ const Channel = () => {
     }));
   };
 
+  const handleDeleteClick = (formId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteChannelId: formId,
+      deleteModalVisible: true,
+    }));
+  };
+
+  const confirmDelete = async () => {
+    await deleteChannel(state.deleteChannelId);
+    toast.success("Channel başarıyla silindi!");
+    const updatedChannel = await fetchChannel();
+    setState((prevState) => ({
+      ...prevState,
+      channel: updatedChannel,
+      filteredChannel: updatedChannel,
+      deleteModalVisible: false,
+      deleteChannelId: null,
+    }));
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -199,7 +189,7 @@ const Channel = () => {
         className="mb-3"
         onClick={() => handleModalOpen()}
       >
-        Yeni Channel Ekle
+        Yeni Kanal Ekle
       </CButton>
       <CFormInput
         type="text"
@@ -217,7 +207,7 @@ const Channel = () => {
       <CTable>
         <CTableHead>
           <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
-            {["İsim", "Logo", "Durum", "Eylemler"].map((header) => (
+            {["İsim", "Logo", "Eylemler"].map((header) => (
               <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
             ))}
           </CTableRow>
@@ -245,10 +235,12 @@ const Channel = () => {
                   }}
                 />
               </CTableDataCell>
+
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
-                <div
+                <CButton
+                  className="me-2"
                   style={{
                     display: "inline-block",
                     padding: "5px 10px",
@@ -262,13 +254,12 @@ const Channel = () => {
                     handleToggleActive(item.channelId, item.isActive)
                   }
                 >
-                  {item.isActive ? "Aktif" : "Pasif"}
-                </div>
-              </CTableDataCell>
-
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
+                  {item.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
                 <CButton
                   color="primary text-white"
                   className="me-2"
@@ -280,7 +271,7 @@ const Channel = () => {
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  onClick={() => handleDelete(item.channelId)}
+                  onClick={() => handleDeleteClick(item.channelId)}
                 >
                   <CIcon icon={cilTrash} />
                 </CButton>
@@ -316,7 +307,7 @@ const Channel = () => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.editChannelId ? "Channel Düzenle" : "Yeni Channel Ekle"}
+            {state.editChannelId ? "Kanal Düzenle" : "Yeni Channel Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -324,23 +315,24 @@ const Channel = () => {
             <CFormInput
               type="text"
               className="mb-3"
-              label="Channel İsmi"
-              value={state.editChannelData.name}
+              label="Kanal İsmi"
+              value={state.channelData.name}
               onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  editChannelData: {
-                    ...prevState.editChannelData,
-                    name: e.target.value,
-                  },
-                }))
+                setState({
+                  ...state,
+                  channelData: { ...state.channelData, name: e.target.value },
+                })
               }
             />
-            {state.editChannelData.logo && (
+            {state.channelData.logo && (
               <div className="mb-3">
                 <label>Mevcut Logo</label>
                 <img
-                  src={`http://10.10.3.181:5244/${state.editChannelData.logo}`}
+                  src={
+                    state.channelData.logo.startsWith("data:image")
+                      ? state.channelData.logo
+                      : `http://10.10.3.181:5244/${state.channelData.logo}`
+                  }
                   alt="Logo"
                   style={{
                     maxWidth: "100px",
@@ -351,20 +343,29 @@ const Channel = () => {
                 />
               </div>
             )}
+
             <CFormInput
               type="file"
               className="mb-3"
               label="Logo Yükle"
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  editChannelData: {
-                    ...prevState.editChannelData,
-                    logo: e.target.files[0],
-                  },
-                }))
-              }
+              onChange={handleFileChange}
             />
+            {state.editChannelId === null && (
+              <CFormSwitch
+                id="isActive"
+                label={state.channelData.isActive ? "Aktif" : "Pasif"}
+                checked={state.channelData.isActive}
+                onChange={(e) =>
+                  setState({
+                    ...state,
+                    channelData: {
+                      ...state.channelData,
+                      isActive: e.target.checked,
+                    },
+                  })
+                }
+              />
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -378,6 +379,38 @@ const Channel = () => {
           </CButton>
           <CButton color="primary" onClick={handleSave}>
             {state.editChannelId ? "Güncelle" : "Kaydet"}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal
+        alignment="center"
+        visible={state.deleteModalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            deleteModalVisible: false,
+            deleteChannelId: null,
+          }))
+        }
+      >
+        <CModalHeader>
+          <CModalTitle>Bu Kanalı silmek istediğinize emin misiniz?</CModalTitle>
+        </CModalHeader>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({
+                ...prevState,
+                deleteModalVisible: false,
+                deleteChannelId: null,
+              }))
+            }
+          >
+            İptal
+          </CButton>
+          <CButton color="danger text-white" onClick={confirmDelete}>
+            Sil
           </CButton>
         </CModalFooter>
       </CModal>

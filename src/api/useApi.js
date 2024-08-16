@@ -109,8 +109,8 @@ export const updateWarehouseConnection = async (warehouseConnectionId) => {
   );
 };
 
-export const createChannel = async () => {
-  return apiRequest("post", "/Channel");
+export const createChannel = async (channelData) => {
+  return apiRequest("post", "/Channel", channelData);
 };
 export const fetchChannel = async () => {
   return apiRequest("get", "/Channel");
@@ -121,8 +121,8 @@ export const fetchChannelForID = async (ChannelId) => {
 export const deleteChannel = async (ChannelId) => {
   await apiRequest("delete", `/Channel/${ChannelId}`);
 };
-export const updateChannel = async (id, data) => {
-  await apiRequest("put", `/Channel/${id}`, data);
+export const updateChannel = async (ChannelId, channelData) => {
+  await apiRequest("put", `/Channel/${ChannelId}`, channelData);
 };
 
 export const createWarehouse = async () => {
