@@ -47,18 +47,21 @@ const Typography = () => {
     filteredUser: [],
     editUserData: {},
     currentPage: 1,
+    deleteModalVisible: false,
   });
   const itemsPerPage = 10;
 
+  const loadUser = async () => {
+    const [users] = await Promise.all([fetchUser()]);
+    setState((prevState) => ({
+      ...prevState,
+      users: users,
+      filteredUser: users,
+      modalVisible: false,
+    }));
+  };
+
   useEffect(() => {
-    const loadUser = async () => {
-      const [users] = await Promise.all([fetchUser()]);
-      setState((prevState) => ({
-        ...prevState,
-        users: users,
-        filteredUser: users,
-      }));
-    };
     loadUser();
   }, []);
 
@@ -68,14 +71,15 @@ const Typography = () => {
       setState((prevState) => ({
         ...prevState,
         editUserData: {
+          userId: data.userId || "",
           name: data.name || "",
           surname: data.surname || "",
           phoneNumber: data.phoneNumber || "",
-          birthDate: data.birthDate || "",
+          birthDate: data.birthDate
+            ? new Date(data.birthDate).toISOString().substring(0, 10) // Tarihi YYYY-MM-DD formatında sakla
+            : "",
           address: data.address || "",
           email: data.email || "",
-          column: data.column || "",
-          targetUrl: data.targetUrl || "",
           isActive: data.isActive || false,
         },
         editUserId: formId,
@@ -96,62 +100,19 @@ const Typography = () => {
   };
 
   const handleSave = async () => {
-    const {
-      editUserId,
-      name,
-      surname,
-      phoneNumber,
-      birthDate,
-      address,
-      email,
-      password,
-      passwordConfirm,
-    } = state;
-
-    let userData;
+    const { editUserId, editUserData } = state;
 
     if (editUserId) {
-      userData = {
-        userId: editUserId,
-        name,
-        surname,
-        phoneNumber,
-        birthDate,
-        address,
-        email,
-      };
-
-      await updateUser(editUserId, userData);
+      console.log("here1", editUserId, editUserData);
+      await updateUser(editUserId, editUserData);
       toast.success("User başarıyla güncellendi.");
     } else {
-      userData = {
-        email,
-        password,
-        passwordConfirm,
-      };
-
-      await createUser(userData);
+      console.log("here2", editUserId, editUserData);
+      await createUser(editUserData);
       toast.success("User başarıyla oluşturuldu.");
     }
 
-    const updatedUser = await fetchUser();
-    setState((prevState) => ({
-      ...prevState,
-      modalVisible: false,
-      users: updatedUser,
-      filteredUser: updatedUser,
-    }));
-  };
-
-  const handleDelete = async (formId) => {
-    await deleteUser(formId);
-    toast.success("User başarıyla silindi!");
-    const updatedUser = await fetchUser();
-    setState((prevState) => ({
-      ...prevState,
-      users: updatedUser,
-      filteredUser: updatedUser,
-    }));
+    loadUser();
   };
 
   useEffect(() => {
@@ -176,41 +137,30 @@ const Typography = () => {
     filterUser();
   }, [state.searchQuery]);
 
-  const handleEdit = async () => {
-    const updatedData = state.editUserData;
-    await updateUser(state.editUserData.userId, updatedData);
-    toast.success("Adres başarıyla güncellendi.");
-    setState((prevState) => ({
-      ...prevState,
-      user: prevState.user.map((item) =>
-        item.userId === updatedData.userId ? updatedData : item
-      ),
-      modalVisible: false,
-    }));
-  };
-
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredUser.slice(
     indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
 
-  const handleToggleActive = async (userId, currentStatus) => {
-    const updatedUser = {
-      ...state.users.find((item) => item.userId === userId),
-      isActive: !currentStatus,
-    };
-
-    await updateUser(userId, updatedUser);
-
-    toast.success("User durumu başarıyla güncellendi.");
-
-    const updatedUserList = await fetchUser();
-
+  const handleDeleteClick = (formId) => {
     setState((prevState) => ({
       ...prevState,
-      users: updatedUserList,
-      filteredUser: updatedUserList,
+      deleteUserId: formId,
+      deleteModalVisible: true,
+    }));
+  };
+
+  const confirmDelete = async () => {
+    await deleteUser(state.deleteUserId);
+    toast.success("User başarıyla silindi!");
+    const updatedUser = await fetchUser();
+    setState((prevState) => ({
+      ...prevState,
+      user: updatedUser,
+      filteredUser: updatedUser,
+      deleteModalVisible: false,
+      deleteUserId: null,
     }));
   };
 
@@ -255,14 +205,14 @@ const Typography = () => {
         </CTableHead>
         <CTableBody>
           {currentItems.map((user, index) => {
-            const formattedDate = new Date(user.birthDate).toLocaleDateString(
-              "tr-TR",
-              {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              }
-            );
+            const formattedDate = user.birthDate
+              ? new Date(user.birthDate).toLocaleDateString("tr-TR", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "";
+
             return (
               <CTableRow key={index}>
                 {[
@@ -292,7 +242,7 @@ const Typography = () => {
                   </CButton>
                   <CButton
                     color="danger text-white"
-                    onClick={() => handleDelete(user.userId)}
+                    onClick={() => handleDeleteClick(user.userId)}
                   >
                     <CIcon icon={cilTrash} />
                   </CButton>
@@ -338,7 +288,7 @@ const Typography = () => {
               ? [
                   { label: "Email", value: "email" },
                   { label: "Şifre", value: "password" },
-                  { label: "Şifre Tekrarı", value: "confirmPassword" },
+                  { label: "Şifre Tekrarı", value: "passwordConfirm" },
                 ].map(({ label, value, type = "text" }) => (
                   <CFormInput
                     key={value}
@@ -365,7 +315,7 @@ const Typography = () => {
                   {
                     label: "Doğum Tarihi",
                     value: "birthDate",
-                    type: "text",
+                    type: "date",
                   },
                   { label: "Adres", value: "address" },
                 ].map(({ label, value, type = "text" }) => (
@@ -375,14 +325,10 @@ const Typography = () => {
                     type={type}
                     label={label}
                     value={
-                      value === "birthDate"
-                        ? new Date(
-                            state.editUserData[value]
-                          ).toLocaleDateString("tr-TR", {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric",
-                          })
+                      value === "birthDate" && state.editUserData[value]
+                        ? new Date(state.editUserData[value])
+                            .toISOString()
+                            .split("T")[0]
                         : state.editUserData[value] || ""
                     }
                     onChange={(e) =>
@@ -408,7 +354,40 @@ const Typography = () => {
             Kapat
           </CButton>
           <CButton color="primary" onClick={handleSave}>
-            {state.editFooterId ? "Güncelle" : "Kaydet"}
+            {state.editUserId ? "Güncelle" : "Kaydet"}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      <CModal
+        alignment="center"
+        visible={state.deleteModalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            deleteModalVisible: false,
+            deleteUserId: null,
+          }))
+        }
+      >
+        <CModalHeader>
+          <CModalTitle>Bu Kanalı silmek istediğinize emin misiniz?</CModalTitle>
+        </CModalHeader>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({
+                ...prevState,
+                deleteModalVisible: false,
+                deleteUserId: null,
+              }))
+            }
+          >
+            İptal
+          </CButton>
+          <CButton color="danger text-white" onClick={confirmDelete}>
+            Sil
           </CButton>
         </CModalFooter>
       </CModal>

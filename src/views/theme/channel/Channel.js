@@ -41,6 +41,7 @@ const Channel = () => {
     filteredChannel: [],
     channelData: {},
     currentPage: 1,
+    deleteModalVisible: false,
   });
 
   const itemsPerPage = 10;
@@ -306,7 +307,7 @@ const Channel = () => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.editChannelId ? "Kanal Düzenle" : "Yeni Channel Ekle"}
+            {state.editChannelId ? "Kanal Düzenle" : "Yeni Kanal Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
