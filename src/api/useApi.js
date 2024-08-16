@@ -55,8 +55,8 @@ export const fetchContactFormForID = async (contactFormId) => {
   return apiRequest("get", `/contactForm/${contactFormId}`);
 };
 
-export const createBlog = async () => {
-  return apiRequest("post", "/blog");
+export const createBlog = async (blogData) => {
+  return apiRequest("post", "/blog", blogData);
 };
 export const fetchBlog = async () => {
   return apiRequest("get", "/blog");
@@ -67,8 +67,8 @@ export const fetchBlogForID = async (blogId) => {
 export const deleteBlog = async (blogId) => {
   await apiRequest("delete", `/blog/${blogId}`);
 };
-export const updateBlog = async (blogId) => {
-  await apiRequest("put", `/blog/${blogId}`);
+export const updateBlog = async (blogId, blogData) => {
+  await apiRequest("put", `/blog/${blogId}`, blogData);
 };
 export const fetchCategory = async () => {
   return apiRequest("get", `/category`);
@@ -83,8 +83,12 @@ export const fetchSubCategoryForID = async (categoryId, subCategoryId) => {
   );
 };
 
-export const createWarehouseConnection = async () => {
-  return apiRequest("post", "/warehouse/WarehouseConnection");
+export const createWarehouseConnection = async (warehouseConnectionData) => {
+  return apiRequest(
+    "post",
+    "/warehouse/WarehouseConnection",
+    warehouseConnectionData
+  );
 };
 export const fetchWarehouseConnection = async () => {
   return apiRequest("get", "/warehouse/WarehouseConnection");
@@ -101,10 +105,14 @@ export const deleteWarehouseConnection = async (warehouseConnectionId) => {
     `/warehouse/WarehouseConnection/${warehouseConnectionId}`
   );
 };
-export const updateWarehouseConnection = async (warehouseConnectionId) => {
+export const updateWarehouseConnection = async (
+  warehouseConnectionId,
+  warehouseConnectionData
+) => {
   await apiRequest(
     "put",
-    `/Warehouse/warehouseConnection/${warehouseConnectionId}`
+    `/Warehouse/warehouseConnection/${warehouseConnectionId}`,
+    warehouseConnectionData
   );
 };
 
@@ -124,8 +132,8 @@ export const updateChannel = async (ChannelId, channelData) => {
   await apiRequest("put", `/Channel/${ChannelId}`, channelData);
 };
 
-export const createWarehouse = async () => {
-  return apiRequest("post", "/warehouse");
+export const createWarehouse = async (warehouseData) => {
+  return apiRequest("post", "/warehouse", warehouseData);
 };
 export const fetchWarehouse = async () => {
   return apiRequest("get", "/warehouse");
@@ -136,8 +144,8 @@ export const fetchWarehouseForID = async (warehouseId) => {
 export const deleteWarehouse = async (warehouseId) => {
   await apiRequest("delete", `/warehouse/${warehouseId}`);
 };
-export const updateWarehouse = async (warehouseId) => {
-  await apiRequest("put", `/Warehouse/${warehouseId}`);
+export const updateWarehouse = async (warehouseId, warehouseData) => {
+  await apiRequest("put", `/Warehouse/${warehouseId}`, warehouseData);
 };
 
 export const createFaq = async (faqData) => {
@@ -152,12 +160,12 @@ export const fetchFaqForID = async (FaqId) => {
 export const deleteFaq = async (FaqId) => {
   await apiRequest("delete", `/Faq/${FaqId}`);
 };
-export const updateFaq = async (FaqId) => {
-  await apiRequest("put", `/Faq/${FaqId}`);
+export const updateFaq = async (FaqId, faqData) => {
+  await apiRequest("put", `/Faq/${FaqId}`, faqData);
 };
 
-export const createUser = async () => {
-  return apiRequest("post", "/Auth/Register");
+export const createUser = async (userData) => {
+  return apiRequest("post", "/Auth/Register", userData);
 };
 export const fetchUser = async () => {
   return apiRequest("get", "/User");
@@ -168,12 +176,12 @@ export const fetchUserForID = async (UserId) => {
 export const deleteUser = async (UserId) => {
   await apiRequest("delete", `/User/${UserId}`);
 };
-export const updateUser = async (UserId) => {
-  await apiRequest("put", `/User/${UserId}`);
+export const updateUser = async (UserId, userData) => {
+  await apiRequest("put", `/User/${UserId}`, userData);
 };
 
-export const createFooter = async () => {
-  return apiRequest("post", "/FooterItem");
+export const createFooter = async (footerData) => {
+  return apiRequest("post", "/FooterItem", footerData);
 };
 export const fetchFooter = async () => {
   return apiRequest("get", "/FooterItem");
@@ -184,8 +192,8 @@ export const fetchFooterForID = async (FooterItemId) => {
 export const deleteFooter = async (FooterItemId) => {
   await apiRequest("delete", `/FooterItem/${FooterItemId}`);
 };
-export const updateFooter = async (FooterItemId) => {
-  await apiRequest("put", `/FooterItem/${FooterItemId}`);
+export const updateFooter = async (FooterItemId, footerData) => {
+  await apiRequest("put", `/FooterItem/${FooterItemId}`, footerData);
 };
 
 export const fetchUserContract = async () => {
@@ -195,8 +203,8 @@ export const fetchUserContractForID = async (UserContractId) => {
   return apiRequest("get", `/UserContract/${UserContractId}`);
 };
 
-export const createBrand = async () => {
-  return apiRequest("post", "/Brand");
+export const createBrand = async (brandData) => {
+  return apiRequest("post", "/Brand", brandData);
 };
 export const fetchBrand = async () => {
   return apiRequest("get", "/Brand");
@@ -207,6 +215,6 @@ export const fetchBrandForID = async (BrandId) => {
 export const deleteBrand = async (BrandId) => {
   await apiRequest("delete", `/Brand/${BrandId}`);
 };
-export const updateBrand = async (BrandId) => {
-  await apiRequest("put", `/Brand/${BrandId}`);
+export const updateBrand = async (BrandId, brandData) => {
+  await apiRequest("put", `/Brand/${BrandId}`, brandData);
 };

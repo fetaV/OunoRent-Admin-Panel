@@ -339,7 +339,7 @@ function Brand() {
         </CTableHead>
         <CTableBody>
           {currentItems.map((Brand) => (
-            <CTableRow key={Brand.BrandId}>
+            <CTableRow key={Brand.brandId}>
               {[
                 { value: "name", isImage: false, isStatus: false },
                 { value: "logo", isImage: true, isStatus: false },

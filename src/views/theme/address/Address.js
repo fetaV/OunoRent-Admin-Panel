@@ -19,6 +19,7 @@ import {
   CFormSelect,
   CPagination,
   CPaginationItem,
+  CFormTextarea,
 } from "@coreui/react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,7 +34,7 @@ const Address = () => {
   const [state, setState] = useState({
     addresses: [],
     filteredAddresses: [],
-    editAddressData: {},
+    addressData: {},
     modalVisible: false,
     searchQuery: "",
     currentPage: 1,
@@ -41,16 +42,16 @@ const Address = () => {
 
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    const loadAddresses = async () => {
-      const data = await fetchAddress();
-      setState((prevState) => ({
-        ...prevState,
-        addresses: data,
-        filteredAddresses: data,
-      }));
-    };
+  const loadAddresses = async () => {
+    const data = await fetchAddress();
+    setState((prevState) => ({
+      ...prevState,
+      addresses: data,
+      filteredAddresses: data,
+    }));
+  };
 
+  useEffect(() => {
     loadAddresses();
   }, []);
 
@@ -80,7 +81,7 @@ const Address = () => {
     };
 
     filterAddresses();
-  }, [state.searchQuery, state.addresses]);
+  }, [state.searchQuery]);
 
   const handleDelete = async (addressId) => {
     await deleteAddress(addressId);
@@ -100,7 +101,7 @@ const Address = () => {
     const data = await fetchAddressForID(addressId);
     setState((prevState) => ({
       ...prevState,
-      editAddressData: {
+      addressData: {
         addressId,
         ...data,
       },
@@ -109,9 +110,15 @@ const Address = () => {
   };
 
   const handleEdit = async () => {
-    const updatedData = state.editAddressData;
-    await updateAddressForID(state.editAddressData.addressId, updatedData);
+    const updatedData = {
+      ...state.addressData,
+      userId: state.addressData.user?.userId,
+    };
+
+    console.log("123", updatedData);
+    await updateAddressForID(updatedData.addressId, updatedData);
     toast.success("Adres başarıyla güncellendi.");
+
     setState((prevState) => ({
       ...prevState,
       addresses: prevState.addresses.map((addr) =>
@@ -119,6 +126,7 @@ const Address = () => {
       ),
       modalVisible: false,
     }));
+    loadAddresses();
   };
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
@@ -159,45 +167,104 @@ const Address = () => {
               { label: "Şehir", value: "city" },
               { label: "İlçe", value: "district" },
               { label: "Semt", value: "neighborhood" },
-              { label: "Adres Detayı", value: "addressDetail" },
-              { label: "Vergi No", value: "taxNo", type: "number" },
-              { label: "Vergi Dairesi", value: "taxOffice" },
-              { label: "Şirket Adı", value: "companyName" },
             ].map(({ label, value, type = "text" }) => (
               <CFormInput
                 key={value}
                 className="mb-3"
                 type={type}
                 label={label}
-                value={state.editAddressData[value] || ""}
+                value={state.addressData[value] || ""}
                 onChange={(e) =>
                   setState((prevState) => ({
                     ...prevState,
-                    editAddressData: {
-                      ...prevState.editAddressData,
+                    addressData: {
+                      ...prevState.addressData,
                       [value]: e.target.value,
                     },
                   }))
                 }
               />
             ))}
+
             <CFormSelect
               className="mb-3"
               label="Adres Tipi"
-              value={state.editAddressData.type}
+              value={state.addressData.type}
+              onChange={(e) =>
+                setState({
+                  ...state,
+                  addressData: {
+                    ...state.addressData,
+                    type: e.target.value,
+                  },
+                })
+              }
+            >
+              <option value="1">Bireysel</option>
+              <option value="2">Kurumsal</option>
+            </CFormSelect>
+            <CFormTextarea
+              className="mb-3"
+              rows={5}
+              label="Kullanıcı Sözleşmesi Detayı"
+              value={state.addressData.addressDetail || ""}
               onChange={(e) =>
                 setState((prevState) => ({
                   ...prevState,
-                  editAddressData: {
-                    ...prevState.editAddressData,
-                    type: e.target.value,
+                  addressData: {
+                    ...prevState.addressData,
+                    addressDetail: e.target.value,
                   },
                 }))
               }
-            >
-              <option value="0">Bireysel</option>
-              <option value="1">Kurumsal</option>
-            </CFormSelect>
+            />
+            {state.addressData.type === 2 && (
+              <>
+                <CFormInput
+                  className="mb-3"
+                  type="number"
+                  label="Vergi No"
+                  value={state.addressData.taxNo || ""}
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      addressData: {
+                        ...prevState.addressData,
+                        taxNo: e.target.value,
+                      },
+                    }))
+                  }
+                />
+                <CFormInput
+                  className="mb-3"
+                  label="Vergi Dairesi"
+                  value={state.addressData.taxOffice || ""}
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      addressData: {
+                        ...prevState.addressData,
+                        taxOffice: e.target.value,
+                      },
+                    }))
+                  }
+                />
+                <CFormInput
+                  className="mb-3"
+                  label="Şirket Adı"
+                  value={state.addressData.companyName || ""}
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      addressData: {
+                        ...prevState.addressData,
+                        companyName: e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </>
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -217,7 +284,7 @@ const Address = () => {
 
       <CTable hover>
         <CTableHead>
-          <CTableRow>
+          <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
             {[
               "Başlık",
               "Şehir",
@@ -225,8 +292,8 @@ const Address = () => {
               "Semt",
               "Vergi No",
               "Vergi Dairesi",
-              "Adres Tipi",
               "Şirket Adı",
+              "Adres Tipi",
               "Aksiyonlar",
             ].map((header) => (
               <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
@@ -235,7 +302,10 @@ const Address = () => {
         </CTableHead>
         <CTableBody>
           {currentItems.map((addr) => (
-            <CTableRow key={addr.addressId}>
+            <CTableRow
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+              key={addr.addressId}
+            >
               {[
                 "title",
                 "city",
@@ -243,21 +313,23 @@ const Address = () => {
                 "neighborhood",
                 "taxNo",
                 "taxOffice",
-                "type",
                 "companyName",
               ].map((key) => (
                 <CTableDataCell key={key}>{addr[key]}</CTableDataCell>
               ))}
               <CTableDataCell>
+                {addr.type === 0 ? "Bireysel" : "Kurumsal"}
+              </CTableDataCell>
+              <CTableDataCell>
                 <CButton
-                  color="info"
+                  color="primary"
                   className="me-2"
                   onClick={() => handleEditModalOpen(addr.addressId)}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
-                  color="danger"
+                  color="danger text-white"
                   onClick={() => handleDelete(addr.addressId)}
                 >
                   <CIcon icon={cilTrash} />
