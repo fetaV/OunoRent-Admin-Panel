@@ -22,8 +22,7 @@ const apiRequest = async (method, url, data = null, headers = {}) => {
       data,
       headers: {
         ...headers,
-        "Content-Type":
-          method === "put" ? "multipart/form-data" : "application/json",
+        "Content-Type": "application/json",
       },
     });
     return response.data;
@@ -141,8 +140,8 @@ export const updateWarehouse = async (warehouseId) => {
   await apiRequest("put", `/Warehouse/${warehouseId}`);
 };
 
-export const createFaq = async () => {
-  return apiRequest("post", "/Faq");
+export const createFaq = async (faqData) => {
+  return apiRequest("post", "/Faq", faqData);
 };
 export const fetchFaq = async () => {
   return apiRequest("get", "/Faq");

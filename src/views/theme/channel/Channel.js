@@ -33,8 +33,7 @@ import {
 const Channel = () => {
   const [state, setState] = useState({
     channel: [],
-    currentChannel: null,
-    visible: false,
+    modalVisible: false,
     logo: null,
     deleteChannelId: null,
     searchQuery: "",
