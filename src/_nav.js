@@ -5,15 +5,10 @@ import {
   cilActionRedo,
   cilAddressBook,
   cilAirplaneModeOff,
-  cilBell,
   cilBookmark,
-  cilCalculator,
   cilCarAlt,
-  cilChartPie,
   cilChatBubble,
   cilContact,
-  cilCursor,
-  cilDescription,
   cilDollar,
   cilDrop,
   cilFeaturedPlaylist,
@@ -22,10 +17,8 @@ import {
   cilLibraryBuilding,
   cilNotes,
   cilPencil,
-  cilPuzzle,
   cilSchool,
   cilSpeedometer,
-  cilStar,
 } from "@coreui/icons";
 import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
 
@@ -47,19 +40,19 @@ const _nav = [
   {
     component: CNavItem,
     name: "Adresler",
-    to: "/theme/address",
+    to: "/address",
     icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Kullanıcı Listesi",
-    to: "/theme/userlist",
+    to: "/userlist",
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Kullanıcı Sözleşmeleri",
-    to: "/theme/userContract",
+    to: "/userContract",
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
   },
   {
@@ -69,59 +62,59 @@ const _nav = [
   {
     component: CNavItem,
     name: "Bize Ulaşın",
-    to: "/theme/contactForm",
+    to: "/contactForm",
     icon: <CIcon icon={cilContact} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Blog",
-    to: "/theme/blog",
+    to: "/blog",
     icon: <CIcon icon={cil3d} customClassName="nav-icon" />,
   },
 
   {
     component: CNavItem,
     name: "FAQ",
-    to: "/theme/faq",
+    to: "/faq",
     icon: <CIcon icon={cilBookmark} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Footer",
-    to: "/theme/footer",
+    to: "/footer",
     icon: <CIcon icon={cilActionRedo} customClassName="nav-icon" />,
   },
 
   {
     component: CNavItem,
     name: "Kategoriler",
-    to: "/theme/categories",
+    to: "/categories",
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
 
   {
     component: CNavItem,
     name: "Markalar",
-    to: "/theme/brand",
+    to: "/brand",
     icon: <CIcon icon={cilLibraryBuilding} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Menü Ana Başlıkları",
-    to: "/theme/menuItem",
+    to: "/menuItem",
     icon: <CIcon icon={cilCarAlt} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Öne Çıkan Kategoriler",
-    to: "/theme/featuredCategories",
+    to: "/featuredCategories",
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
 
   {
     component: CNavItem,
     name: "Slider",
-    to: "/theme/slider",
+    to: "/slider",
     icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
   },
   {
@@ -131,37 +124,37 @@ const _nav = [
   {
     component: CNavItem,
     name: "Depo - Kanal Yönetimi",
-    to: "/theme/warehouseconnection",
+    to: "/warehouseconnection",
     icon: <CIcon icon={cilHouse} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Depo Yönetimi",
-    to: "/theme/warehouse",
+    to: "/warehouse",
     icon: <CIcon icon={cilAirplaneModeOff} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Fiyatlar",
-    to: "/theme/price",
+    to: "/price",
     icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Kanallar",
-    to: "/theme/channel",
+    to: "/channel",
     icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Özellikler",
-    to: "/theme/feature",
+    to: "/feature",
     icon: <CIcon icon={cilFeaturedPlaylist} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: "Sözleşmeler",
-    to: "/theme/contract",
+    to: "/contract",
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
 

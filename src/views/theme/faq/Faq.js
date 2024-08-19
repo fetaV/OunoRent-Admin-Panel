@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilPencil, cilTrash } from "@coreui/icons";
+import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -37,6 +37,7 @@ const Faq = () => {
     currentFaq: null,
     searchQuery: "",
     filteredFaq: [],
+    faqData: {},
     currentPage: 1,
     modalVisible: false,
     editFaqId: null,
@@ -45,15 +46,17 @@ const Faq = () => {
   });
   const itemsPerPage = 10;
 
+  const loadFaq = async () => {
+    const faq = await fetchFaq();
+    setState((prevState) => ({
+      ...prevState,
+      faq,
+      filteredFaq: faq,
+      modalVisible: false,
+    }));
+  };
+
   useEffect(() => {
-    const loadFaq = async () => {
-      const faq = await fetchFaq();
-      setState((prevState) => ({
-        ...prevState,
-        faq,
-        filteredFaq: faq,
-      }));
-    };
     loadFaq();
   }, []);
 
@@ -62,12 +65,9 @@ const Faq = () => {
       const data = await fetchFaqForID(formId);
       setState((prevState) => ({
         ...prevState,
-        label: data.label,
-        text: data.text,
-        orderNumber: data.orderNumber,
+        faqData: data,
         editFaqId: formId,
         modalVisible: true,
-        isActive: data.isActive,
       }));
     } else {
       setState((prevState) => ({
@@ -83,14 +83,7 @@ const Faq = () => {
   };
 
   const handleSave = async () => {
-    const { editFaqId, isActive, label } = state;
-
-    const faqData = {
-      label,
-      text: "",
-      orderNumber: 0,
-      isActive,
-    };
+    const { editFaqId, faqData } = state;
 
     if (editFaqId) {
       await updateFaq(editFaqId, faqData);
@@ -100,13 +93,7 @@ const Faq = () => {
       toast.success("FAQ başarıyla oluşturuldu.");
     }
 
-    const updatedFaq = await fetchFaq();
-    setState((prevState) => ({
-      ...prevState,
-      modalVisible: false,
-      faq: updatedFaq,
-      filteredFaq: updatedFaq,
-    }));
+    loadFaq();
   };
 
   const handleDelete = async (formId) => {
@@ -190,7 +177,6 @@ const Faq = () => {
             {[
               { label: "Label", value: "label" },
               { label: "Order Number", value: "orderNumber" },
-              { label: "Active", value: "isActive", isStatus: true },
               { label: "Actions", value: "actions" },
             ].map(({ label, value }) => (
               <CTableHeaderCell
@@ -218,7 +204,8 @@ const Faq = () => {
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
-                <div
+                <CButton
+                  className="me-2"
                   style={{
                     display: "inline-block",
                     padding: "5px 10px",
@@ -228,14 +215,14 @@ const Faq = () => {
                     border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
                     cursor: "pointer",
                   }}
-                  onClick={() => handleToggleActive(item.faqId)}
+                  onClick={() => handleToggleActive(item.faqId, item.isActive)}
                 >
-                  {item.isActive ? "Aktif" : "Pasif"}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
+                  {item.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
                 <CButton
                   color="primary"
                   className="me-2"
@@ -292,11 +279,11 @@ const Faq = () => {
               type="text"
               id="label"
               label="Label"
-              value={state.label}
+              value={state.faqData.label}
               onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  label: e.target.value,
+                setState(() => ({
+                  ...state,
+                  faqData: { ...state.faqData, label: e.target.value },
                 }))
               }
             />
@@ -305,11 +292,11 @@ const Faq = () => {
               id="text"
               label="Metin"
               rows={5}
-              value={state.text}
+              value={state.faqData.text}
               onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  text: e.target.value,
+                setState(() => ({
+                  ...state,
+                  faqData: { ...state.faqData, text: e.target.value },
                 }))
               }
             />
@@ -317,11 +304,11 @@ const Faq = () => {
               type="number"
               id="orderNumber"
               label="Sıra Numarası"
-              value={state.orderNumber}
+              value={state.faqData.orderNumber}
               onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  orderNumber: e.target.value,
+                setState(() => ({
+                  ...state,
+                  faqData: { ...state.faqData, orderNumber: e.target.value },
                 }))
               }
             />

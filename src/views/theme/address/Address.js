@@ -206,7 +206,7 @@ const Address = () => {
             <CFormTextarea
               className="mb-3"
               rows={5}
-              label="Kullanıcı Sözleşmesi Detayı"
+              label="Adres Detayı"
               value={state.addressData.addressDetail || ""}
               onChange={(e) =>
                 setState((prevState) => ({

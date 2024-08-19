@@ -200,7 +200,7 @@ const ContactForm = () => {
         </CTableHead>
         <CTableBody>
           {currentItems.map((form) => (
-            <CTableRow key={form.id}>
+            <CTableRow key={form.contactFormId}>
               {["name", "email", "subject", "subjectCategory", "formDate"].map(
                 (key) => (
                   <CTableDataCell key={key}>
