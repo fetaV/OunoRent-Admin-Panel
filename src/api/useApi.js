@@ -235,3 +235,26 @@ export const deleteMenuItem = async (MenuItemId) => {
 export const updateMenuItem = async (MenuItemId, MenuItemData) => {
   await apiRequest("put", `/MenuItem/${MenuItemId}`, MenuItemData);
 };
+
+export const createFeaturedCategory = async (FeaturedCategoryData) => {
+  return apiRequest("post", "/FeaturedCategory", FeaturedCategoryData);
+};
+export const fetchFeaturedCategory = async () => {
+  return apiRequest("get", "/FeaturedCategory");
+};
+export const fetchFeaturedCategoryForID = async (FeaturedCategoryId) => {
+  return apiRequest("get", `/FeaturedCategory/${FeaturedCategoryId}`);
+};
+export const deleteFeaturedCategory = async (FeaturedCategoryId) => {
+  await apiRequest("delete", `/FeaturedCategory/${FeaturedCategoryId}`);
+};
+export const updateFeaturedCategory = async (
+  FeaturedCategoryId,
+  FeaturedCategoryData
+) => {
+  await apiRequest(
+    "put",
+    `/FeaturedCategory/${FeaturedCategoryId}`,
+    FeaturedCategoryData
+  );
+};
