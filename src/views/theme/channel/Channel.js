@@ -227,7 +227,7 @@ const Channel = () => {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <img
-                  src={`http://10.10.3.181:5244/${item.logo}`}
+                  src={`http://10.10.3.181:5244/${item.logoUrl}`}
                   alt="Mobil Resim"
                   style={{
                     width: "50px",

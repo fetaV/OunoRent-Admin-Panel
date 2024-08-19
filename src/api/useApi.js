@@ -70,6 +70,7 @@ export const deleteBlog = async (blogId) => {
 export const updateBlog = async (blogId, blogData) => {
   await apiRequest("put", `/blog/${blogId}`, blogData);
 };
+
 export const fetchCategory = async () => {
   return apiRequest("get", `/category`);
 };
@@ -217,4 +218,20 @@ export const deleteBrand = async (BrandId) => {
 };
 export const updateBrand = async (BrandId, brandData) => {
   await apiRequest("put", `/Brand/${BrandId}`, brandData);
+};
+
+export const createMenuItem = async (MenuItemData) => {
+  return apiRequest("post", "/MenuItem", MenuItemData);
+};
+export const fetchMenuItem = async () => {
+  return apiRequest("get", "/MenuItem");
+};
+export const fetchMenuItemForID = async (MenuItemId) => {
+  return apiRequest("get", `/MenuItem/${MenuItemId}`);
+};
+export const deleteMenuItem = async (MenuItemId) => {
+  await apiRequest("delete", `/MenuItem/${MenuItemId}`);
+};
+export const updateMenuItem = async (MenuItemId, MenuItemData) => {
+  await apiRequest("put", `/MenuItem/${MenuItemId}`, MenuItemData);
 };
