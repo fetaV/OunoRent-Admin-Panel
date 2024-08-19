@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilPencil, cilTrash } from "@coreui/icons";
+import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -37,34 +37,37 @@ function WarehouseConnection() {
   const [state, setState] = useState({
     warehouseConnection: [],
     isActive: false,
-    editWarehouseConnectionId: null,
+    warehouseConnectionId: null,
+    deleteWarehouseConnectionId: null,
     warehouse: [],
     channel: [],
     modalVisible: false,
-    editWarehouseConnectionData: {},
-    selectedChannelId: "",
-    selectedWarehouseId: "",
+    warehouseConnectionData: {},
+    channelId: "",
+    warehouseId: "",
     searchQuery: "",
     filteredWarehouseConnection: [],
     currentPage: 1,
+    deleteModalVisible: false,
   });
   const itemsPerPage = 10;
 
+  const loadWarehouseConnection = async () => {
+    const [warehouseConnections, channel, warehouse] = await Promise.all([
+      fetchWarehouseConnection(),
+      fetchChannel(),
+      fetchWarehouse(),
+    ]);
+    setState((prevState) => ({
+      ...prevState,
+      channel,
+      warehouse,
+      warehouseConnection: warehouseConnections,
+      filteredWarehouseConnection: warehouseConnections,
+      modalVisible: false,
+    }));
+  };
   useEffect(() => {
-    const loadWarehouseConnection = async () => {
-      const [warehouseConnections, channel, warehouse] = await Promise.all([
-        fetchWarehouseConnection(),
-        fetchChannel(),
-        fetchWarehouse(),
-      ]);
-      setState((prevState) => ({
-        ...prevState,
-        channel,
-        warehouse,
-        warehouseConnection: warehouseConnections,
-        filteredWarehouseConnection: warehouseConnections,
-      }));
-    };
     loadWarehouseConnection();
   }, []);
 
@@ -73,63 +76,56 @@ function WarehouseConnection() {
       const data = await fetchWarehouseConnectionForID(formId);
       setState((prevState) => ({
         ...prevState,
-        editWarehouseConnectionId: formId,
-        selectedChannelId: data.channelId,
-        selectedWarehouseId: data.warehouseId,
+        warehouseConnectionId: formId,
+        channelId: data.channelId,
+        warehouseId: data.warehouseId,
+        isActive: data.isActive,
         modalVisible: true,
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        selectedChannelId: "",
-        selectedWarehouseId: "",
+        warehouseConnectionId: null,
+        channelId: "",
+        warehouseId: "",
+        isActive: false,
         modalVisible: true,
       }));
     }
   };
 
   const handleSave = async () => {
-    const {
-      editWarehouseConnectionId,
-      isActive,
-      selectedChannelId,
-      selectedWarehouseId,
-    } = state;
+    const { warehouseConnectionId, channelId, warehouseId, isActive } = state;
 
-    const WarehouseConnectionData = {
+    const warehouseConnectionData = {
+      warehouseConnectionId,
+      channelId,
+      warehouseId,
       isActive,
-      channelId: selectedChannelId,
-      warehouseId: selectedWarehouseId,
-      warehouseConnectionId: editWarehouseConnectionId,
     };
 
-    if (editWarehouseConnectionId) {
-      console.log("here3", WarehouseConnectionData);
-
-      await updateWarehouseConnection(
-        editWarehouseConnectionId,
-        WarehouseConnectionData
-      );
-
-      toast.success("WarehouseConnection başarıyla güncellendi.");
-    } else {
-      await createWarehouseConnection(WarehouseConnectionData);
-      toast.success("WarehouseConnection başarıyla oluşturuldu.");
+    try {
+      if (warehouseConnectionId) {
+        await updateWarehouseConnection(
+          warehouseConnectionId,
+          warehouseConnectionData
+        );
+        toast.success("WarehouseConnection başarıyla güncellendi.");
+      } else {
+        await createWarehouseConnection(warehouseConnectionData);
+        toast.success("WarehouseConnection başarıyla oluşturuldu.");
+      }
+      loadWarehouseConnection();
+    } catch (error) {
+      toast.error("Bir hata oluştu. Lütfen tekrar deneyin.");
     }
-
-    setState((prevState) => ({
-      ...prevState,
-      modalVisible: false,
-      WarehouseConnection: fetchWarehouseConnection(),
-      filteredWarehouseConnection: fetchWarehouseConnection(),
-    }));
   };
 
   useEffect(() => {
     const filterWarehouseConnection = () => {
       const lowercasedQuery = state.searchQuery.toLowerCase();
       const filteredData = state.warehouseConnection.filter((item) =>
-        [item.channelName, item.warehouseName]
+        [item.WarehouseConnectionName, item.warehouseName]
           .map((item) => item.toLowerCase())
           .some((item) => item.includes(lowercasedQuery))
       );
@@ -140,45 +136,62 @@ function WarehouseConnection() {
     };
 
     filterWarehouseConnection();
-  }, [state.searchQuery, state.warehouseConnection]);
-
-  const handleDelete = async (formId) => {
-    await deleteWarehouseConnection(formId);
-    toast.success("WarehouseConnection başarıyla silindi!");
-    setState((prevState) => ({
-      ...prevState,
-      WarehouseConnection: prevState.warehouseConnection.filter(
-        (item) => item.warehouseConnectionId !== formId
-      ),
-      filteredWarehouseConnection: prevState.filteredWarehouseConnection.filter(
-        (item) => item.warehouseConnectionId !== formId
-      ),
-    }));
-  };
-
-  const handleEdit = async () => {
-    const updatedData = state.editWarehouseConnectionData;
-    await updateWarehouseConnection(
-      state.editWarehouseConnectionData.warehouseConnectionId,
-      updatedData
-    );
-    toast.success("Warehouseconnection başarıyla güncellendi.");
-    setState((prevState) => ({
-      ...prevState,
-      warehouseConnection: prevState.warehouseConnection.map((item) =>
-        item.warehouseConnectionId === updatedData.warehouseConnectionId
-          ? updatedData
-          : item
-      ),
-      modalVisible: false,
-    }));
-  };
+  }, [state.searchQuery]);
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredWarehouseConnection.slice(
     indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
+
+  const handleToggleActive = async (warehouseConnectionId, currentStatus) => {
+    const warehouseConnectionUpdate = state.warehouseConnection.find(
+      (item) => item.warehouseConnectionId === warehouseConnectionId
+    );
+
+    const updatedWarehouseConnection = {
+      ...warehouseConnectionUpdate,
+      isActive: !currentStatus,
+      channelId: warehouseConnectionUpdate.channelId,
+      warehouseId: warehouseConnectionUpdate.warehouseId,
+    };
+
+    await updateWarehouseConnection(
+      warehouseConnectionId,
+      updatedWarehouseConnection
+    );
+
+    toast.success("WarehouseConnection durumu başarıyla güncellendi.");
+
+    const updatedWarehouseConnectionList = await fetchWarehouseConnection();
+
+    setState((prevState) => ({
+      ...prevState,
+      warehouseConnection: updatedWarehouseConnectionList,
+      filteredWarehouseConnection: updatedWarehouseConnectionList,
+    }));
+  };
+
+  const handleDeleteClick = (formId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteWarehouseConnectionId: formId,
+      deleteModalVisible: true,
+    }));
+  };
+
+  const confirmDelete = async () => {
+    await deleteWarehouseConnection(state.deleteWarehouseConnectionId);
+    toast.success("WarehouseConnection başarıyla silindi!");
+    const updatedWarehouseConnection = await fetchWarehouseConnection();
+    setState((prevState) => ({
+      ...prevState,
+      warehouseConnection: updatedWarehouseConnection,
+      filteredWarehouseConnection: updatedWarehouseConnection,
+      deleteModalVisible: false,
+      deleteWarehouseConnectionId: null,
+    }));
+  };
 
   return (
     <>
@@ -212,7 +225,7 @@ function WarehouseConnection() {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.editWarehouseConnectionId
+            {state.warehouseConnectionId
               ? "WarehouseConnection Düzenle"
               : "Yeni WarehouseConnection Ekle"}
           </CModalTitle>
@@ -226,10 +239,10 @@ function WarehouseConnection() {
               onChange={(e) =>
                 setState((prevState) => ({
                   ...prevState,
-                  selectedChannelId: e.target.value,
+                  channelId: e.target.value,
                 }))
               }
-              value={state.selectedChannelId}
+              value={state.channelId}
             >
               <option value="">Kanal Seçiniz</option>
               {state.channel.map((channel) => (
@@ -245,10 +258,10 @@ function WarehouseConnection() {
               onChange={(e) =>
                 setState((prevState) => ({
                   ...prevState,
-                  selectedWarehouseId: e.target.value,
+                  warehouseId: e.target.value,
                 }))
               }
-              value={state.selectedWarehouseId}
+              value={state.warehouseId}
             >
               <option value="">Depo Seçiniz</option>
               {state.warehouse.map((warehouse) => (
@@ -260,18 +273,19 @@ function WarehouseConnection() {
                 </option>
               ))}
             </CFormSelect>
-            <CFormSwitch
-              label="Aktif"
-              id="isActive"
-              className="mb-3"
-              checked={state.isActive}
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  isActive: e.target.checked,
-                }))
-              }
-            />
+            {state.warehouseConnectionId === null && (
+              <CFormSwitch
+                id="isActive"
+                label={state.isActive ? "Aktif" : "Pasif"}
+                checked={state.isActive}
+                onChange={(e) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    isActive: e.target.checked,
+                  }))
+                }
+              />
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -284,7 +298,7 @@ function WarehouseConnection() {
             Kapat
           </CButton>
           <CButton color="primary" onClick={handleSave}>
-            {state.editWarehouseConnectionId ? "Güncelle" : "Kaydet"}
+            {state.warehouseConnectionId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -294,7 +308,6 @@ function WarehouseConnection() {
             {[
               { label: "Depo Adı", value: "warehouseName" },
               { label: "Kanal Adı", value: "channelName" },
-              { label: "Durum", value: "isActive", isStatus: true },
               { label: "Eylemler", value: "actions" },
             ].map(({ label, value, isStatus }) => (
               <CTableHeaderCell
@@ -312,52 +325,56 @@ function WarehouseConnection() {
               {[
                 { value: "warehouseName", isImage: false, isStatus: false },
                 { value: "channelName", isImage: false, isStatus: false },
-                { value: "isActive", isImage: false, isStatus: true },
               ].map(({ value, isStatus }) => (
                 <CTableDataCell
                   key={value}
                   style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
-                  {isStatus ? (
-                    <div
-                      style={{
-                        display: "inline-block",
-                        padding: "5px 10px",
-                        borderRadius: "8px",
-                        backgroundColor: warehouseConnection[value]
-                          ? "#d4edda"
-                          : "#f8d7da",
-                        color: warehouseConnection[value]
-                          ? "#155724"
-                          : "#721c24",
-                        border: `1px solid ${
-                          warehouseConnection[value] ? "#c3e6cb" : "#f5c6cb"
-                        }`,
-                      }}
-                    >
-                      {warehouseConnection[value] ? "Aktif" : "Pasif"}
-                    </div>
-                  ) : (
-                    warehouseConnection[value]
-                  )}
+                  {warehouseConnection[value]}
                 </CTableDataCell>
               ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  color="primary"
                   className="me-2"
+                  style={{
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: warehouseConnection.isActive
+                      ? "#d4edda"
+                      : "#f8d7da",
+                    color: warehouseConnection.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${warehouseConnection.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
+                  }}
                   onClick={() =>
-                    handleModalOpen(warehouseConnection.warehouseConnectionId)
+                    handleToggleActive(
+                      warehouseConnection.warehouseConnectionId,
+                      warehouseConnection.isActive
+                    )
                   }
+                >
+                  {warehouseConnection.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
+                <CButton
+                  color="primary text-white"
+                  className="me-2"
+                  onClick={() => {
+                    handleModalOpen(warehouseConnection.warehouseConnectionId);
+                  }}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
                   onClick={() =>
-                    handleDelete(warehouseConnection.warehouseConnectionId)
+                    handleDeleteClick(warehouseConnection.warehouseConnectionId)
                   }
                 >
                   <CIcon icon={cilTrash} />
@@ -388,6 +405,38 @@ function WarehouseConnection() {
           )
         )}
       </CPagination>
+      <CModal
+        alignment="center"
+        visible={state.deleteModalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            deleteModalVisible: false,
+            deleteWarehouseConnectionId: null,
+          }))
+        }
+      >
+        <CModalHeader>
+          <CModalTitle>Bu Kanalı silmek istediğinize emin misiniz?</CModalTitle>
+        </CModalHeader>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({
+                ...prevState,
+                deleteModalVisible: false,
+                deleteWarehouseConnectionId: null,
+              }))
+            }
+          >
+            İptal
+          </CButton>
+          <CButton color="danger text-white" onClick={confirmDelete}>
+            Sil
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   );
 }
