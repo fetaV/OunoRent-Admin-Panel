@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilPencil, cilTrash } from "@coreui/icons";
+import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -33,26 +33,30 @@ import {
 const Warehouse = () => {
   const [state, setState] = useState({
     warehouse: [],
+    warehouseData: [],
     name: "",
     logoWarehouseId: 0,
-    editWarehouseId: null,
+    warehouseId: null,
     modalVisible: false,
     isActive: false,
     searchQuery: "",
     filteredWarehouse: [],
     currentPage: 1,
+    deleteWarehouseId: null,
   });
   const itemsPerPage = 10;
 
+  const loadWarehouse = async () => {
+    const [warehouse] = await Promise.all([fetchWarehouse()]);
+    setState((prevState) => ({
+      ...prevState,
+      warehouse: warehouse,
+      filteredWarehouse: warehouse,
+      modalVisible: false,
+    }));
+  };
+
   useEffect(() => {
-    const loadWarehouse = async () => {
-      const [warehouse] = await Promise.all([fetchWarehouse()]);
-      setState((prevState) => ({
-        ...prevState,
-        warehouse: warehouse,
-        filteredWarehouse: warehouse,
-      }));
-    };
     loadWarehouse();
   }, []);
 
@@ -61,59 +65,38 @@ const Warehouse = () => {
       const data = await fetchWarehouseForID(formId);
       setState((prevState) => ({
         ...prevState,
-        name: data.name,
-        logoWarehouseId: data.logoWarehouseId,
-        editWarehouseId: formId,
+        warehouseData: {
+          ...data,
+        },
+        warehouseId: formId,
         modalVisible: true,
         isActive: data.isActive,
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        name,
+        name: "",
+        logoWarehouseId: "",
+        isActive: false,
+        warehouseId: null,
         modalVisible: true,
       }));
     }
   };
 
   const handleSave = async () => {
-    const { editWarehouseId, isActive } = state;
+    const { warehouseId, warehouseData } = state;
 
-    const WarehouseData = {
-      name: state.name,
-      logoWarehouseId: state.logoWarehouseId,
-      isActive: state.isActive,
-    };
-
-    if (editWarehouseId) {
-      await updateWarehouse(editWarehouseId, WarehouseData);
+    if (warehouseId) {
+      await updateWarehouse(warehouseId, warehouseData);
 
       toast.success("Warehouse başarıyla güncellendi.");
     } else {
-      await createWarehouse(WarehouseData);
+      await createWarehouse(warehouseData);
       toast.success("Warehouse başarıyla oluşturuldu.");
     }
 
-    setState((prevState) => ({
-      ...prevState,
-      modalVisible: false,
-      Warehouse: fetchWarehouse(),
-      filteredWarehouse: fetchWarehouse(),
-    }));
-  };
-
-  const handleDelete = async (formId) => {
-    await deleteWarehouse(formId);
-    toast.success("Warehouse başarıyla silindi!");
-    setState((prevState) => ({
-      ...prevState,
-      Warehouse: prevState.warehouse.filter(
-        (item) => item.warehouseId !== formId
-      ),
-      filteredWarehouse: prevState.filteredWarehouse.filter(
-        (item) => item.warehouseId !== formId
-      ),
-    }));
+    loadWarehouse();
   };
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
@@ -121,6 +104,51 @@ const Warehouse = () => {
     indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
+
+  const handleToggleActive = async (warehouseId, currentStatus) => {
+    const warehouseUpdate = state.warehouse.find(
+      (item) => item.warehouseId === warehouseId
+    );
+
+    const updatedWarehouse = {
+      ...warehouseUpdate,
+      isActive: !currentStatus,
+      logoWarehouseId: warehouseUpdate.logoWarehouseId,
+    };
+
+    await updateWarehouse(warehouseId, updatedWarehouse);
+
+    toast.success("Warehouse durumu başarıyla güncellendi.");
+
+    const updatedWarehouseList = await fetchWarehouse();
+
+    setState((prevState) => ({
+      ...prevState,
+      warehouse: updatedWarehouseList,
+      filteredWarehouse: updatedWarehouseList,
+    }));
+  };
+
+  const handleDeleteClick = (formId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteWarehouseId: formId,
+      deleteModalVisible: true,
+    }));
+  };
+
+  const confirmDelete = async () => {
+    await deleteWarehouse(state.deleteWarehouseId);
+    toast.success("Depo başarıyla silindi!");
+    const updatedWarehouse = await fetchWarehouse();
+    setState((prevState) => ({
+      ...prevState,
+      warehouse: updatedWarehouse,
+      filteredWarehouse: updatedWarehouse,
+      deleteModalVisible: false,
+      deleteWarehouseId: null,
+    }));
+  };
 
   useEffect(() => {
     const filterWarehouse = () => {
@@ -170,9 +198,7 @@ const Warehouse = () => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.editWarehouseId
-              ? "Warehouse Düzenle"
-              : "Yeni Warehouse Ekle"}
+            {state.warehouseId ? "Warehouse Düzenle" : "Yeni Warehouse Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -181,11 +207,14 @@ const Warehouse = () => {
               type="text"
               id="exampleFormControlInput1"
               label="Depo Adı"
-              value={state.name}
+              value={state.warehouseData.name}
               onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  name: e.target.value,
+                setState(() => ({
+                  ...state,
+                  warehouseData: {
+                    ...state.warehouseData,
+                    name: e.target.value,
+                  },
                 }))
               }
             />
@@ -193,26 +222,31 @@ const Warehouse = () => {
               type="number"
               id="exampleFormControlInput2"
               label="Logo Depo ID"
-              value={state.logoWarehouseId}
+              value={state.warehouseData.logoWarehouseId}
               onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  logoWarehouseId: e.target.value,
+                setState(() => ({
+                  ...state,
+                  warehouseData: {
+                    ...state.warehouseData,
+                    logoWarehouseId: e.target.value,
+                  },
                 }))
               }
             />
-            <CFormSwitch
-              label="Aktif"
-              id="isActive"
-              className="mb-3"
-              checked={state.isActive}
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  isActive: e.target.checked,
-                }))
-              }
-            />
+            {state.warehouseId === null && (
+              <CFormSwitch
+                label="Aktif"
+                id="isActive"
+                className="mb-3"
+                checked={state.warehouseData.isActive}
+                onChange={(e) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    isActive: e.target.checked,
+                  }))
+                }
+              />
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -225,7 +259,7 @@ const Warehouse = () => {
             Kapat
           </CButton>
           <CButton color="primary" onClick={handleSave}>
-            {state.editWarehouseId ? "Güncelle" : "Kaydet"}
+            {state.warehouseId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -234,7 +268,7 @@ const Warehouse = () => {
           <CTableRow>
             {[
               { label: "Depo Adı", value: "name" },
-              { label: "Durum", value: "isActive", isStatus: true },
+              { label: "Logo Depo ID", value: "logoWarehouseId" },
               { label: "Eylemler", value: "actions" },
             ].map(({ label, value, isStatus }) => (
               <CTableHeaderCell
@@ -250,48 +284,63 @@ const Warehouse = () => {
           {currentItems.map((warehouse) => (
             <CTableRow key={warehouse.warehouseId}>
               {[
-                { value: "name", isImage: false, isStatus: false },
-                { value: "isActive", isImage: false, isStatus: true },
+                {
+                  value: "name",
+                  isImage: false,
+                  isStatus: false,
+                },
+                {
+                  value: "logoWarehouseId",
+                  isImage: false,
+                  isStatus: false,
+                },
               ].map(({ value, isStatus }) => (
                 <CTableDataCell
                   key={value}
                   style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
-                  {isStatus ? (
-                    <div
-                      style={{
-                        display: "inline-block",
-                        padding: "5px 10px",
-                        borderRadius: "8px",
-                        backgroundColor: warehouse[value]
-                          ? "#d4edda"
-                          : "#f8d7da",
-                        color: warehouse[value] ? "#155724" : "#721c24",
-                        border: `1px solid ${
-                          warehouse[value] ? "#c3e6cb" : "#f5c6cb"
-                        }`,
-                      }}
-                    >
-                      {warehouse[value] ? "Aktif" : "Pasif"}
-                    </div>
-                  ) : (
-                    warehouse[value]
-                  )}
+                  {warehouse[value]}
                 </CTableDataCell>
               ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  color="primary"
                   className="me-2"
-                  onClick={() => handleModalOpen(warehouse.warehouseId)}
+                  style={{
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: warehouse.isActive ? "#d4edda" : "#f8d7da",
+                    color: warehouse.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${warehouse.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    handleToggleActive(
+                      warehouse.warehouseId,
+                      warehouse.isActive
+                    )
+                  }
+                >
+                  {warehouse.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
+                <CButton
+                  color="primary text-white"
+                  className="me-2"
+                  onClick={() => {
+                    handleModalOpen(warehouse.warehouseId);
+                  }}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  onClick={() => handleDelete(warehouse.warehouseId)}
+                  onClick={() => handleDeleteClick(warehouse.warehouseId)}
                 >
                   <CIcon icon={cilTrash} />
                 </CButton>
@@ -319,6 +368,39 @@ const Warehouse = () => {
           )
         )}
       </CPagination>
+
+      <CModal
+        alignment="center"
+        visible={state.deleteModalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            deleteModalVisible: false,
+            deletefeaturedCategoryId: null,
+          }))
+        }
+      >
+        <CModalHeader>
+          <CModalTitle>Bu Kanalı silmek istediğinize emin misiniz?</CModalTitle>
+        </CModalHeader>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({
+                ...prevState,
+                deleteModalVisible: false,
+                deletefeaturedCategoryId: null,
+              }))
+            }
+          >
+            İptal
+          </CButton>
+          <CButton color="danger text-white" onClick={confirmDelete}>
+            Sil
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   );
 };
