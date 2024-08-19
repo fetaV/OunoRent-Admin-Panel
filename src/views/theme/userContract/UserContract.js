@@ -31,7 +31,7 @@ const UserContract = () => {
   const [state, setState] = useState({
     UserContract: [],
     filteredUserContract: [],
-    editUserContractData: {},
+    userContractData: {},
     modalVisible: false,
     searchQuery: "",
     currentPage: 1,
@@ -39,16 +39,16 @@ const UserContract = () => {
 
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    const loadUserContract = async () => {
-      const data = await fetchUserContract();
-      setState((prevState) => ({
-        ...prevState,
-        UserContract: data,
-        filteredUserContract: data,
-      }));
-    };
+  const loadUserContract = async () => {
+    const data = await fetchUserContract();
+    setState((prevState) => ({
+      ...prevState,
+      UserContract: data,
+      filteredUserContract: data,
+    }));
+  };
 
+  useEffect(() => {
     loadUserContract();
   }, []);
 
@@ -57,7 +57,7 @@ const UserContract = () => {
       const data = await fetchUserContractForID(formId);
       setState((prevState) => ({
         ...prevState,
-        editUserContractData: {
+        userContractData: {
           contractName: data.contract?.name || "",
           contractBody: data.contract?.body || "",
           contractType: data.contract?.type || "",
@@ -82,7 +82,7 @@ const UserContract = () => {
     } else {
       setState((prevState) => ({
         ...prevState,
-        editUserContractData: {
+        userContractData: {
           contractName: "",
           contractVersion: "",
           requiresAt: "",
@@ -169,12 +169,12 @@ const UserContract = () => {
                     className="mb-3"
                     type="text"
                     label={label}
-                    value={state.editUserContractData[value] || ""}
+                    value={state.userContractData[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        editUserContractData: {
-                          ...prevState.editUserContractData,
+                        userContractData: {
+                          ...prevState.userContractData,
                           [value]: e.target.value,
                         },
                       }))
@@ -193,12 +193,12 @@ const UserContract = () => {
                     className="mb-3"
                     type="text"
                     label={label}
-                    value={state.editUserContractData[value] || ""}
+                    value={state.userContractData[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        editUserContractData: {
-                          ...prevState.editUserContractData,
+                        userContractData: {
+                          ...prevState.userContractData,
                           [value]: e.target.value,
                         },
                       }))
@@ -217,12 +217,12 @@ const UserContract = () => {
                     className="mb-3"
                     type="text"
                     label={label}
-                    value={state.editUserContractData[value] || ""}
+                    value={state.userContractData[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        editUserContractData: {
-                          ...prevState.editUserContractData,
+                        userContractData: {
+                          ...prevState.userContractData,
                           [value]: e.target.value,
                         },
                       }))
@@ -235,12 +235,12 @@ const UserContract = () => {
               className="mb-3"
               rows={5}
               label="Kullanıcı Sözleşmesi Detayı"
-              value={state.editUserContractData.contractBody || ""}
+              value={state.userContractData.contractBody || ""}
               onChange={(e) =>
                 setState((prevState) => ({
                   ...prevState,
-                  editUserContractData: {
-                    ...prevState.editUserContractData,
+                  userContractData: {
+                    ...prevState.userContractData,
                     contractBody: e.target.value,
                   },
                 }))

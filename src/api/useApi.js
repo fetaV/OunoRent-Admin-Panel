@@ -204,6 +204,16 @@ export const fetchUserContractForID = async (UserContractId) => {
   return apiRequest("get", `/UserContract/${UserContractId}`);
 };
 
+export const createContract = async (ContractData) => {
+  return apiRequest("post", "/Contract", ContractData);
+};
+export const fetchContract = async () => {
+  return apiRequest("get", "/Contract");
+};
+export const fetchContractForID = async (ContractId) => {
+  return apiRequest("get", `/Contract/${ContractId}`);
+};
+
 export const createBrand = async (brandData) => {
   return apiRequest("post", "/Brand", brandData);
 };
