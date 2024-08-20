@@ -71,8 +71,17 @@ export const updateBlog = async (blogId, blogData) => {
   await apiRequest("put", `/blog/${blogId}`, blogData);
 };
 
+export const createCategory = async () => {
+  return apiRequest("post", `/category`);
+};
 export const fetchCategory = async () => {
   return apiRequest("get", `/category`);
+};
+export const updateCategory = async (categoriesData) => {
+  return apiRequest("get", `/category`, categoriesData);
+};
+export const deleteCategory = async (categoryId) => {
+  return apiRequest("delete", `/category/${categoryId}`);
 };
 export const fetchCategoryForID = async (categoryId) => {
   return apiRequest("get", `/category/${categoryId}`);
