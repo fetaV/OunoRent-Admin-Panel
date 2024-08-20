@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilNotes, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
+import { cilNotes, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -18,7 +18,6 @@ import {
   CFormInput,
   CPagination,
   CPaginationItem,
-  CFormSwitch,
   CFormTextarea,
 } from "@coreui/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -26,6 +25,7 @@ import "react-toastify/dist/ReactToastify.css";
 import {
   createContract,
   fetchContract,
+  updateContract,
   fetchContractForID,
 } from "src/api/useApi";
 
@@ -33,21 +33,12 @@ const Contract = () => {
   const [state, setState] = useState({
     contracts: [],
     filteredContract: [],
-    contractData: {
-      body: "",
-      contractId: "",
-      createDate: "",
-      isActive: false,
-      name: "",
-      previousVersion: 0,
-      requiresAt: "",
-      type: 0,
-      version: 1,
-    },
+    contractData: {},
     editContractId: null,
     modalVisible: false,
     searchQuery: "",
     currentPage: 1,
+    type: 0,
   });
   const itemsPerPage = 10;
 
@@ -57,6 +48,7 @@ const Contract = () => {
       ...prevState,
       contract: data,
       filteredContract: data,
+      modalVisible: false,
     }));
   };
 
@@ -143,13 +135,13 @@ const Contract = () => {
   );
 
   const handleToggleActive = async (contractId, currentStatus) => {
-    console.log("here10");
     const updatedContract = {
       ...state.contracts.find((item) => item.contractId === contractId),
       isActive: !currentStatus,
+      contractId,
     };
 
-    await updateContract(contractId, updatedContract);
+    await updateContract(contractId, updatedContract); // contractId gönderiyoruz
 
     toast.success("Contract durumu başarıyla güncellendi.");
 
@@ -159,27 +151,6 @@ const Contract = () => {
       ...prevState,
       contracts: updatedContractList,
       filteredContract: updatedContractList,
-    }));
-  };
-
-  const handleDeleteClick = (formId) => {
-    setState((prevState) => ({
-      ...prevState,
-      contractId: formId,
-      deleteModalVisible: true,
-    }));
-  };
-
-  const confirmDelete = async () => {
-    await deleteContract(state.contractId);
-    toast.success("Contract başarıyla silindi!");
-    const updatedContract = await fetchContract();
-    setState((prevState) => ({
-      ...prevState,
-      contracts: updatedContract,
-      filteredContract: updatedContract,
-      deleteModalVisible: false,
-      contractId: null,
     }));
   };
 
@@ -314,6 +285,12 @@ const Contract = () => {
                 value: "previousVersion",
                 type: "number",
                 readOnly: true,
+              },
+              {
+                label: "Sözleşme Tipi",
+                value: "type",
+                type: "number",
+                readOnly: false,
               },
               {
                 label: "Gereklilik",

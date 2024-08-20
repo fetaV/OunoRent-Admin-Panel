@@ -207,6 +207,9 @@ export const fetchUserContractForID = async (UserContractId) => {
 export const createContract = async (ContractData) => {
   return apiRequest("post", "/Contract", ContractData);
 };
+export const updateContract = async (ContractId, ContractData) => {
+  await apiRequest("put", `/Contract/${ContractId}`, ContractData);
+};
 export const fetchContract = async () => {
   return apiRequest("get", "/Contract");
 };
