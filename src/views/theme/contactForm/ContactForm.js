@@ -190,7 +190,7 @@ const ContactForm = () => {
 
       <CTable hover>
         <CTableHead>
-          <CTableRow>
+          <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
             {["İsim", "Email", "Konu", "Kategori", "Tarih", "Aksiyonlar"].map(
               (header) => (
                 <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
@@ -200,7 +200,10 @@ const ContactForm = () => {
         </CTableHead>
         <CTableBody>
           {currentItems.map((form) => (
-            <CTableRow key={form.contactFormId}>
+            <CTableRow
+              style={{ textAlign: "center", verticalAlign: "middle" }}
+              key={form.contactFormId}
+            >
               {["name", "email", "subject", "subjectCategory", "formDate"].map(
                 (key) => (
                   <CTableDataCell key={key}>

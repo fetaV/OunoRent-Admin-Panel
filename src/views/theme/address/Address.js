@@ -115,7 +115,6 @@ const Address = () => {
       userId: state.addressData.user?.userId,
     };
 
-    console.log("123", updatedData);
     await updateAddressForID(updatedData.addressId, updatedData);
     toast.success("Adres başarıyla güncellendi.");
 

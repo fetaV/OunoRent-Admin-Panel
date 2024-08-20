@@ -333,7 +333,7 @@ const Brand = () => {
             <CFormInput
               type="text"
               className="mb-3"
-              label="Kanal İsmi"
+              label="Marka İsmi"
               value={state.brandData.name}
               onChange={(e) =>
                 setState({

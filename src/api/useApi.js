@@ -77,11 +77,8 @@ export const fetchCategory = async () => {
 export const fetchCategoryForID = async (categoryId) => {
   return apiRequest("get", `/category/${categoryId}`);
 };
-export const fetchSubCategoryForID = async (categoryId, subCategoryId) => {
-  return apiRequest(
-    "get",
-    `/category/${categoryId}/subcategory/${subCategoryId}`
-  );
+export const fetchSubCategoryForID = async (categoryId) => {
+  return apiRequest("get", `/category/${categoryId}/subcategory`);
 };
 
 export const createWarehouseConnection = async (warehouseConnectionData) => {

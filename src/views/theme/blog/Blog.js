@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CIcon from "@coreui/icons-react";
-import { cilNotes, cilTrash } from "@coreui/icons";
+import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
   CTable,
   CTableHead,
@@ -41,151 +41,196 @@ import "../blog/ckeditor-styles.css";
 function Blog() {
   const [state, setState] = useState({
     blog: [],
-    title: "",
-    body: "",
-    largeImage: null,
-    smallImage: null,
-    tags: "",
-    slug: "",
-    orderNumber: "",
-    isActive: false,
-    editBlogId: null,
     categories: [],
     subCategories: [],
     modalVisible: false,
-    selectedCategoryId: "",
-    selectedSubCategoryId: "",
     searchQuery: "",
+    categoryData: {},
+    deleteModalVisible: null,
     filteredBlog: [],
     currentPage: 1,
   });
 
   const itemsPerPage = 10;
 
+  const loadBlog = async () => {
+    const [blog, categories] = await Promise.all([
+      fetchBlog(),
+      fetchCategory(),
+    ]);
+    setState((prevState) => ({
+      ...prevState,
+      categories,
+      blog: blog,
+      filteredBlog: blog,
+      modalVisible: false,
+    }));
+  };
   useEffect(() => {
-    const loadBlog = async () => {
-      const [blogs, categories] = await Promise.all([
-        fetchBlog(),
-        fetchCategory(),
-      ]);
-      setState((prevState) => ({
-        ...prevState,
-        categories,
-        blog: blogs,
-        filteredBlog: blogs,
-      }));
-    };
     loadBlog();
   }, []);
 
   useEffect(() => {
-    if (state.selectedCategoryId) {
-      fetchSubCategoryForID(state.selectedCategoryId).then((data) => {
+    if (state.blogData?.categoryId) {
+      fetchSubCategoryForID(state.blogData?.categoryId).then((data) => {
         setState((prevState) => ({
           ...prevState,
           subCategories: data,
         }));
       });
     }
-  }, [state.selectedCategoryId]);
+  }, [state.blogData?.categoryId]);
 
-  const handleModalOpen = async (formId = null) => {
-    if (formId) {
-      const data = await fetchBlogForID(formId);
+  const handleModalOpen = async (blogId = null) => {
+    if (blogId) {
+      const data = await fetchBlogForID(blogId);
       setState((prevState) => ({
         ...prevState,
-        editBlogId: formId,
-        title: data.title,
-        body: data.body,
-        largeImage: data.largeImage,
-        smallImage: data.smallImage,
-        tags: data.tags,
-        slug: data.slug,
-        orderNumber: data.orderNumber,
-        isActive: data.isActive,
-        selectedCategoryId: data.categoryId,
-        selectedSubCategoryId: data.subCategoryId,
+        blogData: data,
+        blogId,
         modalVisible: true,
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        title: "",
-        body: "",
-        largeImage: null,
-        smallImage: null,
-        tags: "",
-        slug: "",
-        orderNumber: "",
-        isActive: false,
-        selectedCategoryId: "",
-        selectedSubCategoryId: "",
+        blogData: {
+          blogId: null,
+          title: "",
+          body: "",
+          largeImage: null,
+          smallImage: null,
+          largeImageUrl: null,
+          smallImageUrl: null,
+          tags: "",
+          slug: "",
+          orderNumber: "",
+          isActive: false,
+          categoryId: "",
+          subCategoryId: "",
+        },
+        blogId: null,
         modalVisible: true,
       }));
     }
   };
 
   const handleSave = async () => {
-    const {
-      editBlogId,
-      title,
-      body,
-      largeImage,
-      smallImage,
-      tags,
-      slug,
-      orderNumber,
-      isActive,
-      selectedCategoryId,
-      selectedSubCategoryId,
-    } = state;
+    const { blogId, blogData } = state;
 
-    const blogData = {
-      title,
-      body,
-      largeImage,
-      smallImage,
-      tags,
-      slug,
-      orderNumber,
-      isActive,
-      categoryId: selectedCategoryId,
-      subCategoryId: selectedSubCategoryId,
-    };
+    if (blogId) {
+      setState((prevState) => ({
+        ...prevState,
+        blogData: {
+          ...blogData,
+          smallImageUrl: undefined,
+          largeImageUrl: undefined,
+        },
+      }));
 
-    if (editBlogId) {
-      await updateBlog(editBlogId, blogData);
+      await updateBlog(blogId, blogData);
       toast.success("Blog başarıyla güncellendi.");
     } else {
+      console.log("111111");
       await createBlog(blogData);
       toast.success("Blog başarıyla oluşturuldu.");
     }
 
-    setState((prevState) => ({
-      ...prevState,
-      modalVisible: false,
-      blog: fetchBlog(),
-      filteredBlog: fetchBlog(),
-    }));
+    loadBlog();
   };
 
-  const handleDelete = async (formId) => {
-    await deleteBlog(formId);
-    toast.success("Blog başarıyla silindi!");
-    setState((prevState) => ({
-      ...prevState,
-      blog: prevState.blog.filter((item) => item.blogId !== formId),
-      filteredBlog: prevState.filteredBlog.filter(
-        (item) => item.blogId !== formId
-      ),
-    }));
+  const handleFileChange = (e) => {
+    const id = e.target.id;
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        if (id === "small") {
+          setState((prevState) => ({
+            ...prevState,
+            blogData: {
+              ...prevState.blogData,
+              smallImage: reader.result,
+            },
+          }));
+        } else if (id === "large") {
+          setState((prevState) => ({
+            ...prevState,
+            blogData: {
+              ...prevState.blogData,
+              largeImage: reader.result,
+            },
+          }));
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
+
+  useEffect(() => {
+    const filterBlog = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.blog.filter((item) => {
+        const title = item.title ? item.title.toLowerCase() : "";
+
+        return [title].some((value) => value.includes(lowercasedQuery));
+      });
+
+      setState((prevState) => ({
+        ...prevState,
+        filteredBlog: filteredData,
+      }));
+    };
+
+    filterBlog();
+  }, [state.searchQuery]);
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredBlog.slice(
     indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
+
+  const handleToggleActive = async (blogId, currentStatus) => {
+    const updatedBlog = {
+      ...state.blog.find((item) => item.blogId === blogId),
+      isActive: !currentStatus,
+    };
+
+    await updateBlog(blogId, updatedBlog);
+
+    toast.success("Blog durumu başarıyla güncellendi.");
+
+    const updatedBlogList = await fetchBlog();
+
+    setState((prevState) => ({
+      ...prevState,
+      blog: updatedBlogList,
+      filteredBlog: updatedBlogList,
+    }));
+  };
+
+  const handleDeleteClick = (blogId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteBlogId: blogId,
+      deleteModalVisible: true,
+    }));
+  };
+
+  const confirmDelete = async () => {
+    await deleteBlog(state.deleteBlogId);
+    toast.success("Blog başarıyla silindi!");
+    const updatedBlog = await fetchBlog();
+    setState((prevState) => ({
+      ...prevState,
+      blog: updatedBlog,
+      filteredBlog: updatedBlog,
+      deleteModalVisible: false,
+      deleteBlogId: null,
+    }));
+  };
 
   return (
     <>
@@ -197,6 +242,18 @@ function Blog() {
       >
         Yeni Blog Ekle
       </CButton>
+      <CFormInput
+        type="text"
+        id="search"
+        placeholder="Arama"
+        value={state.searchQuery}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            searchQuery: e.target.value,
+          }))
+        }
+      />
 
       <CModal
         visible={state.modalVisible}
@@ -207,41 +264,170 @@ function Blog() {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.editBlogId ? "Blog Düzenle" : "Yeni Blog Ekle"}
+            {state.blogData?.blogId ? "Blog Düzenle" : "Yeni Blog Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
+            <CRow className="mb-3">
+              {[
+                { label: "Başlık", value: "title", md: 6 },
+                { label: "Sıra Numarası", value: "orderNumber", md: 6 },
+              ].map(({ label, value, md }) => (
+                <CCol key={value} md={md}>
+                  <CFormInput
+                    className="mb-3"
+                    type="text"
+                    label={label}
+                    value={state.blogData?.[value] || ""}
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        blogData: {
+                          ...prevState.blogData,
+                          [value]: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </CCol>
+              ))}
+            </CRow>
+            <CRow className="mb-3">
+              {[
+                { label: "Etiketler", value: "tags", md: 6 },
+                { label: "Slug", value: "slug", md: 6 },
+              ].map(({ label, value, md, type = "text" }) => (
+                <CCol key={value} md={md}>
+                  <CFormInput
+                    key={value}
+                    className="mb-3"
+                    type={type}
+                    label={label}
+                    value={state.blogData?.[value] || ""}
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        blogData: {
+                          ...prevState.blogData,
+                          [value]: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </CCol>
+              ))}
+            </CRow>
+
+            {(state.blogData?.largeImage || state.blogData?.largeImageUrl) && (
+              <div className="mb-3">
+                <label>Mevcut large Image</label>
+                <img
+                  src={
+                    state.blogData?.largeImage?.startsWith("data:image")
+                      ? state.blogData?.largeImage
+                      : `http://10.10.3.181:5244/${state.blogData?.largeImageUrl}`
+                  }
+                  alt="Logo"
+                  style={{
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+              </div>
+            )}
+            <CFormInput
+              type="file"
+              className="mb-3"
+              label="Logo Yükle"
+              onChange={handleFileChange}
+              id="large"
+            />
+            {(state.blogData?.smallImage || state.blogData?.smallImageUrl) && (
+              <div className="mb-3">
+                <label>Mevcut small Image</label>
+                <img
+                  src={
+                    state.blogData?.smallImage?.startsWith("data:image")
+                      ? state.blogData?.smallImage
+                      : `http://10.10.3.181:5244/${state.blogData?.smallImageUrl}`
+                  }
+                  alt="Logo"
+                  style={{
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+              </div>
+            )}
+
+            <CFormInput
+              type="file"
+              className="mb-3"
+              label="Logo Yükle"
+              onChange={handleFileChange}
+              id="small"
+            />
             <CRow>
               <CCol>
-                <CFormInput
-                  type="text"
+                <CFormSelect
+                  label="Kategori"
                   className="mb-3"
-                  id="title"
-                  label="Başlık"
-                  value={state.title}
-                  onChange={(e) =>
+                  aria-label="Select category"
+                  onChange={(e) => {
                     setState((prevState) => ({
                       ...prevState,
-                      title: e.target.value,
-                    }))
-                  }
-                />
+                      blogData: {
+                        ...prevState.blogData,
+                        categoryId: e.target.value,
+                        subCategoryId: "",
+                      },
+                    }));
+                  }}
+                  value={state.blogData?.categoryId}
+                >
+                  <option value="">Kategori Seçiniz</option>
+                  {state.categories.map((category) => (
+                    <option
+                      key={category.categoryId}
+                      value={category.categoryId}
+                    >
+                      {category.name}
+                    </option>
+                  ))}
+                </CFormSelect>
               </CCol>
               <CCol>
-                <CFormInput
-                  type="number"
+                <CFormSelect
+                  label="Alt Kategori"
                   className="mb-3"
-                  id="orderNumber"
-                  label="Sıra Numarası"
-                  value={state.orderNumber}
-                  onChange={(e) =>
+                  aria-label="Select subcategory"
+                  onChange={(e) => {
                     setState((prevState) => ({
                       ...prevState,
-                      orderNumber: e.target.value,
-                    }))
-                  }
-                />
+                      blogData: {
+                        ...prevState.blogData,
+                        subCategoryId: e.target.value,
+                      },
+                    }));
+                  }}
+                  value={state.blogData?.subCategoryId}
+                  disabled={!state.blogData?.categoryId}
+                >
+                  <option value="">Alt Kategori Seçiniz</option>
+                  {state.subCategories.map((subCategory) => (
+                    <option
+                      key={subCategory.subCategoryId}
+                      value={subCategory.subCategoryId}
+                    >
+                      {subCategory.name}
+                    </option>
+                  ))}
+                </CFormSelect>
               </CCol>
             </CRow>
             <div className="mb-3">
@@ -250,119 +436,35 @@ function Blog() {
               </label>
               <CKEditor
                 editor={ClassicEditor}
-                data={state.body}
+                data={state.blogData?.body}
                 onChange={(event, editor) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    body: editor.getData(),
+                  setState(() => ({
+                    ...state,
+                    blogData: {
+                      ...state.blogData,
+                      body: editor.getData(),
+                    },
                   }))
                 }
               />
             </div>
-            <CFormInput
-              type="file"
-              className="mb-3"
-              id="largeImage"
-              label="Büyük Resim"
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  largeImage: e.target.files[0],
-                }))
-              }
-            />
-            <CFormInput
-              type="file"
-              className="mb-3"
-              id="smallImage"
-              label="Küçük Resim"
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  smallImage: e.target.files[0],
-                }))
-              }
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="tags"
-              label="Etiketler"
-              value={state.tags}
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  tags: e.target.value,
-                }))
-              }
-            />
-            <CFormInput
-              type="text"
-              className="mb-3"
-              id="slug"
-              label="URL Adresi"
-              value={state.slug}
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  slug: e.target.value,
-                }))
-              }
-            />
-            <CFormSelect
-              label="Kategori"
-              className="mb-3"
-              aria-label="Select category"
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  selectedCategoryId: e.target.value,
-                }))
-              }
-              value={state.selectedCategoryId}
-            >
-              <option value="">Kategori Seçiniz</option>
-              {state.categories.map((category) => (
-                <option key={category.categoryId} value={category.categoryId}>
-                  {category.name}
-                </option>
-              ))}
-            </CFormSelect>
-            <CFormSelect
-              label="Alt Kategori"
-              className="mb-3"
-              aria-label="Select subcategory"
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  selectedSubCategoryId: e.target.value,
-                }))
-              }
-              value={state.selectedSubCategoryId}
-              disabled={!state.selectedCategoryId}
-            >
-              <option value="">Alt Kategori Seçiniz</option>
-              {state.subCategories.map((subCategory) => (
-                <option
-                  key={subCategory.subCategoryId}
-                  value={subCategory.subCategoryId}
-                >
-                  {subCategory.name}
-                </option>
-              ))}
-            </CFormSelect>
-            <CFormSwitch
-              label="Aktif"
-              id="isActive"
-              className="mb-3"
-              checked={state.isActive}
-              onChange={(e) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  isActive: e.target.checked,
-                }))
-              }
-            />
+            {state.blogData?.blogId === null && (
+              <CFormSwitch
+                label="Aktif"
+                id="isActive"
+                className="mb-3"
+                checked={state.blogData?.isActive}
+                onChange={(e) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    blogData: {
+                      ...prevState.blogData,
+                      isActive: e.target.checked,
+                    },
+                  }))
+                }
+              />
+            )}
           </CForm>
         </CModalBody>
         <CModalFooter>
@@ -375,7 +477,7 @@ function Blog() {
             Kapat
           </CButton>
           <CButton color="primary" onClick={handleSave}>
-            {state.editBlogId ? "Güncelle" : "Kaydet"}
+            {state.blogId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -390,7 +492,6 @@ function Blog() {
               { label: "Etiketler", value: "tags" },
               { label: "Slug", value: "slug" },
               { label: "Alt Kategori", value: "subCategoryName" },
-              { label: "Durum", value: "isActive", isStatus: true },
               { label: "Eylemler", value: "actions" },
             ].map(({ label, value, isImage, isStatus }) => (
               <CTableHeaderCell
@@ -413,7 +514,6 @@ function Blog() {
                 { value: "tags", isImage: false, isStatus: false },
                 { value: "slug", isImage: false, isStatus: false },
                 { value: "subCategoryName", isImage: false, isStatus: false },
-                { value: "isActive", isImage: false, isStatus: true },
               ].map(({ value, isImage, isStatus }) => (
                 <CTableDataCell
                   key={value}
@@ -429,25 +529,11 @@ function Blog() {
                     >
                       <img
                         src={`http://10.10.3.181:5244/${blog[value]}`}
-                        alt={state.label}
                         style={{
                           width: isImage ? "100px" : "50px",
                           height: "auto",
                         }}
                       />
-                    </div>
-                  ) : isStatus ? (
-                    <div
-                      style={{
-                        display: "inline-block",
-                        padding: "5px 10px",
-                        borderRadius: "8px",
-                        backgroundColor: blog[value] ? "#d4edda" : "#f8d7da",
-                        color: blog[value] ? "#155724" : "#721c24",
-                        border: `1px solid ${blog[value] ? "#c3e6cb" : "#f5c6cb"}`,
-                      }}
-                    >
-                      {blog[value] ? "Aktif" : "Pasif"}
                     </div>
                   ) : (
                     blog[value]
@@ -458,15 +544,36 @@ function Blog() {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  color="primary"
                   className="me-2"
-                  onClick={() => handleModalOpen(blog.blogId)}
+                  style={{
+                    display: "inline-block",
+                    padding: "5px 10px",
+                    borderRadius: "8px",
+                    backgroundColor: blog.isActive ? "#d4edda" : "#f8d7da",
+                    color: blog.isActive ? "#155724" : "#721c24",
+                    border: `1px solid ${blog.isActive ? "#c3e6cb" : "#f5c6cb"}`,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleToggleActive(blog.blogId, blog.isActive)}
                 >
-                  <CIcon icon={cilNotes} />
+                  {blog.isActive ? (
+                    <CIcon icon={cilCheckCircle} />
+                  ) : (
+                    <CIcon icon={cilXCircle} />
+                  )}
+                </CButton>
+                <CButton
+                  color="primary text-white"
+                  className="me-2"
+                  onClick={() => {
+                    handleModalOpen(blog.blogId);
+                  }}
+                >
+                  <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  onClick={() => handleDelete(blog.blogId)}
+                  onClick={() => handleDeleteClick(blog.blogId)}
                 >
                   <CIcon icon={cilTrash} />
                 </CButton>
@@ -492,6 +599,39 @@ function Blog() {
           )
         )}
       </CPagination>
+
+      <CModal
+        alignment="center"
+        visible={state.deleteModalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            deleteModalVisible: false,
+            deleteBlogId: null,
+          }))
+        }
+      >
+        <CModalHeader>
+          <CModalTitle>Bu Blogu silmek istediğinize emin misiniz?</CModalTitle>
+        </CModalHeader>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({
+                ...prevState,
+                deleteModalVisible: false,
+                deleteBlogId: null,
+              }))
+            }
+          >
+            İptal
+          </CButton>
+          <CButton color="danger text-white" onClick={confirmDelete}>
+            Sil
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   );
 }
