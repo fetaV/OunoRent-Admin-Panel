@@ -148,7 +148,7 @@ const Categories = () => {
             ...prevState,
             categoriesData: {
               ...prevState.categoriesData,
-              icon: reader.result,
+              imageHorizontal: reader.result,
             },
           }));
         }
