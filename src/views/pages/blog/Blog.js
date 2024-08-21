@@ -36,7 +36,7 @@ import {
 } from "src/api/useApi";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import "../blog/ckeditor-styles.css";
+import "./ckeditor-styles.css";
 
 function Blog() {
   const [state, setState] = useState({

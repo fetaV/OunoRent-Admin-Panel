@@ -2,32 +2,32 @@ import React from "react";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 const Categories = React.lazy(
-  () => import("./views/theme/categories/Categories")
+  () => import("./views/pages/categories/Categories")
 );
-const UserList = React.lazy(() => import("./views/theme/userlist/UserList"));
-const Slider = React.lazy(() => import("./views/theme/slider/Slider"));
-const Blog = React.lazy(() => import("./views/theme/blog/Blog"));
+const UserList = React.lazy(() => import("./views/pages/userlist/UserList"));
+const Slider = React.lazy(() => import("./views/pages/slider/Slider"));
+const Blog = React.lazy(() => import("./views/pages/blog/Blog"));
 const FeaturedCategory = React.lazy(
-  () => import("./views/theme/featuredCategory/FeaturedCategories")
+  () => import("./views/pages/featuredCategory/FeaturedCategories")
 );
-const MenuItem = React.lazy(() => import("./views/theme/menuItem/MenuItem"));
-const Footer = React.lazy(() => import("./views/theme/footer/Footer"));
-const Faq = React.lazy(() => import("./views/theme/faq/Faq"));
+const MenuItem = React.lazy(() => import("./views/pages/menuItem/MenuItem"));
+const Footer = React.lazy(() => import("./views/pages/footer/Footer"));
+const Faq = React.lazy(() => import("./views/pages/faq/Faq"));
 const ContactForm = React.lazy(
-  () => import("./views/theme/contactForm/ContactForm")
+  () => import("./views/pages/contactForm/ContactForm")
 );
-const Brand = React.lazy(() => import("./views/theme/brand/Brand"));
-const Feature = React.lazy(() => import("./views/theme/feature/Feature"));
-const Address = React.lazy(() => import("./views/theme/address/Address"));
-const Channel = React.lazy(() => import("./views/theme/channel/Channel"));
-const Contract = React.lazy(() => import("./views/theme/contract/Contract"));
-const Price = React.lazy(() => import("./views/theme/price/Price"));
+const Brand = React.lazy(() => import("./views/pages/brand/Brand"));
+const Feature = React.lazy(() => import("./views/pages/feature/Feature"));
+const Address = React.lazy(() => import("./views/pages/address/Address"));
+const Channel = React.lazy(() => import("./views/pages/channel/Channel"));
+const Contract = React.lazy(() => import("./views/pages/contract/Contract"));
+const Price = React.lazy(() => import("./views/pages/price/Price"));
 const UserContract = React.lazy(
-  () => import("./views/theme/userContract/UserContract")
+  () => import("./views/pages/userContract/UserContract")
 );
-const Warehouse = React.lazy(() => import("./views/theme/warehouse/Warehouse"));
+const Warehouse = React.lazy(() => import("./views/pages/warehouse/Warehouse"));
 const WarehouseConnection = React.lazy(
-  () => import("./views/theme/warehouseConnection/WarehouseConnection")
+  () => import("./views/pages/warehouseConnection/WarehouseConnection")
 );
 
 const routes = [
