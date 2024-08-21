@@ -71,14 +71,14 @@ export const updateBlog = async (blogId, blogData) => {
   await apiRequest("put", `/blog/${blogId}`, blogData);
 };
 
-export const createCategory = async () => {
-  return apiRequest("post", `/category`);
+export const createCategory = async (categoriesData) => {
+  return apiRequest("post", `/category`, categoriesData);
 };
 export const fetchCategory = async () => {
   return apiRequest("get", `/category`);
 };
-export const updateCategory = async (categoriesData) => {
-  return apiRequest("get", `/category`, categoriesData);
+export const updateCategory = async (categoryId, categoriesData) => {
+  return apiRequest("put", `/category/${categoryId}`, categoriesData);
 };
 export const deleteCategory = async (categoryId) => {
   return apiRequest("delete", `/category/${categoryId}`);
@@ -86,8 +86,29 @@ export const deleteCategory = async (categoryId) => {
 export const fetchCategoryForID = async (categoryId) => {
   return apiRequest("get", `/category/${categoryId}`);
 };
-export const fetchSubCategoryForID = async (categoryId) => {
+export const createSubCategory = async (categoryId) => {
+  return apiRequest("post", `/category/${categoryId}/subcategory`);
+};
+export const fetchSubCategory = async (categoryId) => {
   return apiRequest("get", `/category/${categoryId}/subcategory`);
+};
+export const fetchSubCategoryForID = async (categoryId, subCategoryId) => {
+  return apiRequest(
+    "get",
+    `/category/${categoryId}/subcategory/${subCategoryId}`
+  );
+};
+export const updateSubCategory = async (categoryId, subCategoryId) => {
+  return apiRequest(
+    "put",
+    `/category/${categoryId}/subcategory/${subCategoryId}`
+  );
+};
+export const deleteSubCategory = async (categoryId, subCategoryId) => {
+  return apiRequest(
+    "delete",
+    `/category/${categoryId}/subcategory/${subCategoryId}`
+  );
 };
 
 export const createWarehouseConnection = async (warehouseConnectionData) => {

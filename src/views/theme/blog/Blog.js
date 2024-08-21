@@ -197,6 +197,7 @@ function Blog() {
       ...state.blog.find((item) => item.blogId === blogId),
       isActive: !currentStatus,
     };
+    console.log(updatedBlog);
 
     await updateBlog(blogId, updatedBlog);
 
@@ -277,7 +278,6 @@ function Blog() {
                 <CCol key={value} md={md}>
                   <CFormInput
                     className="mb-3"
-                    type="text"
                     label={label}
                     value={state.blogData?.[value] || ""}
                     onChange={(e) =>
@@ -477,7 +477,7 @@ function Blog() {
             Kapat
           </CButton>
           <CButton color="primary" onClick={handleSave}>
-            {state.blogId ? "Güncelle" : "Kaydet"}
+            {state.blogData?.blogId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>

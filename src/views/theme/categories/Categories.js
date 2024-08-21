@@ -35,8 +35,15 @@ import {
   fetchCategoryForID,
   deleteCategory,
   updateCategory,
+  createSubCategory,
+  fetchSubCategory,
   fetchSubCategoryForID,
+  deleteSubCategory,
+  updateSubCategory,
 } from "src/api/useApi";
+import "../blog/ckeditor-styles.css";
+import { SubCategories } from "./SubCategories";
+
 const Categories = () => {
   const [state, setState] = useState({
     categories: [],
@@ -48,6 +55,8 @@ const Categories = () => {
     filteredSubCategories: [],
     modalVisible: false,
     currentPage: 1,
+    deleteModalVisible: false,
+    deleteCategoryId: null,
   });
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -69,13 +78,32 @@ const Categories = () => {
     loadCategories();
   }, []);
 
+  //SC
+  useEffect(() => {
+    if (state.categoriesData?.categoryId) {
+      fetchSubCategory(state.categoriesData?.categoryId).then((data) => {
+        setState((prevState) => ({
+          ...prevState,
+          subCategoriesData: data,
+        }));
+      });
+    }
+  }, [state.categoriesData?.categoryId]);
+
+  const handleTableOpen = async (categoryId) => {
+    const data = await fetchSubCategory(categoryId);
+    setState((prevState) => ({
+      ...prevState,
+      subCategoriesData: data,
+    }));
+  };
+
   const handleModalOpen = async (categoryId = null) => {
     if (categoryId) {
       const data = await fetchCategoryForID(categoryId);
       setState((prevState) => ({
         ...prevState,
         categoriesData: data,
-        categoryId,
         modalVisible: true,
       }));
     } else {
@@ -86,18 +114,18 @@ const Categories = () => {
           description: "",
           icon: "",
           orderNumber: 0,
-          isActive: true,
+          isActive: false,
           imageHorizontal: "",
           imageSquare: "",
+          categoryId: null,
         },
-        categoryId: null,
         modalVisible: true,
       }));
     }
   };
 
-  const handleSave = async () => {
-    const { categoryId, categoriesData } = state;
+  const handleSave = async (categoryId) => {
+    const { categoriesData } = state;
 
     if (categoryId) {
       setState((prevState) => ({
@@ -106,13 +134,15 @@ const Categories = () => {
           ...categoriesData,
           smallImageUrl: undefined,
           largeImageUrl: undefined,
+          iconUrl: undefined,
         },
       }));
+      console.log("1112", categoriesData);
 
-      await updateBlog(categoryId, categoriesData);
+      await updateCategory(categoryId, categoriesData);
       toast.success("category başarıyla güncellendi.");
     } else {
-      console.log("111111");
+      console.log("11", categoriesData);
       await createCategory(categoriesData);
       toast.success("category başarıyla oluşturuldu.");
     }
@@ -148,7 +178,7 @@ const Categories = () => {
             ...prevState,
             categoriesData: {
               ...prevState.categoriesData,
-              imageHorizontal: reader.result,
+              icon: reader.result,
             },
           }));
         }
@@ -216,24 +246,38 @@ const Categories = () => {
       ...state.categories.find((item) => item.categoryId === categoryId),
       isActive: !currentStatus,
     };
-    console.log(
-      state.categories.find((item) => item.categoryId === categoryId)
-    );
 
     await updateCategory(categoryId, updatedCategory);
 
-    toast.success("Kategori durumu başarıyla güncellendi.");
+    toast.success("Category durumu başarıyla güncellendi.");
 
     const updatedCategoryList = await fetchCategory();
 
     setState((prevState) => ({
       ...prevState,
-      categories: prevState.categories.map((item) =>
-        item.categoryId === categoryId ? updatedCategory : item
-      ),
-      filteredCategories: prevState.filteredCategories.map((item) =>
-        item.categoryId === categoryId ? updatedCategory : item
-      ),
+      categories: updatedCategoryList,
+      filteredCategories: updatedCategoryList,
+    }));
+  };
+
+  const handleDeleteClick = (categoryId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteCategoryId: categoryId,
+      deleteModalVisible: true,
+    }));
+  };
+
+  const confirmDelete = async () => {
+    await deleteCategory(state.deleteCategoryId);
+    toast.success("Category başarıyla silindi!");
+    const updatedCategory = await fetchCategory();
+    setState((prevState) => ({
+      ...prevState,
+      categories: updatedCategory,
+      filteredCategories: updatedCategory,
+      deleteModalVisible: false,
+      deleteCategoryId: null,
     }));
   };
 
@@ -277,7 +321,7 @@ const Categories = () => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.categoriesData?.categoryIdId
+            {state.categoriesData?.categoryId
               ? "Kategori Düzenle"
               : "Yeni Kategori Ekle"}
           </CModalTitle>
@@ -332,111 +376,63 @@ const Categories = () => {
                   />
                 </CCol>
               ))}
-              {(state.categoriesData?.imageHorizontal ||
-                state.categoriesData?.imageHorizontalUrl) && (
-                <div className="mb-3 col-md-4">
-                  <label>Mevcut Large Image</label>
-                  <img
-                    onClick={() => {
-                      if (fileInputRef1.current) {
-                        fileInputRef1.current.click();
+              {[
+                {
+                  key: "imageHorizontal",
+                  label: "Mevcut Large Image",
+                  ref: fileInputRef1,
+                  defaultImage:
+                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
+                },
+                {
+                  key: "imageSquare",
+                  label: "Mevcut Small Image",
+                  ref: fileInputRef2,
+                  defaultImage:
+                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
+                },
+                {
+                  key: "icon",
+                  label: "Mevcut Icon Image",
+                  ref: fileInputRef3,
+                  defaultImage:
+                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
+                },
+              ].map(({ key, label, ref, defaultImage }) => (
+                <div key={key} className="mb-3 col-md-4">
+                  <label className="d-flex">{label}</label>
+                  <div className="image-container m-1">
+                    <img
+                      onClick={() => {
+                        if (ref.current) {
+                          ref.current.click();
+                        }
+                      }}
+                      src={
+                        state.categoriesData?.[key]?.startsWith("data:image")
+                          ? state.categoriesData?.[key]
+                          : state.categoriesData?.[`${key}Url`]
+                            ? `http://10.10.3.181:5244/${state.categoriesData?.[`${key}Url`]}`
+                            : defaultImage
                       }
-                    }}
-                    className="pt-2"
-                    src={
-                      state.categoriesData?.imageHorizontal?.startsWith(
-                        "data:image"
-                      )
-                        ? state.categoriesData?.imageHorizontal
-                        : `http://10.10.3.181:5244/${state.categoriesData?.imageHorizontalUrl}`
-                    }
-                    alt="Logo"
-                    style={{
-                      maxWidth: "100px",
-                      maxHeight: "100px",
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
+                      style={{ width: 200, height: "auto" }}
+                      alt={label}
+                    />
+                    <button
+                      className="edit-button"
+                      onClick={() => {
+                        if (ref.current) {
+                          ref.current.click();
+                        }
+                      }}
+                    >
+                      {state.categoriesData?.categoryId ? "Güncelle" : "Kaydet"}
+                    </button>
+                  </div>
                 </div>
-              )}
-              {(state.categoriesData?.imageSquare ||
-                state.categoriesData?.imageSquareUrl) && (
-                <div className="mb-3 col-md-4">
-                  <label>Mevcut small Image</label>
-                  <img
-                    onClick={() => {
-                      if (fileInputRef2.current) {
-                        fileInputRef2.current.click();
-                      }
-                    }}
-                    className="pt-2"
-                    src={
-                      state.categoriesData?.imageSquare?.startsWith(
-                        "data:image"
-                      )
-                        ? state.categoriesData?.imageSquare
-                        : `http://10.10.3.181:5244/${state.categoriesData?.imageSquareUrl}`
-                    }
-                    alt="Logo"
-                    style={{
-                      maxWidth: "100px",
-                      maxHeight: "100px",
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
-                </div>
-              )}
-              {(state.categoriesData?.icon ||
-                state.categoriesData?.iconUrl) && (
-                <div className="mb-3 col-md-4">
-                  <label>Mevcut Icon Image</label>
-                  <img
-                    onClick={() => {
-                      if (fileInputRef3.current) {
-                        fileInputRef3.current.click();
-                      }
-                    }}
-                    className="pt-2"
-                    src={
-                      state.categoriesData?.icon?.startsWith("data:image")
-                        ? state.categoriesData?.icon
-                        : `http://10.10.3.181:5244/${state.categoriesData?.iconUrl}`
-                    }
-                    alt="Logo"
-                    style={{
-                      maxWidth: "100px",
-                      maxHeight: "100px",
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
-                </div>
-              )}
+              ))}
             </CRow>
 
-            <CRow className="mb-3">
-              <CCol md={6}>
-                {state.categoriesData?.categoryIdId === null && (
-                  <CFormSwitch
-                    label="Aktif"
-                    id="isActive"
-                    className="mb-3"
-                    checked={state.categoriesData?.isActive}
-                    onChange={(e) =>
-                      setState((prevState) => ({
-                        ...prevState,
-                        categoriesData: {
-                          ...prevState.categoriesData,
-                          isActive: e.target.checked,
-                        },
-                      }))
-                    }
-                  />
-                )}
-              </CCol>
-            </CRow>
             <CFormInput
               type="file"
               className="mb-3 d-none"
@@ -460,7 +456,7 @@ const Categories = () => {
             />
           </CForm>
         </CModalBody>
-        <CModalFooter>
+        <CModalFooter className="mt-5">
           <CButton
             color="secondary"
             onClick={() =>
@@ -469,8 +465,11 @@ const Categories = () => {
           >
             Kapat
           </CButton>
-          <CButton color="primary" onClick={handleSave}>
-            {state.categoryIdId ? "Güncelle" : "Kaydet"}
+          <CButton
+            color="primary"
+            onClick={() => handleSave(state.categoriesData?.categoryId)}
+          >
+            {state.categoriesData?.categoryId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -509,16 +508,7 @@ const Categories = () => {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className="me-2"
-                  style={{
-                    display: "inline-block",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    backgroundColor: category.isActive ? "#d4edda" : "#f8d7da",
-                    color: category.isActive ? "#155724" : "#721c24",
-                    border: `1px solid ${category.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                    cursor: "pointer",
-                  }}
+                  className={`text-white me-2 ${category.isActive ? "btn-success" : "btn-danger"}`}
                   onClick={() =>
                     handleToggleActive(category.categoryId, category.isActive)
                   }
@@ -540,7 +530,7 @@ const Categories = () => {
                     </CDropdownItem>
                     <CDropdownItem
                       className="btn"
-                      onClick={() => handleDelete(category.categoryId)}
+                      onClick={() => handleDeleteClick(category.categoryId)}
                     >
                       Sil
                     </CDropdownItem>
@@ -552,18 +542,7 @@ const Categories = () => {
                     </CDropdownItem>
                     <CDropdownItem
                       className="btn"
-                      onClick={() => {
-                        setParentCategoryId(category.categoryId);
-                        setSelectedCategoryName(category.name);
-                        if (
-                          category.subCategories &&
-                          category.subCategories.length > 0
-                        ) {
-                          setSelectedCategoryId(category.categoryId);
-                        } else {
-                          toast.info("Alt kategori verisi bulunmamaktadır");
-                        }
-                      }}
+                      onClick={() => handleTableOpen(category.categoryId)}
                     >
                       Alt Kategorileri Göster
                     </CDropdownItem>
@@ -591,6 +570,43 @@ const Categories = () => {
           )
         )}
       </CPagination>
+
+      <CModal
+        alignment="center"
+        visible={state.deleteModalVisible}
+        onClose={() =>
+          setState((prevState) => ({
+            ...prevState,
+            deleteModalVisible: false,
+            deleteCategoryId: null,
+          }))
+        }
+      >
+        <CModalHeader>
+          <CModalTitle>
+            Bu Categoryu silmek istediğinize emin misiniz?
+          </CModalTitle>
+        </CModalHeader>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() =>
+              setState((prevState) => ({
+                ...prevState,
+                deleteModalVisible: false,
+                deleteCategoryId: null,
+              }))
+            }
+          >
+            İptal
+          </CButton>
+          <CButton color="danger text-white" onClick={confirmDelete}>
+            Sil
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      <SubCategories data={state.subCategoriesData} />
     </>
   );
 };
