@@ -98,10 +98,15 @@ export const fetchSubCategoryForID = async (categoryId, subCategoryId) => {
     `/category/${categoryId}/subcategory/${subCategoryId}`
   );
 };
-export const updateSubCategory = async (categoryId, subCategoryId) => {
+export const updateSubCategory = async (
+  categoryId,
+  subCategoryId,
+  subCategoriesData
+) => {
   return apiRequest(
     "put",
-    `/category/${categoryId}/subcategory/${subCategoryId}`
+    `/category/${categoryId}/subcategory/${subCategoryId}`,
+    subCategoriesData
   );
 };
 export const deleteSubCategory = async (categoryId, subCategoryId) => {

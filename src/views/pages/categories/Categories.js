@@ -78,18 +78,6 @@ const Categories = () => {
     loadCategories();
   }, []);
 
-  //SC
-  useEffect(() => {
-    if (state.categoriesData?.categoryId) {
-      fetchSubCategory(state.categoriesData?.categoryId).then((data) => {
-        setState((prevState) => ({
-          ...prevState,
-          subCategoriesData: data,
-        }));
-      });
-    }
-  }, [state.categoriesData?.categoryId]);
-
   const handleTableOpen = async (categoryId) => {
     const data = await fetchSubCategory(categoryId);
     setState((prevState) => ({
@@ -477,7 +465,7 @@ const Categories = () => {
         <CTableHead>
           <CTableRow>
             {[
-              { label: "Kategori Adı", value: "title" },
+              { label: "Kategori Adı", value: "name" },
               { label: "Sıra Numarası", value: "orderNumber" },
               { label: "Eylemler", value: "actions" },
             ].map(({ label, value }) => (
