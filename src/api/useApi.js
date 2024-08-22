@@ -86,8 +86,12 @@ export const deleteCategory = async (categoryId) => {
 export const fetchCategoryForID = async (categoryId) => {
   return apiRequest("get", `/category/${categoryId}`);
 };
-export const createSubCategory = async (categoryId) => {
-  return apiRequest("post", `/category/${categoryId}/subcategory`);
+export const createSubCategory = async (categoryId, subCategoriesData) => {
+  return apiRequest(
+    "post",
+    `/category/${categoryId}/subcategory`,
+    subCategoriesData
+  );
 };
 export const fetchSubCategory = async (categoryId) => {
   return apiRequest("get", `/category/${categoryId}/subcategory`);

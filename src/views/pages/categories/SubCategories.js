@@ -18,15 +18,8 @@ import {
   CFormInput,
   CRow,
   CCol,
-  CPagination,
-  CPaginationItem,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
-  CFormSelect,
-  CFormSwitch,
 } from "@coreui/react";
+import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -55,14 +48,14 @@ export const SubCategories = ({ data }) => {
   });
   const fileInputRef3 = useRef(null);
 
-  const handleToggleActive = async (data) => {
-    data.isActive = !data.isActive;
+  const handleToggleActive = async (item) => {
+    item.isActive = !item.isActive;
 
-    await updateSubCategory(data.categoryId, data.subCategoryId, data);
+    await updateSubCategory(item.categoryId, item.subCategoryId, item);
 
     toast.success("Category durumu başarıyla güncellendi.");
 
-    const updatedSubCategoryList = await fetchSubCategory(data.categoryId);
+    const updatedSubCategoryList = await fetchSubCategory(item.categoryId);
     console.log(updatedSubCategoryList);
 
     setState((prevState) => ({
@@ -72,15 +65,18 @@ export const SubCategories = ({ data }) => {
     }));
   };
   const handleModalOpen = async (categoryId, subCategoryId) => {
-    if ((categoryId, subCategoryId)) {
-      const data = await fetchSubCategoryForID(categoryId, subCategoryId);
+    if (categoryId && subCategoryId) {
+      const item = await fetchSubCategoryForID(categoryId, subCategoryId);
       setState((prevState) => ({
         ...prevState,
-        subCategoriesData: data,
+        subCategoriesData: {
+          ...item,
+          categoryId,
+          subCategoryId,
+        },
         modalVisible: true,
       }));
-      console.log(data);
-    } else {
+    } else if (data.length) {
       setState((prevState) => ({
         ...prevState,
         subCategoriesData: {
@@ -90,9 +86,35 @@ export const SubCategories = ({ data }) => {
           orderNumber: 0,
           isActive: false,
           categoryId: null,
+          subCategoryId: null,
         },
         modalVisible: true,
       }));
+    }
+  };
+
+  const handleSave = async () => {
+    const { subCategoriesData } = state;
+    const { subCategoryId } = subCategoriesData;
+
+    if (subCategoryId) {
+      setState((prevState) => ({
+        ...prevState,
+        subCategoriesData: {
+          ...subCategoriesData,
+          iconUrl: undefined,
+        },
+        modalVisible: false,
+      }));
+      await updateSubCategory(
+        data[0].categoryId,
+        subCategoryId,
+        subCategoriesData
+      );
+      toast.success("Alt kategori başarıyla güncellendi.");
+    } else {
+      await createSubCategory(data[0].categoryId, subCategoriesData);
+      toast.success("Alt kategori başarıyla oluşturuldu.");
     }
   };
 
@@ -143,6 +165,8 @@ export const SubCategories = ({ data }) => {
 
   return (
     <>
+      <ToastContainer />
+
       <CButton
         color="primary"
         className="mb-3"
@@ -255,72 +279,75 @@ export const SubCategories = ({ data }) => {
               ))}
             </CRow>
             <CRow className="mb-3">
-              {[
-                { label: "Etiketler", value: "tags", md: 6 },
-                { label: "Açıklama", value: "description", md: 6 },
-              ].map(({ label, value, md, type = "text" }) => (
-                <CCol key={value} md={md}>
-                  <CFormInput
-                    key={value}
-                    className="mb-3"
-                    type={type}
-                    label={label}
-                    value={state.subCategoriesData?.[value] || ""}
-                    onChange={(e) =>
-                      setState((prevState) => ({
-                        ...prevState,
-                        subCategoriesData: {
-                          ...prevState.subCategoriesData,
-                          [value]: e.target.value,
-                        },
-                      }))
-                    }
-                  />
-                </CCol>
-              ))}
-              {[
-                {
-                  key: "icon",
-                  label: "Mevcut Icon Image",
-                  ref: fileInputRef3,
-                  defaultImage:
-                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
-                },
-              ].map(({ key, label, ref, defaultImage }) => (
-                <div key={key} className="mb-3 col-md-4">
-                  <label className="d-flex">{label}</label>
-                  <div className="image-container m-1">
-                    <img
-                      onClick={() => {
-                        if (ref.current) {
-                          ref.current.click();
-                        }
-                      }}
-                      src={
-                        state.subCategoriesData?.[key]?.startsWith("data:image")
-                          ? state.subCategoriesData?.[key]
-                          : state.subCategoriesData?.[`${key}Url`]
-                            ? `http://10.10.3.181:5244/${state.subCategoriesData?.[`${key}Url`]}`
-                            : defaultImage
+              {[{ label: "Açıklama", value: "description", md: 6 }].map(
+                ({ label, value, md, type = "text" }) => (
+                  <CCol key={value} md={md}>
+                    <CFormInput
+                      key={value}
+                      className="mb-3"
+                      type={type}
+                      label={label}
+                      value={state.subCategoriesData?.[value] || ""}
+                      onChange={(e) =>
+                        setState((prevState) => ({
+                          ...prevState,
+                          subCategoriesData: {
+                            ...prevState.subCategoriesData,
+                            [value]: e.target.value,
+                          },
+                        }))
                       }
-                      style={{ width: 200, height: "auto" }}
-                      alt={label}
                     />
-                    <button
-                      className="edit-button"
-                      onClick={() => {
-                        if (ref.current) {
-                          ref.current.click();
+                  </CCol>
+                )
+              )}
+              <CCol>
+                {[
+                  {
+                    key: "icon",
+                    label: "Mevcut Icon Image",
+                    ref: fileInputRef3,
+                    defaultImage:
+                      "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
+                  },
+                ].map(({ key, label, ref, defaultImage }) => (
+                  <div key={key} className="mb-3 col-md-4">
+                    <label className="d-flex">{label}</label>
+                    <div className="image-container m-1">
+                      <img
+                        onClick={() => {
+                          if (ref.current) {
+                            ref.current.click();
+                          }
+                        }}
+                        src={
+                          state.subCategoriesData?.[key]?.startsWith(
+                            "data:image"
+                          )
+                            ? state.subCategoriesData?.[key]
+                            : state.subCategoriesData?.[`${key}Url`]
+                              ? `http://10.10.3.181:5244/${state.subCategoriesData?.[`${key}Url`]}`
+                              : defaultImage
                         }
-                      }}
-                    >
-                      {state.subCategoriesData?.categoryId
-                        ? "Güncelle"
-                        : "Kaydet"}
-                    </button>
+                        style={{ width: 200, height: "auto" }}
+                        alt={label}
+                      />
+                      <button
+                        className="edit-button"
+                        onClick={() => {
+                          if (ref.current) {
+                            ref.current.click();
+                          }
+                        }}
+                      >
+                        {state.subCategoriesData?.categoryId
+                          ? "Güncelle"
+                          : "Kaydet"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </CCol>
             </CRow>
 
             <CFormInput
@@ -341,10 +368,7 @@ export const SubCategories = ({ data }) => {
           >
             Kapat
           </CButton>
-          <CButton
-            color="primary"
-            onClick={() => handleSave(state.subCategoriesData?.categoryId)}
-          >
+          <CButton color="primary" onClick={() => handleSave()}>
             {state.subCategoriesData?.categoryId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
