@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CIcon from "@coreui/icons-react";
 import { cilPencil, cilTrash, cilCheckCircle, cilXCircle } from "@coreui/icons";
 import {
@@ -32,15 +32,18 @@ import {
   deleteBlog,
   updateBlog,
   fetchCategory,
+  fetchSubCategory,
   fetchSubCategoryForID,
 } from "src/api/useApi";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./ckeditor-styles.css";
+import "../blog/ckeditor-styles.css";
 
 function Blog() {
   const [state, setState] = useState({
     blog: [],
+    blogData: {},
     categories: [],
     subCategories: [],
     modalVisible: false,
@@ -50,6 +53,8 @@ function Blog() {
     filteredBlog: [],
     currentPage: 1,
   });
+  const fileInputRef1 = useRef(null);
+  const fileInputRef2 = useRef(null);
 
   const itemsPerPage = 10;
 
@@ -72,7 +77,7 @@ function Blog() {
 
   useEffect(() => {
     if (state.blogData?.categoryId) {
-      fetchSubCategoryForID(state.blogData?.categoryId).then((data) => {
+      fetchSubCategory(state.blogData?.categoryId).then((data) => {
         setState((prevState) => ({
           ...prevState,
           subCategories: data,
@@ -93,21 +98,7 @@ function Blog() {
     } else {
       setState((prevState) => ({
         ...prevState,
-        blogData: {
-          blogId: null,
-          title: "",
-          body: "",
-          largeImage: null,
-          smallImage: null,
-          largeImageUrl: null,
-          smallImageUrl: null,
-          tags: "",
-          slug: "",
-          orderNumber: "",
-          isActive: false,
-          categoryId: "",
-          subCategoryId: "",
-        },
+        blogData: {},
         blogId: null,
         modalVisible: true,
       }));
@@ -130,7 +121,6 @@ function Blog() {
       await updateBlog(blogId, blogData);
       toast.success("Blog başarıyla güncellendi.");
     } else {
-      console.log("111111");
       await createBlog(blogData);
       toast.success("Blog başarıyla oluşturuldu.");
     }
@@ -257,6 +247,7 @@ function Blog() {
       />
 
       <CModal
+        className="modal-xl"
         visible={state.modalVisible}
         onClose={() =>
           setState((prevState) => ({ ...prevState, modalVisible: false }))
@@ -317,63 +308,73 @@ function Blog() {
                   />
                 </CCol>
               ))}
+              {[
+                {
+                  key: "largeImage",
+                  label: "Mevcut Large Image",
+                  ref: fileInputRef1,
+                  defaultImage:
+                    "https://png.pngtree.com/png-vector/20210604/ourmid/pngtree-gray-network-placeholder-png-image_3416659.jpg",
+                },
+                {
+                  key: "smallImage",
+                  label: "Mevcut Small Image",
+                  ref: fileInputRef2,
+                  defaultImage:
+                    "https://png.pngtree.com/png-vector/20210604/ourmid/pngtree-gray-network-placeholder-png-image_3416659.jpg",
+                },
+              ].map(({ key, label, ref, defaultImage }) => (
+                <div key={key} className="mb-3 col-md-6">
+                  <label className="d-flex">{label}</label>
+                  <div className="image-container m-1">
+                    <img
+                      onClick={() => {
+                        if (ref.current) {
+                          ref.current.click();
+                        }
+                      }}
+                      src={
+                        state.blogData?.[key]?.startsWith("data:image")
+                          ? state.blogData?.[key]
+                          : state.blogData?.[`${key}Url`]
+                            ? `http://10.10.3.181:5244/${state.blogData?.[`${key}Url`]}`
+                            : defaultImage
+                      }
+                      style={{ width: 200, height: "auto" }}
+                      alt={label}
+                    />
+                    <button
+                      className="edit-button"
+                      onClick={() => {
+                        if (ref.current) {
+                          ref.current.click();
+                        }
+                      }}
+                    >
+                      {state.blogData?.categoryId ? "Güncelle" : "Kaydet"}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </CRow>
 
-            {(state.blogData?.largeImage || state.blogData?.largeImageUrl) && (
-              <div className="mb-3">
-                <label>Mevcut large Image</label>
-                <img
-                  src={
-                    state.blogData?.largeImage?.startsWith("data:image")
-                      ? state.blogData?.largeImage
-                      : `http://10.10.3.181:5244/${state.blogData?.largeImageUrl}`
-                  }
-                  alt="Logo"
-                  style={{
-                    maxWidth: "100px",
-                    maxHeight: "100px",
-                    display: "block",
-                    margin: "0 auto",
-                  }}
-                />
-              </div>
-            )}
             <CFormInput
               type="file"
-              className="mb-3"
-              label="Logo Yükle"
+              className="mb-3 d-none"
               onChange={handleFileChange}
               id="large"
+              ref={fileInputRef1}
             />
-            {(state.blogData?.smallImage || state.blogData?.smallImageUrl) && (
-              <div className="mb-3">
-                <label>Mevcut small Image</label>
-                <img
-                  src={
-                    state.blogData?.smallImage?.startsWith("data:image")
-                      ? state.blogData?.smallImage
-                      : `http://10.10.3.181:5244/${state.blogData?.smallImageUrl}`
-                  }
-                  alt="Logo"
-                  style={{
-                    maxWidth: "100px",
-                    maxHeight: "100px",
-                    display: "block",
-                    margin: "0 auto",
-                  }}
-                />
-              </div>
-            )}
 
             <CFormInput
               type="file"
-              className="mb-3"
-              label="Logo Yükle"
+              className="mb-3 d-none"
               onChange={handleFileChange}
               id="small"
+              ref={fileInputRef2}
             />
-            <CRow>
-              <CCol>
+            <CRow className="mt-5">
+              <CCol className="mt-5">
                 <CFormSelect
                   label="Kategori"
                   className="mb-3"
@@ -401,7 +402,7 @@ function Blog() {
                   ))}
                 </CFormSelect>
               </CCol>
-              <CCol>
+              <CCol className="mt-5">
                 <CFormSelect
                   label="Alt Kategori"
                   className="mb-3"
@@ -544,16 +545,7 @@ function Blog() {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className="me-2"
-                  style={{
-                    display: "inline-block",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    backgroundColor: blog.isActive ? "#d4edda" : "#f8d7da",
-                    color: blog.isActive ? "#155724" : "#721c24",
-                    border: `1px solid ${blog.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                    cursor: "pointer",
-                  }}
+                  className={`text-white me-2 ${blog.isActive ? "btn-success" : "btn-danger"}`}
                   onClick={() => handleToggleActive(blog.blogId, blog.isActive)}
                 >
                   {blog.isActive ? (

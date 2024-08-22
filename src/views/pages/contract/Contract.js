@@ -201,16 +201,7 @@ const Contract = () => {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className="me-2"
-                  style={{
-                    display: "inline-block",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    backgroundColor: contract.isActive ? "#d4edda" : "#f8d7da",
-                    color: contract.isActive ? "#155724" : "#721c24",
-                    border: `1px solid ${contract.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                    cursor: "pointer",
-                  }}
+                  className={`text-white me-2 ${contract.isActive ? "btn-success" : "btn-danger"}`}
                   onClick={() =>
                     handleToggleActive(contract.contractId, contract.isActive)
                   }

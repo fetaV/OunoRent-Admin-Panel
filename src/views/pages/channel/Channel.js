@@ -240,16 +240,7 @@ const Channel = () => {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className="me-2"
-                  style={{
-                    display: "inline-block",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    backgroundColor: item.isActive ? "#d4edda" : "#f8d7da",
-                    color: item.isActive ? "#155724" : "#721c24",
-                    border: `1px solid ${item.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                    cursor: "pointer",
-                  }}
+                  className={`text-white me-2 ${item.isActive ? "btn-success" : "btn-danger"}`}
                   onClick={() =>
                     handleToggleActive(item.channelId, item.isActive)
                   }

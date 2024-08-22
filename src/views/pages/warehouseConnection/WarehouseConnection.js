@@ -337,18 +337,7 @@ function WarehouseConnection() {
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className="me-2"
-                  style={{
-                    display: "inline-block",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    backgroundColor: warehouseConnection.isActive
-                      ? "#d4edda"
-                      : "#f8d7da",
-                    color: warehouseConnection.isActive ? "#155724" : "#721c24",
-                    border: `1px solid ${warehouseConnection.isActive ? "#c3e6cb" : "#f5c6cb"}`,
-                    cursor: "pointer",
-                  }}
+                  className={`text-white me-2 ${warehouseConnection.isActive ? "btn-success" : "btn-danger"}`}
                   onClick={() =>
                     handleToggleActive(
                       warehouseConnection.warehouseConnectionId,
