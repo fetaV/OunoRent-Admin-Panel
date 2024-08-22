@@ -21,7 +21,6 @@ import {
 } from "@coreui/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import {
   createSubCategory,
   fetchSubCategory,
@@ -48,6 +47,21 @@ export const SubCategories = ({ data }) => {
   });
   const fileInputRef = useRef(null);
 
+  const fetchSubCategories = async () => {
+    if (data.length) {
+      const updatedSubCategoryList = await fetchSubCategory(data[0].categoryId);
+      setState((prevState) => ({
+        ...prevState,
+        subCategories: updatedSubCategoryList,
+        filteredSubCategories: updatedSubCategoryList,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    fetchSubCategories();
+  }, [data]);
+
   const handleToggleActive = async (item) => {
     item.isActive = !item.isActive;
 
@@ -55,15 +69,9 @@ export const SubCategories = ({ data }) => {
 
     toast.success("Category durumu başarıyla güncellendi.");
 
-    const updatedSubCategoryList = await fetchSubCategory(item.categoryId);
-    console.log(updatedSubCategoryList);
-
-    setState((prevState) => ({
-      ...prevState,
-      subCategories: updatedSubCategoryList,
-      filteredSubCategories: updatedSubCategoryList,
-    }));
+    await fetchSubCategories();
   };
+
   const handleModalOpen = async (categoryId, subCategoryId) => {
     if (categoryId && subCategoryId) {
       const item = await fetchSubCategoryForID(categoryId, subCategoryId);
@@ -94,26 +102,29 @@ export const SubCategories = ({ data }) => {
   };
 
   const handleSave = async () => {
-    const { subCategoriesData, subCategoryId } = state;
+    const { subCategoriesData } = state;
 
-    if (subCategoryId) {
+    try {
+      if (subCategoriesData.subCategoryId) {
+        await updateSubCategory(
+          data[0].categoryId,
+          subCategoriesData.subCategoryId,
+          { ...subCategoriesData, iconUrl: undefined }
+        );
+        toast.success("Alt kategori başarıyla güncellendi.");
+      } else {
+        await createSubCategory(data[0].categoryId, subCategoriesData);
+        toast.success("Alt kategori başarıyla oluşturuldu.");
+      }
+
+      await fetchSubCategories();
       setState((prevState) => ({
         ...prevState,
-        subCategoriesData: {
-          ...subCategoriesData,
-          iconUrl: undefined,
-        },
         modalVisible: false,
       }));
-      await updateSubCategory(
-        data[0].categoryId,
-        subCategoryId,
-        subCategoriesData
-      );
-      toast.success("Alt kategori başarıyla güncellendi.");
-    } else {
-      await createSubCategory(data[0].categoryId, subCategoriesData);
-      toast.success("Alt kategori başarıyla oluşturuldu.");
+    } catch (error) {
+      console.error("Bir hata oluştu:", error);
+      toast.error("Bir hata oluştu. Lütfen tekrar deneyin.");
     }
   };
 
@@ -127,7 +138,7 @@ export const SubCategories = ({ data }) => {
         if (id === "icon") {
           setState((prevState) => ({
             ...prevState,
-            categoriesData: {
+            subCategoriesData: {
               ...prevState.subCategoriesData,
               icon: reader.result,
             },
@@ -151,11 +162,9 @@ export const SubCategories = ({ data }) => {
   const confirmDelete = async () => {
     await deleteSubCategory(state.deleteCategoryId, state.deleteSubCategoryId);
     toast.success("Category başarıyla silindi!");
-    const updatedSubCategory = await fetchSubCategory(state.deleteCategoryId);
+    await fetchSubCategories();
     setState((prevState) => ({
       ...prevState,
-      subCategories: updatedSubCategory,
-      filteredSubCategories: updatedSubCategory,
       deleteModalVisible: false,
       deleteSubCategoryId: null,
       deleteCategoryId: null,
@@ -173,7 +182,7 @@ export const SubCategories = ({ data }) => {
       >
         Yeni Alt Kategori Ekle
       </CButton>
-      {data.length ? (
+      {state.subCategories.length ? (
         <CTable>
           <CTableHead>
             <CTableRow>
@@ -192,7 +201,7 @@ export const SubCategories = ({ data }) => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {data.map((item) => (
+            {state.subCategories.map((item) => (
               <CTableRow
                 style={{ textAlign: "center", verticalAlign: "middle" }}
                 key={item.subCategoryId}
