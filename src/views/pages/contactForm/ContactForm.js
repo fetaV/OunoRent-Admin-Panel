@@ -59,7 +59,7 @@ const ContactForm = () => {
       const filteredData = state.contactForms.filter((form) =>
         [form.name, form.email, form.subject, form.subjectCategory, form.body]
           .map((item) => item.toLowerCase())
-          .some((item) => item.includes(lowercasedQuery))
+          .some((item) => item.includes(lowercasedQuery)),
       );
       setState((prevState) => ({
         ...prevState,
@@ -76,10 +76,10 @@ const ContactForm = () => {
     setState((prevState) => ({
       ...prevState,
       contactForms: prevState.contactForms.filter(
-        (form) => form.contactFormId !== formId
+        (form) => form.contactFormId !== formId,
       ),
       filteredContactForms: prevState.filteredContactForms.filter(
-        (form) => form.contactFormId !== formId
+        (form) => form.contactFormId !== formId,
       ),
     }));
   };
@@ -96,29 +96,40 @@ const ContactForm = () => {
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state.filteredContactForms.slice(
     indexOfLastItem - itemsPerPage,
-    indexOfLastItem
+    indexOfLastItem,
   );
 
-  const truncateText = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return `${text.substring(0, maxLength)}...`;
-    }
-    return text;
-  };
+  const truncateText = (text, maxLength) =>
+    text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const formattedDate = date.toLocaleDateString("tr-TR", {
+    return `${date.toLocaleDateString("tr-TR", {
       year: "numeric",
       month: "long",
       day: "numeric",
-    });
-    const formattedTime = date.toLocaleTimeString("tr-TR", {
+    })} ${date.toLocaleTimeString("tr-TR", {
       hour: "2-digit",
       minute: "2-digit",
-    });
-    return `${formattedDate} ${formattedTime}`;
+    })}`;
   };
+
+  const tableHeaders = [
+    "İsim",
+    "Email",
+    "Konu",
+    "Kategori",
+    "Tarih",
+    "Aksiyonlar",
+  ];
+
+  const formFields = [
+    { label: "İsim", key: "name", type: "text" },
+    { label: "Email", key: "email", type: "email" },
+    { label: "Konu", key: "subject", type: "text" },
+    { label: "Kategori Konusu", key: "subjectCategory", type: "text" },
+  ];
+
   return (
     <>
       <ToastContainer />
@@ -138,7 +149,10 @@ const ContactForm = () => {
       <CModal
         visible={state.modalVisible}
         onClose={() =>
-          setState((prevState) => ({ ...prevState, modalVisible: false }))
+          setState((prevState) => ({
+            ...prevState,
+            modalVisible: false,
+          }))
         }
       >
         <CModalHeader>
@@ -147,22 +161,13 @@ const ContactForm = () => {
         <CModalBody>
           {state.editContactFormData && (
             <CForm>
-              {[
-                { label: "İsim", value: "name", type: "text" },
-                { label: "Email", value: "email", type: "email" },
-                { label: "Konu", value: "subject", type: "text" },
-                {
-                  label: "Kategori Konusu",
-                  value: "subjectCategory",
-                  type: "text",
-                },
-              ].map(({ label, value, type }) => (
+              {formFields.map(({ label, key, type }) => (
                 <CFormInput
-                  key={value}
+                  key={key}
                   type={type}
                   className="mb-3"
                   label={label}
-                  value={state.editContactFormData[value] || ""}
+                  value={state.editContactFormData[key] || ""}
                   readOnly
                 />
               ))}
@@ -180,7 +185,10 @@ const ContactForm = () => {
           <CButton
             color="secondary"
             onClick={() =>
-              setState((prevState) => ({ ...prevState, modalVisible: false }))
+              setState((prevState) => ({
+                ...prevState,
+                modalVisible: false,
+              }))
             }
           >
             Kapat
@@ -191,11 +199,9 @@ const ContactForm = () => {
       <CTable hover>
         <CTableHead>
           <CTableRow style={{ textAlign: "center", verticalAlign: "middle" }}>
-            {["İsim", "Email", "Konu", "Kategori", "Tarih", "Aksiyonlar"].map(
-              (header) => (
-                <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
-              )
-            )}
+            {tableHeaders.map((header) => (
+              <CTableHeaderCell key={header}>{header}</CTableHeaderCell>
+            ))}
           </CTableRow>
         </CTableHead>
         <CTableBody>
@@ -211,9 +217,8 @@ const ContactForm = () => {
                       ? formatDate(form[key])
                       : truncateText(form[key], 30)}
                   </CTableDataCell>
-                )
+                ),
               )}
-
               <CTableDataCell>
                 <CButton
                   color="info"
@@ -252,7 +257,7 @@ const ContactForm = () => {
             >
               {i + 1}
             </CPaginationItem>
-          )
+          ),
         )}
       </CPagination>
     </>

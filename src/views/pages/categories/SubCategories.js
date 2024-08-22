@@ -46,7 +46,7 @@ export const SubCategories = ({ data }) => {
     deleteSubCategoryId: null,
     deleteCategoryId: null,
   });
-  const fileInputRef3 = useRef(null);
+  const fileInputRef = useRef(null);
 
   const handleToggleActive = async (item) => {
     item.isActive = !item.isActive;
@@ -85,7 +85,7 @@ export const SubCategories = ({ data }) => {
           icon: "",
           orderNumber: 0,
           isActive: false,
-          categoryId: null,
+          categoryId: data[0].categoryId,
           subCategoryId: null,
         },
         modalVisible: true,
@@ -94,8 +94,7 @@ export const SubCategories = ({ data }) => {
   };
 
   const handleSave = async () => {
-    const { subCategoriesData } = state;
-    const { subCategoryId } = subCategoriesData;
+    const { subCategoriesData, subCategoryId } = state;
 
     if (subCategoryId) {
       setState((prevState) => ({
@@ -306,7 +305,7 @@ export const SubCategories = ({ data }) => {
                   {
                     key: "icon",
                     label: "Mevcut Icon Image",
-                    ref: fileInputRef3,
+                    ref: fileInputRef,
                     defaultImage:
                       "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
                   },
@@ -355,7 +354,7 @@ export const SubCategories = ({ data }) => {
               className="mb-3 d-none"
               onChange={handleFileChange}
               id="icon"
-              ref={fileInputRef3}
+              ref={fileInputRef}
             />
           </CForm>
         </CModalBody>

@@ -25,10 +25,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   createFaq,
+  createUser,
   deleteFaq,
   fetchFaq,
   fetchFaqForID,
   updateFaq,
+  updateUser,
 } from "src/api/useApi";
 
 const Faq = () => {
@@ -44,7 +46,12 @@ const Faq = () => {
     text: "",
     isActive: true,
   });
+
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    loadFaq();
+  }, []);
 
   const loadFaq = async () => {
     const faq = await fetchFaq();
@@ -55,10 +62,6 @@ const Faq = () => {
       modalVisible: false,
     }));
   };
-
-  useEffect(() => {
-    loadFaq();
-  }, []);
 
   const handleModalOpen = async (formId = null) => {
     if (formId) {
@@ -72,9 +75,7 @@ const Faq = () => {
     } else {
       setState((prevState) => ({
         ...prevState,
-        label: "",
-        text: "",
-        orderNumber: "",
+        faqData: { label: "", text: "", orderNumber: "" },
         editFaqId: null,
         modalVisible: true,
         isActive: true,
@@ -93,12 +94,17 @@ const Faq = () => {
       toast.success("FAQ başarıyla oluşturuldu.");
     }
 
-    loadFaq();
+    setState((prev) => ({
+      ...prev,
+      modalVisible: false,
+    }));
+    await loadFaq();
   };
 
   const handleDelete = async (formId) => {
     await deleteFaq(formId);
     toast.success("FAQ başarıyla silindi!");
+
     const updatedFaq = await fetchFaq();
     setState((prevState) => ({
       ...prevState,
@@ -106,29 +112,6 @@ const Faq = () => {
       filteredFaq: updatedFaq,
     }));
   };
-
-  const indexOfLastItem = state.currentPage * itemsPerPage;
-  const currentItems = state.filteredFaq.slice(
-    indexOfLastItem - itemsPerPage,
-    indexOfLastItem
-  );
-
-  useEffect(() => {
-    const filterFaq = () => {
-      const lowercasedQuery = state.searchQuery.toLowerCase();
-      const filteredData = state.faq.filter((item) =>
-        [item.label, item.orderNumber.toString()]
-          .map((item) => item.toLowerCase() || item.toString())
-          .some((item) => item.includes(lowercasedQuery))
-      );
-      setState((prevState) => ({
-        ...prevState,
-        filteredFaq: filteredData,
-      }));
-    };
-
-    filterFaq();
-  }, [state.searchQuery, state.faq]);
 
   const handleToggleActive = async (faqId, currentStatus) => {
     const updatedFaq = {
@@ -141,11 +124,46 @@ const Faq = () => {
     toast.success("FAQ durumu başarıyla güncellendi.");
 
     const updatedFaqList = await fetchFaq();
-
     setState((prevState) => ({
       ...prevState,
       faq: updatedFaqList,
       filteredFaq: updatedFaqList,
+    }));
+  };
+
+  const indexOfLastItem = state.currentPage * itemsPerPage;
+  const currentItems = state.filteredFaq.slice(
+    indexOfLastItem - itemsPerPage,
+    indexOfLastItem,
+  );
+
+  useEffect(() => {
+    const filterFaq = () => {
+      const lowercasedQuery = state.searchQuery.toLowerCase();
+      const filteredData = state.faq.filter((item) =>
+        [item.label, item.orderNumber.toString()]
+          .map((field) => field.toLowerCase())
+          .some((field) => field.includes(lowercasedQuery)),
+      );
+      setState((prevState) => ({
+        ...prevState,
+        filteredFaq: filteredData,
+      }));
+    };
+
+    filterFaq();
+  }, [state.searchQuery, state.faq]);
+
+  const tableHeaders = [
+    { label: "Label", value: "label" },
+    { label: "Order Number", value: "orderNumber" },
+    { label: "Actions", value: "actions" },
+  ];
+
+  const handleInputChange = (e, field) => {
+    setState((prevState) => ({
+      ...prevState,
+      faqData: { ...prevState.faqData, [field]: e.target.value },
     }));
   };
 
@@ -174,11 +192,7 @@ const Faq = () => {
       <CTable hover>
         <CTableHead>
           <CTableRow>
-            {[
-              { label: "Label", value: "label" },
-              { label: "Order Number", value: "orderNumber" },
-              { label: "Actions", value: "actions" },
-            ].map(({ label, value }) => (
+            {tableHeaders.map(({ label, value }) => (
               <CTableHeaderCell
                 key={value}
                 style={{ textAlign: "center", verticalAlign: "middle" }}
@@ -191,16 +205,14 @@ const Faq = () => {
         <CTableBody>
           {currentItems.map((item) => (
             <CTableRow key={item.faqId}>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.label}
-              </CTableDataCell>
-              <CTableDataCell
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-              >
-                {item.orderNumber}
-              </CTableDataCell>
+              {tableHeaders.slice(0, 2).map(({ value }) => (
+                <CTableDataCell
+                  key={value}
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                >
+                  {item[value]}
+                </CTableDataCell>
+              ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
@@ -217,11 +229,7 @@ const Faq = () => {
                   }}
                   onClick={() => handleToggleActive(item.faqId, item.isActive)}
                 >
-                  {item.isActive ? (
-                    <CIcon icon={cilCheckCircle} />
-                  ) : (
-                    <CIcon icon={cilXCircle} />
-                  )}
+                  <CIcon icon={item.isActive ? cilCheckCircle : cilXCircle} />
                 </CButton>
                 <CButton
                   color="primary"
@@ -241,12 +249,9 @@ const Faq = () => {
           ))}
         </CTableBody>
       </CTable>
-
       <CPagination className="btn btn-sm">
         {Array.from(
-          {
-            length: Math.ceil(state.filteredFaq.length / itemsPerPage),
-          },
+          { length: Math.ceil(state.filteredFaq.length / itemsPerPage) },
           (_, i) => (
             <CPaginationItem
               key={i + 1}
@@ -257,17 +262,13 @@ const Faq = () => {
             >
               {i + 1}
             </CPaginationItem>
-          )
+          ),
         )}
       </CPagination>
-
       <CModal
         visible={state.modalVisible}
         onClose={() =>
-          setState((prevState) => ({
-            ...prevState,
-            modalVisible: false,
-          }))
+          setState((prevState) => ({ ...prevState, modalVisible: false }))
         }
       >
         <CModalHeader>
@@ -280,37 +281,21 @@ const Faq = () => {
               id="label"
               label="Label"
               value={state.faqData.label}
-              onChange={(e) =>
-                setState(() => ({
-                  ...state,
-                  faqData: { ...state.faqData, label: e.target.value },
-                }))
-              }
+              onChange={(e) => handleInputChange(e, "label")}
             />
             <CFormTextarea
-              type="text"
               id="text"
               label="Metin"
               rows={5}
               value={state.faqData.text}
-              onChange={(e) =>
-                setState(() => ({
-                  ...state,
-                  faqData: { ...state.faqData, text: e.target.value },
-                }))
-              }
+              onChange={(e) => handleInputChange(e, "text")}
             />
             <CFormInput
               type="number"
               id="orderNumber"
               label="Sıra Numarası"
               value={state.faqData.orderNumber}
-              onChange={(e) =>
-                setState(() => ({
-                  ...state,
-                  faqData: { ...state.faqData, orderNumber: e.target.value },
-                }))
-              }
+              onChange={(e) => handleInputChange(e, "orderNumber")}
             />
             {state.editFaqId === null && (
               <CFormSwitch
@@ -331,10 +316,7 @@ const Faq = () => {
           <CButton
             color="secondary"
             onClick={() =>
-              setState((prevState) => ({
-                ...prevState,
-                modalVisible: false,
-              }))
+              setState((prevState) => ({ ...prevState, modalVisible: false }))
             }
           >
             Kapat
