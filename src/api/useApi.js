@@ -71,6 +71,22 @@ export const updateBlog = async (blogId, blogData) => {
   await apiRequest("put", `/blog/${blogId}`, blogData);
 };
 
+export const createFeature = async (featureData) => {
+  return apiRequest("post", "/feature", featureData);
+};
+export const fetchFeature = async () => {
+  return apiRequest("get", "/feature");
+};
+export const fetchFeatureForID = async (featureId) => {
+  return apiRequest("get", `/feature/${featureId}`);
+};
+export const deleteFeature = async (featureId) => {
+  await apiRequest("delete", `/feature/${featureId}`);
+};
+export const updateFeature = async (featureId, featureData) => {
+  await apiRequest("put", `/feature/${featureId}`, featureData);
+};
+
 export const createCategory = async (categoriesData) => {
   return apiRequest("post", `/category`, categoriesData);
 };
