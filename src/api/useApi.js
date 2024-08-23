@@ -71,6 +71,22 @@ export const updateBlog = async (blogId, blogData) => {
   await apiRequest("put", `/blog/${blogId}`, blogData);
 };
 
+export const createSlider = async (sliderData) => {
+  return apiRequest("post", "/slider", sliderData);
+};
+export const fetchSlider = async () => {
+  return apiRequest("get", "/slider");
+};
+export const fetchSliderForID = async (sliderId) => {
+  return apiRequest("get", `/slider/${sliderId}`);
+};
+export const deleteSlider = async (sliderId) => {
+  await apiRequest("delete", `/slider/${sliderId}`);
+};
+export const updateSlider = async (sliderId, sliderData) => {
+  await apiRequest("put", `/slider/${sliderId}`, sliderData);
+};
+
 export const createFeature = async (featureData) => {
   return apiRequest("post", "/feature", featureData);
 };

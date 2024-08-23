@@ -73,11 +73,6 @@ function Feature() {
         setState((prevState) => ({
           ...prevState,
           subCategories: data,
-          features: {
-            ...prevState.features,
-            categoryId: prevState.features.category.categoryId,
-            subCategoryId: prevState.features.subCategory?.subCategoryId || "",
-          },
         }));
       });
     }
@@ -108,20 +103,10 @@ function Feature() {
     console.log(features);
 
     if (features?.featureId) {
-      setState((prevState) => ({
-        ...prevState,
-        features: {
-          ...features,
-          smallImageUrl: undefined,
-        },
-      }));
-
-      await updateFeature(features?.featureId, features);
-      console.log("1", features);
+      await updateFeature(features.featureId, features);
       toast.success("Feature başarıyla güncellendi.");
     } else {
       await createFeature(features);
-      console.log(features);
       toast.success("Feature başarıyla oluşturuldu.");
     }
 
@@ -153,17 +138,8 @@ function Feature() {
   );
 
   const handleToggleActive = async (feature) => {
-    const updatedFeature = {
-      ...feature,
-      categoryId: feature.category.categoryId,
-      subCategoryId: feature.subCategory.subCategoryId,
-      isActive: !feature.isActive,
-    };
-
-    await updateFeature(feature.featureId, updatedFeature);
-
+    await updateFeature(feature.featureId, feature);
     toast.success("Özellik durumu başarıyla güncellendi.");
-
     loadFeature();
   };
 
@@ -178,6 +154,7 @@ function Feature() {
   const confirmDelete = async () => {
     await deleteFeature(state.featureId);
     toast.success("Özellik başarıyla silindi!");
+
     const updatedFeature = await fetchFeature();
     setState((prevState) => ({
       ...prevState,
@@ -292,8 +269,6 @@ function Feature() {
                       ...prevState,
                       features: {
                         ...prevState.features,
-                        subCategoryId: e.target.value,
-
                         subCategory: {
                           subCategoryId: e.target.value,
                         },
