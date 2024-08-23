@@ -39,7 +39,7 @@ const UserContract = () => {
   const itemsPerPage = 10;
   const currentItems = state.filteredUserContract.slice(
     (state.currentPage - 1) * itemsPerPage,
-    state.currentPage * itemsPerPage,
+    state.currentPage * itemsPerPage
   );
   useEffect(() => {
     const loadUserContract = async () => {
@@ -60,7 +60,7 @@ const UserContract = () => {
       const filteredData = state.UserContract.filter((item) =>
         [item.fileName, item.contract?.name, item.user?.name]
           .map((item) => item?.toLowerCase() || "")
-          .some((item) => item.includes(lowercasedQuery)),
+          .some((item) => item.includes(lowercasedQuery))
       );
       setState((prevState) => ({
         ...prevState,
@@ -123,12 +123,12 @@ const UserContract = () => {
   ];
 
   const formFields = [
-    { label: "Sözleşme Adı", key: "contractName" },
-    { label: "Sözleşme Versiyonu", key: "contractVersion" },
-    { label: "Sözleşme Tipi", key: "contractType" },
-    { label: "Dosya Adı", key: "fileName" },
-    { label: "İsim", key: "userName" },
-    { label: "Soyisim", key: "userSurname" },
+    { label: "Sözleşme Adı", readOnly: true, key: "contractName" },
+    { label: "Sözleşme Versiyonu", readOnly: true, key: "contractVersion" },
+    { label: "Sözleşme Tipi", readOnly: true, key: "contractType" },
+    { label: "Dosya Adı", readOnly: true, key: "fileName" },
+    { label: "İsim", readOnly: true, key: "userName" },
+    { label: "Soyisim", readOnly: true, key: "userSurname" },
   ];
 
   return (
@@ -159,12 +159,13 @@ const UserContract = () => {
         <CModalBody>
           <CForm>
             <CRow className="mb-3">
-              {formFields.map(({ label, key }) => (
+              {formFields.map(({ label, key, readOnly }) => (
                 <CCol key={key} md={6}>
                   <CFormInput
                     className="mb-3"
                     type="text"
                     label={label}
+                    readOnly={readOnly}
                     value={state.userContractData[key] || ""}
                     onChange={(e) => handleInputChange(e, key)}
                   />
@@ -174,6 +175,7 @@ const UserContract = () => {
             <CFormTextarea
               className="mb-3"
               rows={5}
+              readOnly={true}
               label="Kullanıcı Sözleşmesi Detayı"
               value={state.userContractData.contractBody || ""}
               onChange={(e) => handleInputChange(e, "contractBody")}
@@ -252,7 +254,7 @@ const UserContract = () => {
             >
               {i + 1}
             </CPaginationItem>
-          ),
+          )
         )}
       </CPagination>
     </>
