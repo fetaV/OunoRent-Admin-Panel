@@ -152,6 +152,55 @@ export const deleteSubCategory = async (categoryId, subCategoryId) => {
   );
 };
 
+export const createFooterHeader = async (FooterHeaderData) => {
+  return apiRequest("post", `/footerHeader`, FooterHeaderData);
+};
+export const fetchFooterHeader = async () => {
+  return apiRequest("get", `/footerHeader`);
+};
+export const updateFooterHeader = async (footerHeaderId, FooterHeaderData) => {
+  return apiRequest("put", `/footerHeader/${footerHeaderId}`, FooterHeaderData);
+};
+export const deleteFooterHeader = async (footerHeaderId) => {
+  return apiRequest("delete", `/footerHeader/${footerHeaderId}`);
+};
+export const fetchFooterHeaderForID = async (footerHeaderId) => {
+  return apiRequest("get", `/footerHeader/${footerHeaderId}`);
+};
+export const createFooterItem = async (footerHeaderId, footerItemData) => {
+  return apiRequest(
+    "post",
+    `/footerHeader/${footerHeaderId}/FooterItem`,
+    footerItemData
+  );
+};
+export const fetchFooterItem = async (footerHeaderId) => {
+  return apiRequest("get", `/footerHeader/${footerHeaderId}/FooterItem`);
+};
+export const fetchFooterItemForID = async (footerHeaderId, footerItemId) => {
+  return apiRequest(
+    "get",
+    `/footerHeader/${footerHeaderId}/FooterItem/${footerItemId}`
+  );
+};
+export const updateFooterItem = async (
+  footerHeaderId,
+  footerItemId,
+  footerItemData
+) => {
+  return apiRequest(
+    "put",
+    `/footerHeader/${footerHeaderId}/FooterItem/${footerItemId}`,
+    footerItemData
+  );
+};
+export const deleteFooterItem = async (footerHeaderId, footerItemId) => {
+  return apiRequest(
+    "delete",
+    `/footerHeader/${footerHeaderId}/FooterItem/${footerItemId}`
+  );
+};
+
 export const createWarehouseConnection = async (warehouseConnectionData) => {
   return apiRequest(
     "post",
@@ -255,14 +304,14 @@ export const createFooter = async (footerData) => {
 export const fetchFooter = async () => {
   return apiRequest("get", "/FooterItem");
 };
-export const fetchFooterForID = async (FooterItemId) => {
-  return apiRequest("get", `/FooterItem/${FooterItemId}`);
+export const fetchFooterForID = async (footerItemId) => {
+  return apiRequest("get", `/FooterItem/${footerItemId}`);
 };
-export const deleteFooter = async (FooterItemId) => {
-  await apiRequest("delete", `/FooterItem/${FooterItemId}`);
+export const deleteFooter = async (footerItemId) => {
+  await apiRequest("delete", `/FooterItem/${footerItemId}`);
 };
-export const updateFooter = async (FooterItemId, footerData) => {
-  await apiRequest("put", `/FooterItem/${FooterItemId}`, footerData);
+export const updateFooter = async (footerItemId, footerData) => {
+  await apiRequest("put", `/FooterItem/${footerItemId}`, footerData);
 };
 
 export const fetchUserContract = async () => {

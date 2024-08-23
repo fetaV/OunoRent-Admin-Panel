@@ -11,7 +11,7 @@ const FeaturedCategory = React.lazy(
   () => import("./views/pages/featuredCategory/FeaturedCategories")
 );
 const MenuItem = React.lazy(() => import("./views/pages/menuItem/MenuItem"));
-const Footer = React.lazy(() => import("./views/pages/footer/Footer"));
+const Footer = React.lazy(() => import("./views/pages/footer/FooterHeader"));
 const Faq = React.lazy(() => import("./views/pages/faq/Faq"));
 const ContactForm = React.lazy(
   () => import("./views/pages/contactForm/ContactForm")

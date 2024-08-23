@@ -30,29 +30,29 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  createCategory,
-  fetchCategory,
-  fetchCategoryForID,
-  deleteCategory,
-  updateCategory,
-  fetchSubCategory,
+  createFooterHeader,
+  fetchFooterHeader,
+  fetchFooterHeaderForID,
+  deleteFooterHeader,
+  updateFooterHeader,
+  fetchFooterItem,
 } from "src/api/useApi";
 import "../blog/ckeditor-styles.css";
-import { SubCategories } from "./SubCategories";
+import { FooterItem } from "./FooterItem";
 
-const Categories = () => {
+const FooterHeader = () => {
   const [state, setState] = useState({
-    categories: [],
-    subCategories: [],
+    footerHeader: [],
+    footerItem: [],
     searchQuery: "",
-    categoriesData: {},
-    subCategoriesData: {},
-    filteredCategories: [],
-    filteredSubCategories: [],
+    footerHeaderData: {},
+    footerItemData: {},
+    filteredFooterHeader: [],
+    filteredFooterItem: [],
     modalVisible: false,
     currentPage: 1,
     deleteModalVisible: false,
-    deleteCategoryId: null,
+    deleteFooterHeaderId: null,
   });
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -60,40 +60,40 @@ const Categories = () => {
 
   const itemsPerPage = 10;
 
-  const loadCategories = async () => {
-    const [categories] = await Promise.all([fetchCategory()]);
+  const loadFooterHeader = async () => {
+    const [footerHeader] = await Promise.all([fetchFooterHeader()]);
     setState((prevState) => ({
       ...prevState,
-      categories,
-      filteredCategories: categories,
+      footerHeader,
+      filteredFooterHeader: footerHeader,
       modalVisible: false,
     }));
   };
 
   useEffect(() => {
-    loadCategories();
+    loadFooterHeader();
   }, []);
 
-  const handleTableOpen = async (categoryId) => {
-    const data = await fetchSubCategory(categoryId);
+  const handleTableOpen = async (footerHeaderId) => {
+    const data = await fetchFooterItem(footerHeaderId);
     setState((prevState) => ({
       ...prevState,
-      subCategoriesData: data,
+      footerItemData: data,
     }));
   };
 
-  const handleModalOpen = async (categoryId = null) => {
-    if (categoryId) {
-      const data = await fetchCategoryForID(categoryId);
+  const handleModalOpen = async (footerHeaderId = null) => {
+    if (footerHeaderId) {
+      const data = await fetchFooterHeaderForID(footerHeaderId);
       setState((prevState) => ({
         ...prevState,
-        categoriesData: data,
+        footerHeaderData: data,
         modalVisible: true,
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        categoriesData: {
+        footerHeaderData: {
           name: "",
           description: "",
           icon: "",
@@ -101,37 +101,37 @@ const Categories = () => {
           isActive: false,
           imageHorizontal: "",
           imageSquare: "",
-          categoryId: null,
+          footerHeaderId: null,
         },
         modalVisible: true,
       }));
     }
   };
 
-  const handleSave = async (categoryId) => {
-    const { categoriesData } = state;
+  const handleSave = async (footerHeaderId) => {
+    const { footerHeaderData } = state;
 
-    if (categoryId) {
+    if (footerHeaderId) {
       setState((prevState) => ({
         ...prevState,
-        categoriesData: {
-          ...categoriesData,
+        footerHeaderData: {
+          ...footerHeaderData,
           smallImageUrl: undefined,
           largeImageUrl: undefined,
           iconUrl: undefined,
         },
       }));
-      console.log("1112", categoriesData);
+      console.log("1112", footerHeaderData);
 
-      await updateCategory(categoryId, categoriesData);
+      await updateFooterHeader(footerHeaderId, footerHeaderData);
       toast.success("category başarıyla güncellendi.");
     } else {
-      console.log("11", categoriesData);
-      await createCategory(categoriesData);
+      console.log("11", footerHeaderData);
+      await createFooterHeader(footerHeaderData);
       toast.success("category başarıyla oluşturuldu.");
     }
 
-    loadCategories();
+    loadFooterHeader();
   };
 
   const handleFileChange = (e) => {
@@ -144,24 +144,24 @@ const Categories = () => {
         if (id === "small") {
           setState((prevState) => ({
             ...prevState,
-            categoriesData: {
-              ...prevState.categoriesData,
+            footerHeaderData: {
+              ...prevState.footerHeaderData,
               imageSquare: reader.result,
             },
           }));
         } else if (id === "large") {
           setState((prevState) => ({
             ...prevState,
-            categoriesData: {
-              ...prevState.categoriesData,
+            footerHeaderData: {
+              ...prevState.footerHeaderData,
               imageHorizontal: reader.result,
             },
           }));
         } else if (id === "icon") {
           setState((prevState) => ({
             ...prevState,
-            categoriesData: {
-              ...prevState.categoriesData,
+            footerHeaderData: {
+              ...prevState.footerHeaderData,
               icon: reader.result,
             },
           }));
@@ -175,7 +175,7 @@ const Categories = () => {
   const downloadExcel = async () => {
     try {
       const response = await fetch(
-        "http://10.10.3.181:5244/api/Category/exportCategories",
+        "http://10.10.3.181:5244/api/Category/exportfooterHeader",
         {
           method: "GET",
           headers: {
@@ -189,7 +189,7 @@ const Categories = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "Categories.xlsx";
+        a.download = "footerHeader.xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -202,9 +202,9 @@ const Categories = () => {
   };
 
   useEffect(() => {
-    const filteredCategories = () => {
+    const filteredFooterHeader = () => {
       const lowercasedQuery = state.searchQuery.toLowerCase();
-      const filteredData = state.categories.filter((item) => {
+      const filteredData = state.footerHeader.filter((item) => {
         const name = item.name ? item.name.toLowerCase() : "";
 
         return [name].some((value) => value.includes(lowercasedQuery));
@@ -212,56 +212,58 @@ const Categories = () => {
 
       setState((prevState) => ({
         ...prevState,
-        filteredCategories: filteredData,
+        filteredFooterHeader: filteredData,
       }));
     };
 
-    filteredCategories();
+    filteredFooterHeader();
   }, [state.searchQuery]);
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
-  const currentItems = state.filteredCategories.slice(
+  const currentItems = state.filteredFooterHeader.slice(
     indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
 
-  const handleToggleActive = async (categoryId, currentStatus) => {
+  const handleToggleActive = async (footerHeaderId, currentStatus) => {
     const updatedCategory = {
-      ...state.categories.find((item) => item.categoryId === categoryId),
+      ...state.footerHeader.find(
+        (item) => item.footerHeaderId === footerHeaderId
+      ),
       isActive: !currentStatus,
     };
 
-    await updateCategory(categoryId, updatedCategory);
+    await updateFooterHeader(footerHeaderId, updatedCategory);
 
     toast.success("Category durumu başarıyla güncellendi.");
 
-    const updatedCategoryList = await fetchCategory();
+    const updatedCategoryList = await fetchFooterHeader();
 
     setState((prevState) => ({
       ...prevState,
-      categories: updatedCategoryList,
-      filteredCategories: updatedCategoryList,
+      footerHeader: updatedCategoryList,
+      filteredFooterHeader: updatedCategoryList,
     }));
   };
 
-  const handleDeleteClick = (categoryId) => {
+  const handleDeleteClick = (footerHeaderId) => {
     setState((prevState) => ({
       ...prevState,
-      deleteCategoryId: categoryId,
+      deleteFooterHeaderId: footerHeaderId,
       deleteModalVisible: true,
     }));
   };
 
   const confirmDelete = async () => {
-    await deleteCategory(state.deleteCategoryId);
+    await deleteFooterHeader(state.deleteFooterHeaderId);
     toast.success("Category başarıyla silindi!");
-    const updatedCategory = await fetchCategory();
+    const updatedCategory = await fetchFooterHeader();
     setState((prevState) => ({
       ...prevState,
-      categories: updatedCategory,
-      filteredCategories: updatedCategory,
+      footerHeader: updatedCategory,
+      filteredFooterHeader: updatedCategory,
       deleteModalVisible: false,
-      deleteCategoryId: null,
+      deleteFooterHeaderId: null,
     }));
   };
 
@@ -305,7 +307,7 @@ const Categories = () => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.categoriesData?.categoryId
+            {state.footerHeaderData?.footerHeaderId
               ? "Kategori Düzenle"
               : "Yeni Kategori Ekle"}
           </CModalTitle>
@@ -322,12 +324,12 @@ const Categories = () => {
                     className="mb-3"
                     type="text"
                     label={label}
-                    value={state.categoriesData?.[value] || ""}
+                    value={state.footerHeaderData?.[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        categoriesData: {
-                          ...prevState.categoriesData,
+                        footerHeaderData: {
+                          ...prevState.footerHeaderData,
                           [value]: e.target.value,
                         },
                       }))
@@ -347,12 +349,12 @@ const Categories = () => {
                     className="mb-3"
                     type={type}
                     label={label}
-                    value={state.categoriesData?.[value] || ""}
+                    value={state.footerHeaderData?.[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        categoriesData: {
-                          ...prevState.categoriesData,
+                        footerHeaderData: {
+                          ...prevState.footerHeaderData,
                           [value]: e.target.value,
                         },
                       }))
@@ -393,10 +395,10 @@ const Categories = () => {
                         }
                       }}
                       src={
-                        state.categoriesData?.[key]?.startsWith("data:image")
-                          ? state.categoriesData?.[key]
-                          : state.categoriesData?.[`${key}Url`]
-                            ? `http://10.10.3.181:5244/${state.categoriesData?.[`${key}Url`]}`
+                        state.footerHeaderData?.[key]?.startsWith("data:image")
+                          ? state.footerHeaderData?.[key]
+                          : state.footerHeaderData?.[`${key}Url`]
+                            ? `http://10.10.3.181:5244/${state.footerHeaderData?.[`${key}Url`]}`
                             : defaultImage
                       }
                       style={{ width: 200, height: "auto" }}
@@ -410,7 +412,9 @@ const Categories = () => {
                         }
                       }}
                     >
-                      {state.categoriesData?.categoryId ? "Güncelle" : "Kaydet"}
+                      {state.footerHeaderData?.footerHeaderId
+                        ? "Güncelle"
+                        : "Kaydet"}
                     </button>
                   </div>
                 </div>
@@ -451,9 +455,9 @@ const Categories = () => {
           </CButton>
           <CButton
             color="primary"
-            onClick={() => handleSave(state.categoriesData?.categoryId)}
+            onClick={() => handleSave(state.footerHeaderData?.footerHeaderId)}
           >
-            {state.categoriesData?.categoryId ? "Güncelle" : "Kaydet"}
+            {state.footerHeaderData?.footerHeaderId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -475,8 +479,8 @@ const Categories = () => {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems.map((category) => (
-            <CTableRow key={category.categoryId}>
+          {currentItems.map((footerHeader) => (
+            <CTableRow key={footerHeader.footerHeaderId}>
               {[
                 { value: "name", isImage: false, isStatus: false },
                 { value: "orderNumber", isImage: false, isStatus: false },
@@ -485,19 +489,22 @@ const Categories = () => {
                   key={value}
                   style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
-                  {category[value]}
+                  {footerHeader[value]}
                 </CTableDataCell>
               ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className={`text-white me-2 ${category.isActive ? "btn-success" : "btn-danger"}`}
+                  className={`text-white me-2 ${footerHeader.isActive ? "btn-success" : "btn-danger"}`}
                   onClick={() =>
-                    handleToggleActive(category.categoryId, category.isActive)
+                    handleToggleActive(
+                      footerHeader.footerHeaderId,
+                      footerHeader.isActive
+                    )
                   }
                 >
-                  {category.isActive ? (
+                  {footerHeader.isActive ? (
                     <CIcon icon={cilCheckCircle} />
                   ) : (
                     <CIcon icon={cilXCircle} />
@@ -508,19 +515,25 @@ const Categories = () => {
                   <CDropdownMenu>
                     <CDropdownItem
                       className="btn"
-                      onClick={() => handleModalOpen(category.categoryId)}
+                      onClick={() =>
+                        handleModalOpen(footerHeader.footerHeaderId)
+                      }
                     >
                       Düzenle
                     </CDropdownItem>
                     <CDropdownItem
                       className="btn"
-                      onClick={() => handleDeleteClick(category.categoryId)}
+                      onClick={() =>
+                        handleDeleteClick(footerHeader.footerHeaderId)
+                      }
                     >
                       Sil
                     </CDropdownItem>
                     <CDropdownItem
                       className="btn"
-                      onClick={() => handleTableOpen(category.categoryId)}
+                      onClick={() =>
+                        handleTableOpen(footerHeader.footerHeaderId)
+                      }
                     >
                       Alt Kategorileri Göster
                     </CDropdownItem>
@@ -534,7 +547,9 @@ const Categories = () => {
 
       <CPagination className="btn btn-sm">
         {Array.from(
-          { length: Math.ceil(state.filteredCategories.length / itemsPerPage) },
+          {
+            length: Math.ceil(state.filteredFooterHeader.length / itemsPerPage),
+          },
           (_, i) => (
             <CPaginationItem
               key={i + 1}
@@ -556,7 +571,7 @@ const Categories = () => {
           setState((prevState) => ({
             ...prevState,
             deleteModalVisible: false,
-            deleteCategoryId: null,
+            deleteFooterHeaderId: null,
           }))
         }
       >
@@ -572,7 +587,7 @@ const Categories = () => {
               setState((prevState) => ({
                 ...prevState,
                 deleteModalVisible: false,
-                deleteCategoryId: null,
+                deleteFooterHeaderId: null,
               }))
             }
           >
@@ -584,9 +599,9 @@ const Categories = () => {
         </CModalFooter>
       </CModal>
 
-      <SubCategories data={state.subCategoriesData} />
+      <FooterItem data={state.footerItemData} />
     </>
   );
 };
 
-export default Categories;
+export default FooterHeader;

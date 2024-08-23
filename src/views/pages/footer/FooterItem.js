@@ -22,76 +22,76 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import {
-  createSubCategory,
-  fetchSubCategory,
-  fetchSubCategoryForID,
-  deleteSubCategory,
-  updateSubCategory,
+  createFooterItem,
+  fetchFooterItem,
+  fetchFooterItemForID,
+  deleteFooterItem,
+  updateFooterItem,
 } from "src/api/useApi";
 import "../blog/ckeditor-styles.css";
 
-export const SubCategories = ({ data }) => {
+export const FooterItem = ({ data }) => {
   const [state, setState] = useState({
-    subCategories: [],
+    FooterItem: [],
     searchQuery: "",
-    subCategoriesData: {},
-    filteredSubCategories: [],
+    footerItemData: {},
+    filteredFooterItem: [],
     modalVisible: false,
     currentPage: 1,
     deleteModalVisible: false,
-    deleteSubCategoryId: null,
+    deleteFooterItemId: null,
     deleteCategoryId: null,
   });
   const fileInputRef = useRef(null);
 
-  const fetchSubCategories = async () => {
+  const fetchFooterItem = async () => {
     if (data.length) {
-      const updatedSubCategoryList = await fetchSubCategory(data[0].categoryId);
+      const updatedFooterItemList = await fetchFooterItem(data[0].categoryId);
       setState((prevState) => ({
         ...prevState,
-        subCategories: updatedSubCategoryList,
-        filteredSubCategories: updatedSubCategoryList,
+        FooterItem: updatedFooterItemList,
+        filteredFooterItem: updatedFooterItemList,
       }));
     }
   };
 
   useEffect(() => {
-    fetchSubCategories();
+    fetchFooterItem();
   }, [data]);
 
   const handleToggleActive = async (item) => {
     item.isActive = !item.isActive;
 
-    await updateSubCategory(item.categoryId, item.subCategoryId, item);
+    await updateFooterItem(item.categoryId, item.FooterItemId, item);
 
     toast.success("Category durumu başarıyla güncellendi.");
 
-    await fetchSubCategories();
+    await fetchFooterItem();
   };
 
-  const handleModalOpen = async (categoryId, subCategoryId) => {
-    if (categoryId && subCategoryId) {
-      const item = await fetchSubCategoryForID(categoryId, subCategoryId);
+  const handleModalOpen = async (categoryId, FooterItemId) => {
+    if (categoryId && FooterItemId) {
+      const item = await fetchFooterItemForID(categoryId, FooterItemId);
       setState((prevState) => ({
         ...prevState,
-        subCategoriesData: {
+        footerItemData: {
           ...item,
           categoryId,
-          subCategoryId,
+          FooterItemId,
         },
         modalVisible: true,
       }));
     } else if (data.length) {
       setState((prevState) => ({
         ...prevState,
-        subCategoriesData: {
+        footerItemData: {
           name: "",
           description: "",
           icon: "",
           orderNumber: 0,
           isActive: false,
           categoryId: data[0].categoryId,
-          subCategoryId: null,
+          FooterItemId: null,
         },
         modalVisible: true,
       }));
@@ -99,22 +99,22 @@ export const SubCategories = ({ data }) => {
   };
 
   const handleSave = async () => {
-    const { subCategoriesData } = state;
+    const { footerItemData } = state;
 
     try {
-      if (subCategoriesData.subCategoryId) {
-        await updateSubCategory(
+      if (footerItemData.FooterItemId) {
+        await updateFooterItem(
           data[0].categoryId,
-          subCategoriesData.subCategoryId,
-          { ...subCategoriesData, iconUrl: undefined }
+          footerItemData.FooterItemId,
+          { ...footerItemData, iconUrl: undefined }
         );
         toast.success("Alt kategori başarıyla güncellendi.");
       } else {
-        await createSubCategory(data[0].categoryId, subCategoriesData);
+        await createFooterItem(data[0].categoryId, footerItemData);
         toast.success("Alt kategori başarıyla oluşturuldu.");
       }
 
-      await fetchSubCategories();
+      await fetchFooterItem();
       setState((prevState) => ({
         ...prevState,
         modalVisible: false,
@@ -135,8 +135,8 @@ export const SubCategories = ({ data }) => {
         if (id === "icon") {
           setState((prevState) => ({
             ...prevState,
-            subCategoriesData: {
-              ...prevState.subCategoriesData,
+            footerItemData: {
+              ...prevState.footerItemData,
               icon: reader.result,
             },
           }));
@@ -150,20 +150,20 @@ export const SubCategories = ({ data }) => {
   const handleDeleteClick = (item) => {
     setState((prevState) => ({
       ...prevState,
-      deleteSubCategoryId: item.subCategoryId,
+      deleteFooterItemId: item.FooterItemId,
       deleteCategoryId: item.categoryId,
       deleteModalVisible: true,
     }));
   };
 
   const confirmDelete = async () => {
-    await deleteSubCategory(state.deleteCategoryId, state.deleteSubCategoryId);
+    await deleteFooterItem(state.deleteCategoryId, state.deleteFooterItemId);
     toast.success("Category başarıyla silindi!");
-    await fetchSubCategories();
+    await fetchFooterItem();
     setState((prevState) => ({
       ...prevState,
       deleteModalVisible: false,
-      deleteSubCategoryId: null,
+      deleteFooterItemId: null,
       deleteCategoryId: null,
     }));
   };
@@ -179,7 +179,7 @@ export const SubCategories = ({ data }) => {
       >
         Yeni Alt Kategori Ekle
       </CButton>
-      {state.subCategories.length ? (
+      {state.FooterItem.length ? (
         <CTable>
           <CTableHead>
             <CTableRow>
@@ -198,10 +198,10 @@ export const SubCategories = ({ data }) => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {state.subCategories.map((item) => (
+            {state.FooterItem.map((item) => (
               <CTableRow
                 style={{ textAlign: "center", verticalAlign: "middle" }}
-                key={item.subCategoryId}
+                key={item.FooterItemId}
               >
                 <CTableDataCell>{item.name}</CTableDataCell>
                 <CTableDataCell>{item.orderNumber}</CTableDataCell>
@@ -222,7 +222,7 @@ export const SubCategories = ({ data }) => {
                     color="primary text-white"
                     className="me-2"
                     onClick={() => {
-                      handleModalOpen(item.categoryId, item.subCategoryId);
+                      handleModalOpen(item.categoryId, item.FooterItemId);
                     }}
                   >
                     <CIcon icon={cilPencil} />
@@ -252,7 +252,7 @@ export const SubCategories = ({ data }) => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.subCategoriesData?.categoryId
+            {state.footerItemData?.categoryId
               ? "Kategori Düzenle"
               : "Yeni Kategori Ekle"}
           </CModalTitle>
@@ -269,12 +269,12 @@ export const SubCategories = ({ data }) => {
                     className="mb-3"
                     type="text"
                     label={label}
-                    value={state.subCategoriesData?.[value] || ""}
+                    value={state.footerItemData?.[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        subCategoriesData: {
-                          ...prevState.subCategoriesData,
+                        footerItemData: {
+                          ...prevState.footerItemData,
                           [value]: e.target.value,
                         },
                       }))
@@ -292,12 +292,12 @@ export const SubCategories = ({ data }) => {
                       className="mb-3"
                       type={type}
                       label={label}
-                      value={state.subCategoriesData?.[value] || ""}
+                      value={state.footerItemData?.[value] || ""}
                       onChange={(e) =>
                         setState((prevState) => ({
                           ...prevState,
-                          subCategoriesData: {
-                            ...prevState.subCategoriesData,
+                          footerItemData: {
+                            ...prevState.footerItemData,
                             [value]: e.target.value,
                           },
                         }))
@@ -326,12 +326,10 @@ export const SubCategories = ({ data }) => {
                           }
                         }}
                         src={
-                          state.subCategoriesData?.[key]?.startsWith(
-                            "data:image"
-                          )
-                            ? state.subCategoriesData?.[key]
-                            : state.subCategoriesData?.[`${key}Url`]
-                              ? `http://10.10.3.181:5244/${state.subCategoriesData?.[`${key}Url`]}`
+                          state.footerItemData?.[key]?.startsWith("data:image")
+                            ? state.footerItemData?.[key]
+                            : state.footerItemData?.[`${key}Url`]
+                              ? `http://10.10.3.181:5244/${state.footerItemData?.[`${key}Url`]}`
                               : defaultImage
                         }
                         style={{ width: 200, height: "auto" }}
@@ -345,7 +343,7 @@ export const SubCategories = ({ data }) => {
                           }
                         }}
                       >
-                        {state.subCategoriesData?.categoryId
+                        {state.footerItemData?.categoryId
                           ? "Güncelle"
                           : "Kaydet"}
                       </button>
@@ -374,7 +372,7 @@ export const SubCategories = ({ data }) => {
             Kapat
           </CButton>
           <CButton color="primary" onClick={() => handleSave()}>
-            {state.subCategoriesData?.categoryId ? "Güncelle" : "Kaydet"}
+            {state.footerItemData?.categoryId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -385,7 +383,7 @@ export const SubCategories = ({ data }) => {
           setState((prevState) => ({
             ...prevState,
             deleteModalVisible: false,
-            deleteSubCategoryId: null,
+            deleteFooterItemId: null,
           }))
         }
       >
@@ -401,7 +399,7 @@ export const SubCategories = ({ data }) => {
               setState((prevState) => ({
                 ...prevState,
                 deleteModalVisible: false,
-                deleteSubCategoryId: null,
+                deleteFooterItemId: null,
               }))
             }
           >
