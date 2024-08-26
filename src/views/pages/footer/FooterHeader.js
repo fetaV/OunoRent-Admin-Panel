@@ -277,14 +277,14 @@ const FooterHeader = () => {
           className="mb-3"
           onClick={() => handleModalOpen()}
         >
-          Yeni Kategori Ekle
+          Yeni Footer Ekle
         </CButton>
         <CButton color="success text-white" onClick={downloadExcel}>
           Excel İndir
         </CButton>
       </div>
 
-      <h3>Kategoriler</h3>
+      <h3>Footerler</h3>
       <CFormInput
         type="text"
         id="search"
@@ -308,8 +308,8 @@ const FooterHeader = () => {
         <CModalHeader>
           <CModalTitle id="ModalLabel">
             {state.footerHeaderData?.footerHeaderId
-              ? "Kategori Düzenle"
-              : "Yeni Kategori Ekle"}
+              ? "Footer Düzenle"
+              : "Yeni Footer Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -338,110 +338,6 @@ const FooterHeader = () => {
                 </CCol>
               ))}
             </CRow>
-            <CRow className="mb-3">
-              {[
-                { label: "Etiketler", value: "description", md: 6 },
-                { label: "Slug", value: "slug", md: 6 },
-              ].map(({ label, value, md, type = "text" }) => (
-                <CCol key={value} md={md}>
-                  <CFormInput
-                    key={value}
-                    className="mb-3"
-                    type={type}
-                    label={label}
-                    value={state.footerHeaderData?.[value] || ""}
-                    onChange={(e) =>
-                      setState((prevState) => ({
-                        ...prevState,
-                        footerHeaderData: {
-                          ...prevState.footerHeaderData,
-                          [value]: e.target.value,
-                        },
-                      }))
-                    }
-                  />
-                </CCol>
-              ))}
-              {[
-                {
-                  key: "imageHorizontal",
-                  label: "Mevcut Large Image",
-                  ref: fileInputRef1,
-                  defaultImage:
-                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
-                },
-                {
-                  key: "imageSquare",
-                  label: "Mevcut Small Image",
-                  ref: fileInputRef2,
-                  defaultImage:
-                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
-                },
-                {
-                  key: "icon",
-                  label: "Mevcut Icon Image",
-                  ref: fileInputRef3,
-                  defaultImage:
-                    "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
-                },
-              ].map(({ key, label, ref, defaultImage }) => (
-                <div key={key} className="mb-3 col-md-4">
-                  <label className="d-flex">{label}</label>
-                  <div className="image-container m-1">
-                    <img
-                      onClick={() => {
-                        if (ref.current) {
-                          ref.current.click();
-                        }
-                      }}
-                      src={
-                        state.footerHeaderData?.[key]?.startsWith("data:image")
-                          ? state.footerHeaderData?.[key]
-                          : state.footerHeaderData?.[`${key}Url`]
-                            ? `http://10.10.3.181:5244/${state.footerHeaderData?.[`${key}Url`]}`
-                            : defaultImage
-                      }
-                      style={{ width: 200, height: "auto" }}
-                      alt={label}
-                    />
-                    <button
-                      className="edit-button"
-                      onClick={() => {
-                        if (ref.current) {
-                          ref.current.click();
-                        }
-                      }}
-                    >
-                      {state.footerHeaderData?.footerHeaderId
-                        ? "Güncelle"
-                        : "Kaydet"}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </CRow>
-
-            <CFormInput
-              type="file"
-              className="mb-3 d-none"
-              onChange={handleFileChange}
-              id="large"
-              ref={fileInputRef1}
-            />
-            <CFormInput
-              type="file"
-              className="mb-3 d-none"
-              onChange={handleFileChange}
-              id="small"
-              ref={fileInputRef2}
-            />
-            <CFormInput
-              type="file"
-              className="mb-3 d-none"
-              onChange={handleFileChange}
-              id="icon"
-              ref={fileInputRef3}
-            />
           </CForm>
         </CModalBody>
         <CModalFooter className="mt-5">
@@ -465,7 +361,7 @@ const FooterHeader = () => {
         <CTableHead>
           <CTableRow>
             {[
-              { label: "Kategori Adı", value: "name" },
+              { label: "Footer Adı", value: "name" },
               { label: "Sıra Numarası", value: "orderNumber" },
               { label: "Eylemler", value: "actions" },
             ].map(({ label, value }) => (
@@ -535,7 +431,7 @@ const FooterHeader = () => {
                         handleTableOpen(footerHeader.footerHeaderId)
                       }
                     >
-                      Alt Kategorileri Göster
+                      Alt Footerleri Göster
                     </CDropdownItem>
                   </CDropdownMenu>
                 </CDropdown>

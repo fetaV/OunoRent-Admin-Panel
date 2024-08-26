@@ -103,6 +103,22 @@ export const updateFeature = async (featureId, featureData) => {
   await apiRequest("put", `/feature/${featureId}`, featureData);
 };
 
+export const createProduct = async (productData) => {
+  return apiRequest("post", "/product", productData);
+};
+export const fetchProduct = async () => {
+  return apiRequest("get", "/product");
+};
+export const fetchProductForID = async (productId) => {
+  return apiRequest("get", `/product/${productId}`);
+};
+export const deleteProduct = async (productId) => {
+  await apiRequest("delete", `/product/${productId}`);
+};
+export const updateProduct = async (productId, productData) => {
+  await apiRequest("put", `/product/${productId}`, productData);
+};
+
 export const createCategory = async (categoriesData) => {
   return apiRequest("post", `/category`, categoriesData);
 };

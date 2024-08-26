@@ -317,7 +317,7 @@ const Address = () => {
                 <CTableDataCell key={key}>{addr[key]}</CTableDataCell>
               ))}
               <CTableDataCell>
-                {addr.type === 0 ? "Bireysel" : "Kurumsal"}
+                {addr.type === 1 ? "Bireysel" : "Kurumsal"}
               </CTableDataCell>
               <CTableDataCell>
                 <CButton

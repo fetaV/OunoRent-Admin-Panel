@@ -26,97 +26,101 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  createFeature,
-  fetchFeature,
-  fetchFeatureForID,
-  deleteFeature,
-  updateFeature,
+  createProduct,
+  fetchProduct,
+  fetchProductForID,
+  deleteProduct,
+  updateProduct,
+  fetchBrand,
   fetchCategory,
   fetchSubCategory,
 } from "src/api/useApi";
 import "../blog/ckeditor-styles.css";
 
-function Feature() {
+function Product() {
   const [state, setState] = useState({
-    features: [],
+    product: [],
     categories: [],
     subCategories: [],
+    brands: [],
     modalVisible: false,
     searchQuery: "",
     deleteModalVisible: null,
-    filteredFeature: [],
+    filteredProduct: [],
     currentPage: 1,
   });
 
   const itemsPerPage = 10;
 
-  const loadFeature = async () => {
-    const [features, categories] = await Promise.all([
-      fetchFeature(),
+  const loadProduct = async () => {
+    const [product, brands, categories] = await Promise.all([
+      fetchProduct(),
+      fetchBrand(),
       fetchCategory(),
     ]);
     setState((prevState) => ({
       ...prevState,
+      brands,
       categories,
-      features,
-      filteredFeature: features,
+      product,
+      filteredProduct: product,
       modalVisible: false,
     }));
   };
   useEffect(() => {
-    loadFeature();
+    loadProduct();
   }, []);
 
   useEffect(() => {
-    if (state.features?.category?.categoryId) {
-      fetchSubCategory(state.features?.category.categoryId).then((data) => {
+    if (state.product?.categoryId) {
+      fetchSubCategory(state.product?.categoryId).then((data) => {
         setState((prevState) => ({
           ...prevState,
           subCategories: data,
         }));
       });
     }
-  }, [state.features?.category?.categoryId]);
+  }, [state.product?.categoryId]);
 
-  const handleModalOpen = async (featureId = null) => {
-    if (featureId) {
-      const data = await fetchFeatureForID(featureId);
+  const handleModalOpen = async (productId = null) => {
+    if (productId) {
+      const data = await fetchProductForID(productId);
       setState((prevState) => ({
         ...prevState,
-        features: data,
+        product: data,
         modalVisible: true,
       }));
       console.log(data);
     } else {
       setState((prevState) => ({
         ...prevState,
-        features: [],
-        featureId: null,
+        product: [],
+        productId: null,
         modalVisible: true,
       }));
     }
   };
 
   const handleSave = async () => {
-    const { features } = state;
+    const { product } = state;
 
-    console.log(features);
+    console.log(product);
 
-    if (features?.featureId) {
-      await updateFeature(features.featureId, features);
-      toast.success("Feature başarıyla güncellendi.");
+    if (product?.productId) {
+      await updateProduct(product.productId, product);
+      toast.success("Product başarıyla güncellendi.");
     } else {
-      await createFeature(features);
-      toast.success("Feature başarıyla oluşturuldu.");
+      await createProduct(product);
+      toast.success("Product başarıyla oluşturuldu.");
     }
 
-    loadFeature();
+    loadProduct();
   };
 
   useEffect(() => {
-    const filterFeature = () => {
+    const filterProduct = () => {
       const lowercasedQuery = state.searchQuery.toLowerCase();
-      const filteredData = state.features.filter((item) => {
+      const filteredData = state.product.filter((item) => {
         const name = item.name ? item.name.toLowerCase() : "";
 
         return [name].some((value) => value.includes(lowercasedQuery));
@@ -124,44 +128,44 @@ function Feature() {
 
       setState((prevState) => ({
         ...prevState,
-        filteredFeature: filteredData,
+        filteredProduct: filteredData,
       }));
     };
 
-    filterFeature();
+    filterProduct();
   }, [state.searchQuery]);
 
   const indexOfLastItem = state.currentPage * itemsPerPage;
-  const currentItems = state.filteredFeature.slice(
+  const currentItems = state.filteredProduct.slice(
     indexOfLastItem - itemsPerPage,
     indexOfLastItem
   );
 
-  const handleToggleActive = async (feature) => {
-    await updateFeature(feature.featureId, feature);
+  const handleToggleActive = async (product) => {
+    await updateProduct(product.productId, product);
     toast.success("Özellik durumu başarıyla güncellendi.");
-    loadFeature();
+    loadProduct();
   };
 
-  const handleDeleteClick = (featureId) => {
+  const handleDeleteClick = (productId) => {
     setState((prevState) => ({
       ...prevState,
-      featureId: featureId,
+      productId: productId,
       deleteModalVisible: true,
     }));
   };
 
   const confirmDelete = async () => {
-    await deleteFeature(state.featureId);
+    await deleteProduct(state.productId);
     toast.success("Özellik başarıyla silindi!");
 
-    const updatedFeature = await fetchFeature();
+    const updatedProduct = await fetchProduct();
     setState((prevState) => ({
       ...prevState,
-      features: updatedFeature,
-      filteredFeature: updatedFeature,
+      product: updatedProduct,
+      filteredProduct: updatedProduct,
       deleteModalVisible: false,
-      featureId: null,
+      productId: null,
     }));
   };
 
@@ -198,28 +202,49 @@ function Feature() {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.features?.featureId
-              ? "Özellik Düzenle"
-              : "Yeni Özellik Ekle"}
+            {state.product?.productId ? "Özellik Düzenle" : "Yeni Özellik Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <CRow className="mb-3">
               {[
-                { label: "Özellik Adı", value: "name", md: 6 },
-                { label: "Özellik Tipi", value: "featureType", md: 6 },
+                { label: "Ürün Adı", value: "name", md: 6 },
+                { label: "Marka", value: "brandName", md: 6 },
               ].map(({ label, value, md }) => (
                 <CCol key={value} md={md}>
                   <CFormInput
                     className="mb-3"
                     label={label}
-                    value={state.features?.[value] || ""}
+                    value={state.product?.[value] || ""}
                     onChange={(e) =>
                       setState((prevState) => ({
                         ...prevState,
-                        features: {
-                          ...prevState.features,
+                        product: {
+                          ...prevState.product,
+                          [value]: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </CCol>
+              ))}
+            </CRow>
+            <CRow className="mb-3">
+              {[
+                { label: "Model", value: "model", md: 6 },
+                { label: "Barkod", value: "barcode", md: 6 },
+              ].map(({ label, value, md }) => (
+                <CCol key={value} md={md}>
+                  <CFormInput
+                    className="mb-3"
+                    label={label}
+                    value={state.product?.[value] || ""}
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        product: {
+                          ...prevState.product,
                           [value]: e.target.value,
                         },
                       }))
@@ -232,21 +257,46 @@ function Feature() {
             <CRow>
               <CCol>
                 <CFormSelect
+                  label="Marka"
+                  className="mb-3"
+                  aria-label="Select brand"
+                  onChange={(e) => {
+                    setState((prevState) => ({
+                      ...prevState,
+                      brands: {
+                        ...prevState.brands,
+                        brandId: e.target.value,
+                      },
+                    }));
+                  }}
+                  value={state.brands?.brandId}
+                >
+                  <option value="">Marka Seçiniz</option>
+                  {state.brands.map((brands) => (
+                    <option key={brands.brandId} value={brands.brandId}>
+                      {brands.name}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol>
+                <CFormSelect
                   label="Kategori"
                   className="mb-3"
                   aria-label="Select category"
                   onChange={(e) => {
                     setState((prevState) => ({
                       ...prevState,
-                      features: {
-                        ...prevState.features,
-                        category: {
-                          categoryId: e.target.value,
-                        },
+                      product: {
+                        ...prevState.product,
+                        categoryId: e.target.value,
+                        subCategoryId: "",
                       },
                     }));
                   }}
-                  value={state.features?.category?.categoryId}
+                  value={state.product?.categoryId}
                 >
                   <option value="">Kategori Seçiniz</option>
                   {state.categories.map((category) => (
@@ -267,15 +317,14 @@ function Feature() {
                   onChange={(e) => {
                     setState((prevState) => ({
                       ...prevState,
-                      features: {
-                        ...prevState.features,
-                        subCategory: {
-                          subCategoryId: e.target.value,
-                        },
+                      product: {
+                        ...prevState.product,
+                        subCategoryId: e.target.value,
                       },
                     }));
                   }}
-                  value={state.features?.subCategory?.subCategoryId}
+                  value={state.product?.subCategoryId}
+                  disabled={!state.product?.categoryId}
                 >
                   <option value="">Alt Kategori Seçiniz</option>
                   {state.subCategories.map((subCategory) => (
@@ -301,7 +350,7 @@ function Feature() {
             Kapat
           </CButton>
           <CButton color="primary" onClick={handleSave}>
-            {state.features?.featureId ? "Güncelle" : "Kaydet"}
+            {state.product?.productId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -309,10 +358,9 @@ function Feature() {
         <CTableHead>
           <CTableRow>
             {[
-              { label: "Özellik Adı", value: "name" },
-              { label: "Özellik Tipi", value: "featureType" },
-              { label: "Kategori Adı", value: "tags" },
-              { label: "Alt Kategori Adı", value: "subCategoryName" },
+              { label: "Barkod", value: "barcode" },
+              { label: "Model", value: "model" },
+              { label: "İsim", value: "name" },
               { label: "Eylemler", value: "actions" },
             ].map(({ label, value, isImage, isStatus }) => (
               <CTableHeaderCell
@@ -325,29 +373,28 @@ function Feature() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {currentItems.map((feature) => (
-            <CTableRow key={feature.featureId}>
+          {currentItems.map((product) => (
+            <CTableRow key={product.productId}>
               {[
+                { value: "barcode", isImage: false, isStatus: false },
+                { value: "model", isImage: false, isStatus: false },
                 { value: "name", isImage: false, isStatus: false },
-                { value: "featureType", isImage: false, isStatus: false },
-                { value: "category.name", isImage: false, isStatus: false },
-                { value: "subCategory.name", isImage: false, isStatus: false },
               ].map(({ value }) => (
                 <CTableDataCell
                   key={value}
                   style={{ textAlign: "center", verticalAlign: "middle" }}
                 >
-                  {value.split(".").reduce((obj, key) => obj?.[key], feature)}
+                  {value}
                 </CTableDataCell>
               ))}
               <CTableDataCell
                 style={{ textAlign: "center", verticalAlign: "middle" }}
               >
                 <CButton
-                  className={`text-white me-2 ${feature.isActive ? "btn-success" : "btn-danger"}`}
-                  onClick={() => handleToggleActive(feature)}
+                  className={`text-white me-2 ${product.isActive ? "btn-success" : "btn-danger"}`}
+                  onClick={() => handleToggleActive(product)}
                 >
-                  {feature.isActive ? (
+                  {product.isActive ? (
                     <CIcon icon={cilCheckCircle} />
                   ) : (
                     <CIcon icon={cilXCircle} />
@@ -357,14 +404,14 @@ function Feature() {
                   color="primary text-white"
                   className="me-2"
                   onClick={() => {
-                    handleModalOpen(feature.featureId);
+                    handleModalOpen(product.productId);
                   }}
                 >
                   <CIcon icon={cilPencil} />
                 </CButton>
                 <CButton
                   color="danger text-white"
-                  onClick={() => handleDeleteClick(feature.featureId)}
+                  onClick={() => handleDeleteClick(product.productId)}
                 >
                   <CIcon icon={cilTrash} />
                 </CButton>
@@ -376,7 +423,7 @@ function Feature() {
 
       <CPagination className="btn btn-sm">
         {Array.from(
-          { length: Math.ceil(state.filteredFeature.length / itemsPerPage) },
+          { length: Math.ceil(state.filteredProduct.length / itemsPerPage) },
           (_, i) => (
             <CPaginationItem
               key={i + 1}
@@ -398,7 +445,7 @@ function Feature() {
           setState((prevState) => ({
             ...prevState,
             deleteModalVisible: false,
-            featureId: null,
+            productId: null,
           }))
         }
       >
@@ -414,7 +461,7 @@ function Feature() {
               setState((prevState) => ({
                 ...prevState,
                 deleteModalVisible: false,
-                featureId: null,
+                productId: null,
               }))
             }
           >
@@ -429,4 +476,4 @@ function Feature() {
   );
 }
 
-export default Feature;
+export default Product;

@@ -13,7 +13,9 @@ import {
   cilDrop,
   cilFeaturedPlaylist,
   cilFile,
+  cilHandPointUp,
   cilHouse,
+  cilInbox,
   cilLibraryBuilding,
   cilNotes,
   cilPencil,
@@ -64,6 +66,18 @@ const _nav = [
     name: "Bize Ulaşın",
     to: "/contactForm",
     icon: <CIcon icon={cilContact} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: "Popüler Ürünler",
+    to: "/popularProduct",
+    icon: <CIcon icon={cilHandPointUp} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: "Ürünler",
+    to: "/product",
+    icon: <CIcon icon={cilInbox} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

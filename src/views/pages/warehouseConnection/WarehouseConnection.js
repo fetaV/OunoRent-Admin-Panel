@@ -239,10 +239,12 @@ function WarehouseConnection() {
               onChange={(e) =>
                 setState((prevState) => ({
                   ...prevState,
-                  channelId: e.target.value,
+                  channel: {
+                    channelId: e.target.value,
+                  },
                 }))
               }
-              value={state.channelId}
+              value={state.channel?.channelId}
             >
               <option value="">Kanal Seçiniz</option>
               {state.channel.map((channel) => (
@@ -258,10 +260,12 @@ function WarehouseConnection() {
               onChange={(e) =>
                 setState((prevState) => ({
                   ...prevState,
-                  warehouseId: e.target.value,
+                  warehouse: {
+                    warehouseId: e.target.value,
+                  },
                 }))
               }
-              value={state.warehouseId}
+              value={state.warehouse?.warehouseId}
             >
               <option value="">Depo Seçiniz</option>
               {state.warehouse.map((warehouse) => (

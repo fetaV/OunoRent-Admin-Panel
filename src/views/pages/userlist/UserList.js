@@ -44,7 +44,7 @@ const Typography = () => {
   const indexOfLastItem = state.currentPage * itemsPerPage;
   const currentItems = state?.filteredUser?.slice(
     indexOfLastItem - itemsPerPage,
-    indexOfLastItem,
+    indexOfLastItem
   );
 
   const loadUsers = async () => {
@@ -66,7 +66,7 @@ const Typography = () => {
       const filteredData = state.users.filter((user) => {
         const fields = ["address", "email", "name", "surname"];
         return fields.some((field) =>
-          user[field]?.toLowerCase().includes(lowercasedQuery),
+          user[field]?.toLowerCase().includes(lowercasedQuery)
         );
       });
 
@@ -230,7 +230,7 @@ const Typography = () => {
             >
               {i + 1}
             </CPaginationItem>
-          ),
+          )
         )}
       </CPagination>
 
@@ -246,12 +246,7 @@ const Typography = () => {
         <CModalBody>
           <CForm>
             {[
-              { label: "İsim", value: "name" },
-              { label: "Soyisim", value: "surname" },
               { label: "Email", value: "email" },
-              { label: "Telefon", value: "phoneNumber" },
-              { label: "Doğum Tarihi", value: "birthDate", type: "date" },
-              { label: "Adres", value: "address" },
               state.editUserId === null && {
                 label: "Şifre",
                 value: "password",
@@ -262,6 +257,21 @@ const Typography = () => {
                 value: "passwordConfirm",
                 type: "password",
               },
+              state.editUserId !== null && { label: "İsim", value: "name" },
+              state.editUserId !== null && {
+                label: "Soyisim",
+                value: "surname",
+              },
+              state.editUserId !== null && {
+                label: "Telefon",
+                value: "phoneNumber",
+              },
+              state.editUserId !== null && {
+                label: "Doğum Tarihi",
+                value: "birthDate",
+                type: "date",
+              },
+              state.editUserId !== null && { label: "Adres", value: "address" },
             ]
               .filter(Boolean)
               .map(({ label, value, type = "text" }) => (
@@ -290,6 +300,7 @@ const Typography = () => {
               ))}
           </CForm>
         </CModalBody>
+
         <CModalFooter>
           <CButton
             color="secondary"

@@ -22,6 +22,10 @@ const Address = React.lazy(() => import("./views/pages/address/Address"));
 const Channel = React.lazy(() => import("./views/pages/channel/Channel"));
 const Contract = React.lazy(() => import("./views/pages/contract/Contract"));
 const Price = React.lazy(() => import("./views/pages/price/Price"));
+const PopularProduct = React.lazy(
+  () => import("./views/pages/popularProduct/PopularProduct")
+);
+const Product = React.lazy(() => import("./views/pages/Product/Product"));
 const UserContract = React.lazy(
   () => import("./views/pages/userContract/UserContract")
 );
@@ -51,6 +55,8 @@ const routes = [
   { path: "/channel", name: "Channel", element: Channel },
   { path: "/contract", name: "Contract", element: Contract },
   { path: "/price", name: "Price", element: Price },
+  { path: "/popularProduct", name: "PopularProduct", element: PopularProduct },
+  { path: "/product", name: "Product", element: Product },
   { path: "/userContract", name: "UserContract", element: UserContract },
   { path: "/warehouse", name: "Warehouse", element: Warehouse },
   {

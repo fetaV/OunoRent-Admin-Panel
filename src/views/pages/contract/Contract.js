@@ -162,7 +162,7 @@ const Contract = () => {
         className="mb-3"
         onClick={() => handleModalOpen()}
       >
-        Yeni Kanal Ekle
+        Yeni Sözleşme Ekle
       </CButton>
       <CFormInput
         type="text"
@@ -253,7 +253,7 @@ const Contract = () => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.editContractId ? "Kanal Düzenle" : "Yeni Kanal Ekle"}
+            {state.editContractId ? "Sözleşme Düzenle" : "Yeni Sözleşme Ekle"}
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -263,7 +263,7 @@ const Contract = () => {
                 label: "Sözleşme Adı",
                 value: "name",
                 type: "text",
-                readOnly: false,
+                readOnly: !!state.contractData?.contractId,
               },
               {
                 label: "Versiyon",
@@ -281,13 +281,13 @@ const Contract = () => {
                 label: "Sözleşme Tipi",
                 value: "type",
                 type: "number",
-                readOnly: false,
+                readOnly: !!state.contractData?.contractId,
               },
               {
                 label: "Gereklilik",
                 value: "requiresAt",
                 type: "text",
-                readOnly: false,
+                readOnly: !!state.contractData?.contractId,
               },
             ].map(({ label, value, type, readOnly }) => (
               <CFormInput
@@ -318,7 +318,9 @@ const Contract = () => {
               rows={5}
               label="Kullanıcı Sözleşmesi Detayı"
               value={state.contractData.body}
+              readOnly={!!state.contractId}
               onChange={(e) =>
+                !state.contractData?.contractId &&
                 setState((prevState) => ({
                   ...prevState,
                   contractData: {
@@ -330,6 +332,7 @@ const Contract = () => {
             />
           </CForm>
         </CModalBody>
+
         <CModalFooter>
           <CButton
             color="secondary"

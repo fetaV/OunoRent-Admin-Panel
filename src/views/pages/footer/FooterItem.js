@@ -40,13 +40,15 @@ export const FooterItem = ({ data }) => {
     currentPage: 1,
     deleteModalVisible: false,
     deleteFooterItemId: null,
-    deleteCategoryId: null,
+    deleteFooterHeaderId: null,
   });
   const fileInputRef = useRef(null);
 
   const fetchFooterItem = async () => {
     if (data.length) {
-      const updatedFooterItemList = await fetchFooterItem(data[0].categoryId);
+      const updatedFooterItemList = await fetchFooterItem(
+        data[0].footerHeaderId
+      );
       setState((prevState) => ({
         ...prevState,
         FooterItem: updatedFooterItemList,
@@ -62,21 +64,21 @@ export const FooterItem = ({ data }) => {
   const handleToggleActive = async (item) => {
     item.isActive = !item.isActive;
 
-    await updateFooterItem(item.categoryId, item.FooterItemId, item);
+    await updateFooterItem(item.FooterHeaderId, item.FooterItemId, item);
 
-    toast.success("Category durumu başarıyla güncellendi.");
+    toast.success("FooterHeader durumu başarıyla güncellendi.");
 
     await fetchFooterItem();
   };
 
-  const handleModalOpen = async (categoryId, FooterItemId) => {
-    if (categoryId && FooterItemId) {
-      const item = await fetchFooterItemForID(categoryId, FooterItemId);
+  const handleModalOpen = async (FooterHeaderId, FooterItemId) => {
+    if (FooterHeaderId && FooterItemId) {
+      const item = await fetchFooterItemForID(FooterHeaderId, FooterItemId);
       setState((prevState) => ({
         ...prevState,
         footerItemData: {
           ...item,
-          categoryId,
+          FooterHeaderId,
           FooterItemId,
         },
         modalVisible: true,
@@ -90,7 +92,7 @@ export const FooterItem = ({ data }) => {
           icon: "",
           orderNumber: 0,
           isActive: false,
-          categoryId: data[0].categoryId,
+          FooterHeaderId: data[0].FooterHeaderId,
           FooterItemId: null,
         },
         modalVisible: true,
@@ -104,14 +106,14 @@ export const FooterItem = ({ data }) => {
     try {
       if (footerItemData.FooterItemId) {
         await updateFooterItem(
-          data[0].categoryId,
+          data[0].FooterHeaderId,
           footerItemData.FooterItemId,
           { ...footerItemData, iconUrl: undefined }
         );
-        toast.success("Alt kategori başarıyla güncellendi.");
+        toast.success("FooterItem başarıyla güncellendi.");
       } else {
-        await createFooterItem(data[0].categoryId, footerItemData);
-        toast.success("Alt kategori başarıyla oluşturuldu.");
+        await createFooterItem(data[0].FooterHeaderId, footerItemData);
+        toast.success("FooterItem başarıyla oluşturuldu.");
       }
 
       await fetchFooterItem();
@@ -151,95 +153,100 @@ export const FooterItem = ({ data }) => {
     setState((prevState) => ({
       ...prevState,
       deleteFooterItemId: item.FooterItemId,
-      deleteCategoryId: item.categoryId,
+      deleteFooterHeaderId: item.FooterHeaderId,
       deleteModalVisible: true,
     }));
   };
 
   const confirmDelete = async () => {
-    await deleteFooterItem(state.deleteCategoryId, state.deleteFooterItemId);
-    toast.success("Category başarıyla silindi!");
+    await deleteFooterItem(
+      state.deleteFooterHeaderId,
+      state.deleteFooterItemId
+    );
+    toast.success("FooterHeader başarıyla silindi!");
     await fetchFooterItem();
     setState((prevState) => ({
       ...prevState,
       deleteModalVisible: false,
       deleteFooterItemId: null,
-      deleteCategoryId: null,
+      deleteFooterHeaderId: null,
     }));
   };
 
   return (
     <>
       <ToastContainer />
-
-      <CButton
-        color="primary"
-        className="mb-3"
-        onClick={() => handleModalOpen()}
-      >
-        Yeni Alt Kategori Ekle
-      </CButton>
       {state.FooterItem.length ? (
-        <CTable>
-          <CTableHead>
-            <CTableRow>
-              {[
-                { label: "Alt Kategori Adı", value: "name" },
-                { label: "Sıra Numarası", value: "orderNumber" },
-                { label: "Eylemler", value: "actions" },
-              ].map(({ label, value }) => (
-                <CTableHeaderCell
-                  key={value}
-                  style={{ textAlign: "center", verticalAlign: "middle" }}
-                >
-                  {label}
-                </CTableHeaderCell>
-              ))}
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {state.FooterItem.map((item) => (
-              <CTableRow
-                style={{ textAlign: "center", verticalAlign: "middle" }}
-                key={item.FooterItemId}
-              >
-                <CTableDataCell>{item.name}</CTableDataCell>
-                <CTableDataCell>{item.orderNumber}</CTableDataCell>
-                <CTableDataCell
-                  style={{ textAlign: "center", verticalAlign: "middle" }}
-                >
-                  <CButton
-                    className={`text-white me-2 ${item.isActive ? "btn-success" : "btn-danger"}`}
-                    onClick={() => handleToggleActive(item)}
+        <>
+          <CButton
+            color="primary"
+            className="mb-3"
+            onClick={() => handleModalOpen()}
+          >
+            Yeni FooterItem Ekle
+          </CButton>
+
+          <CTable>
+            <CTableHead>
+              <CTableRow>
+                {[
+                  { label: "FooterItem Adı", value: "name" },
+                  { label: "Sıra Numarası", value: "orderNumber" },
+                  { label: "Eylemler", value: "actions" },
+                ].map(({ label, value }) => (
+                  <CTableHeaderCell
+                    key={value}
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
                   >
-                    {item.isActive ? (
-                      <CIcon icon={cilCheckCircle} />
-                    ) : (
-                      <CIcon icon={cilXCircle} />
-                    )}
-                  </CButton>
-                  <CButton
-                    color="primary text-white"
-                    className="me-2"
-                    onClick={() => {
-                      handleModalOpen(item.categoryId, item.FooterItemId);
-                    }}
-                  >
-                    <CIcon icon={cilPencil} />
-                  </CButton>
-                  <CButton
-                    color="danger text-white"
-                    onClick={() => handleDeleteClick(item)}
-                  >
-                    <CIcon icon={cilTrash} />
-                  </CButton>
-                </CTableDataCell>
+                    {label}
+                  </CTableHeaderCell>
+                ))}
               </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
+            </CTableHead>
+            <CTableBody>
+              {state.FooterItem.map((item) => (
+                <CTableRow
+                  style={{ textAlign: "center", verticalAlign: "middle" }}
+                  key={item.FooterItemId}
+                >
+                  <CTableDataCell>{item.name}</CTableDataCell>
+                  <CTableDataCell>{item.orderNumber}</CTableDataCell>
+                  <CTableDataCell
+                    style={{ textAlign: "center", verticalAlign: "middle" }}
+                  >
+                    <CButton
+                      className={`text-white me-2 ${item.isActive ? "btn-success" : "btn-danger"}`}
+                      onClick={() => handleToggleActive(item)}
+                    >
+                      {item.isActive ? (
+                        <CIcon icon={cilCheckCircle} />
+                      ) : (
+                        <CIcon icon={cilXCircle} />
+                      )}
+                    </CButton>
+                    <CButton
+                      color="primary text-white"
+                      className="me-2"
+                      onClick={() => {
+                        handleModalOpen(item.FooterHeaderId, item.FooterItemId);
+                      }}
+                    >
+                      <CIcon icon={cilPencil} />
+                    </CButton>
+                    <CButton
+                      color="danger text-white"
+                      onClick={() => handleDeleteClick(item)}
+                    >
+                      <CIcon icon={cilTrash} />
+                    </CButton>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
+        </>
       ) : (
-        <h3>Alt Kategori Bulunmamaktadır</h3>
+        <h3>FooterItem Bulunmamaktadır</h3>
       )}
 
       <CModal
@@ -252,7 +259,7 @@ export const FooterItem = ({ data }) => {
       >
         <CModalHeader>
           <CModalTitle id="ModalLabel">
-            {state.footerItemData?.categoryId
+            {state.footerItemData?.FooterHeaderId
               ? "Kategori Düzenle"
               : "Yeni Kategori Ekle"}
           </CModalTitle>
@@ -343,7 +350,7 @@ export const FooterItem = ({ data }) => {
                           }
                         }}
                       >
-                        {state.footerItemData?.categoryId
+                        {state.footerItemData?.FooterHeaderId
                           ? "Güncelle"
                           : "Kaydet"}
                       </button>
@@ -372,7 +379,7 @@ export const FooterItem = ({ data }) => {
             Kapat
           </CButton>
           <CButton color="primary" onClick={() => handleSave()}>
-            {state.footerItemData?.categoryId ? "Güncelle" : "Kaydet"}
+            {state.footerItemData?.FooterHeaderId ? "Güncelle" : "Kaydet"}
           </CButton>
         </CModalFooter>
       </CModal>
@@ -389,7 +396,7 @@ export const FooterItem = ({ data }) => {
       >
         <CModalHeader>
           <CModalTitle>
-            Bu Categoryu silmek istediğinize emin misiniz?
+            Bu FooterHeaderu silmek istediğinize emin misiniz?
           </CModalTitle>
         </CModalHeader>
         <CModalFooter>

@@ -76,15 +76,17 @@ function Blog() {
   }, []);
 
   useEffect(() => {
-    if (state.blogData?.categoryId) {
-      fetchSubCategory(state.blogData?.categoryId).then((data) => {
+    if (state.blogData?.categories?.categoryId) {
+      fetchSubCategory(state.blogData?.categories?.categoryId).then((data) => {
         setState((prevState) => ({
           ...prevState,
-          subCategories: data,
+          blogData: {
+            subCategories: data,
+          },
         }));
       });
     }
-  }, [state.blogData?.categoryId]);
+  }, [state.blogData?.categories?.categoryId]);
 
   const handleModalOpen = async (blogId = null) => {
     if (blogId) {
@@ -351,7 +353,9 @@ function Blog() {
                         }
                       }}
                     >
-                      {state.blogData?.categoryId ? "Güncelle" : "Kaydet"}
+                      {state.blogData?.categories?.categoryId
+                        ? "Güncelle"
+                        : "Kaydet"}
                     </button>
                   </div>
                 </div>
@@ -384,12 +388,16 @@ function Blog() {
                       ...prevState,
                       blogData: {
                         ...prevState.blogData,
-                        categoryId: e.target.value,
-                        subCategoryId: "",
+                        categories: {
+                          categoryId: e.target.value,
+                        },
+                        subCategories: {
+                          subCategoryId: "",
+                        },
                       },
                     }));
                   }}
-                  value={state.blogData?.categoryId}
+                  value={state.blogData?.categories?.categoryId}
                 >
                   <option value="">Kategori Seçiniz</option>
                   {state.categories.map((category) => (
@@ -412,12 +420,14 @@ function Blog() {
                       ...prevState,
                       blogData: {
                         ...prevState.blogData,
-                        subCategoryId: e.target.value,
+                        subCategories: {
+                          subCategoryId: e.target.value,
+                        },
                       },
                     }));
                   }}
-                  value={state.blogData?.subCategoryId}
-                  disabled={!state.blogData?.categoryId}
+                  value={state.blogData?.subCategories?.subCategoryId}
+                  disabled={!state.blogData?.categories?.categoryId}
                 >
                   <option value="">Alt Kategori Seçiniz</option>
                   {state.subCategories.map((subCategory) => (
