@@ -20,6 +20,7 @@ import {
   cilNotes,
   cilPencil,
   cilSchool,
+  cilSend,
   cilSpeedometer,
 } from "@coreui/icons";
 import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
@@ -78,6 +79,12 @@ const _nav = [
     name: "Ürünler",
     to: "/product",
     icon: <CIcon icon={cilInbox} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: "Stok",
+    to: "/stock",
+    icon: <CIcon icon={cilSend} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
